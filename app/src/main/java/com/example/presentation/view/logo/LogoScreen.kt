@@ -37,7 +37,7 @@ import kotlinx.coroutines.delay
 
 
 @Composable
-fun LogoScreen(modifier: Modifier = Modifier) {
+fun LogoScreen(modifier: Modifier = Modifier, onNavigateToHome: Any) {
     var isVisible by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {

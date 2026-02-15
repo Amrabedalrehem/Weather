@@ -8,6 +8,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.example.presentation.view.logo.LogoScreen
 import com.example.presentation.view.theme.WeatherTheme
 
@@ -17,12 +21,28 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             WeatherTheme {
-                Scaffold(modifier = Modifier.Companion.fillMaxSize()) { innerPadding ->
-                    LogoScreen(
-                        modifier = Modifier.Companion.padding(innerPadding)
-                    )
+                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                 val navController: NavHostController = rememberNavController()
+
+                    NavHost(
+                        navController = navController,
+                        startDestination = RouteScreen.Logo
+                    ) {
+                        composable<RouteScreen.Logo> {
+                            LogoScreen(
+                                modifier = Modifier.padding(innerPadding),
+                                onNavigateToHome = {
+                                 //   navController.navigate(RouteScreen.Home)
+                                }
+                            )
+                        }
+                    }
+                }
+
+
                 }
             }
         }
     }
-}
+
+
