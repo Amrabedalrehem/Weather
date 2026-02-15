@@ -13,6 +13,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.presentation.view.logo.LogoScreen
+import com.example.presentation.view.permission.PermissionScreen
 import com.example.presentation.view.theme.WeatherTheme
 
 class MainActivity : ComponentActivity() {
@@ -36,6 +37,15 @@ class MainActivity : ComponentActivity() {
                                 }
                             )
                         }
+                        composable<RouteScreen.Logo> {
+                            PermissionScreen(
+                                modifier = Modifier.padding(innerPadding),
+                                onNavigateToHome = {
+                                    //   navController.navigate(RouteScreen.Home)
+                                }
+                            )
+                        }
+
                     }
                 }
 

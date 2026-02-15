@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -25,14 +24,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.airbnb.lottie.compose.LottieAnimation
-import com.airbnb.lottie.compose.LottieCompositionSpec
-import com.airbnb.lottie.compose.LottieConstants
-import com.airbnb.lottie.compose.rememberLottieComposition
-import com.example.weather.R
+import com.example.presentation.view.MyLottieAnimation
 import kotlinx.coroutines.delay
 
 
@@ -88,17 +82,4 @@ fun LogoScreen(modifier: Modifier = Modifier, onNavigateToHome: Any) {
             )
         }
     }
-}
-
-@Composable
-fun MyLottieAnimation(size: Dp = 200.dp) {
-    val composition by rememberLottieComposition(
-        LottieCompositionSpec.RawRes(R.raw.cloud_and_sun_animation)
-    )
-
-    LottieAnimation(
-        composition = composition,
-        modifier = Modifier.size(size),
-        iterations = LottieConstants.IterateForever
-    )
 }
