@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 sealed class RouteScreen {
 
     @Serializable
-    data object Logo : RouteScreen()
+    data object Splash : RouteScreen()
 
     @Serializable
     data object Permission : RouteScreen()
@@ -14,5 +14,8 @@ sealed class RouteScreen {
 
     @Serializable
     data object Settings : RouteScreen()
+
+    @Serializable
+    data object Home : RouteScreen()
 
 }

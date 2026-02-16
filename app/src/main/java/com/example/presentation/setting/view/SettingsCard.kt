@@ -1,4 +1,4 @@
-package com.example.presentation.view.setting
+package com.example.presentation.setting.view
 import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement

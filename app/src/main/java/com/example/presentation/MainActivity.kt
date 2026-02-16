@@ -12,10 +12,11 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.presentation.view.logo.LogoScreen
-import com.example.presentation.view.permission.PermissionScreen
-import com.example.presentation.view.setting.SettingsScreen
-import com.example.presentation.view.theme.WeatherTheme
+import com.example.presentation.home.view.HomeScreen
+import com.example.presentation.splash.view.SplashScreen
+import com.example.presentation.permission.view.PermissionScreen
+import com.example.presentation.setting.view.SettingsScreen
+import com.example.presentation.theme.WeatherTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -28,17 +29,17 @@ class MainActivity : ComponentActivity() {
 
                     NavHost(
                         navController = navController,
-                        startDestination = RouteScreen.Settings
+                        startDestination = RouteScreen.Home
                     ) {
-                        composable<RouteScreen.Logo> {
-                            LogoScreen(
+                        composable<RouteScreen.Splash> {
+                            SplashScreen(
                                 modifier = Modifier.padding(innerPadding),
                                 onNavigateToHome = {
                                 navController.navigate(RouteScreen.Permission)
                                 }
                             )
                         }
-                        composable<RouteScreen.Logo> {
+                        composable<RouteScreen.Splash> {
                             PermissionScreen(
                                 modifier = Modifier.padding(innerPadding),
                                 onNavigateToHome = {
@@ -46,7 +47,12 @@ class MainActivity : ComponentActivity() {
                                 }
                             )
                         }
+                        composable<RouteScreen.Home> {
+                            HomeScreen(
+                                modifier = Modifier.padding(innerPadding),
 
+                                )
+                        }
                         composable<RouteScreen.Settings> {
                                 SettingsScreen(
                                 modifier = Modifier.padding(innerPadding),

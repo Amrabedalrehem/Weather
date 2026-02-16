@@ -1,4 +1,4 @@
-package com.example.presentation.view.permission
+package com.example.presentation.permission.view
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -34,7 +34,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.presentation.view.MyLottieAnimation
+import com.example.presentation.MyLottieAnimation
 import kotlinx.coroutines.delay
 @Composable
 fun PermissionScreen(modifier: Modifier = Modifier, onNavigateToHome: () -> Unit) {

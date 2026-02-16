@@ -1,4 +1,4 @@
-package com.example.presentation.view.logo
+package com.example.presentation.splash.view
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -26,12 +26,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.presentation.view.MyLottieAnimation
+import com.example.presentation.MyLottieAnimation
 import kotlinx.coroutines.delay
 
 
 @Composable
-fun LogoScreen(modifier: Modifier = Modifier, onNavigateToHome: Any) {
+fun SplashScreen(modifier: Modifier = Modifier, onNavigateToHome: Any) {
     var isVisible by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {

@@ -1,4 +1,4 @@
-package com.example.presentation.view.setting
+package com.example.presentation.setting.view
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -46,7 +46,7 @@ fun SettingsScreen(modifier: Modifier) {
     {
         SettingsCard(
             title = "Language",
-            icon =R.drawable.languages,
+            icon = R.drawable.languages,
             options = listOf("Default", "English", "العربية"),
             selectedOption = language,
             onOptionSelected = { select -> language = select }
@@ -64,7 +64,7 @@ fun SettingsScreen(modifier: Modifier) {
 
         SettingsCard(
             title = "Location",
-            icon =R.drawable.map,
+            icon = R.drawable.map,
             options = listOf("Gps", "Map"),
             selectedOption = location,
             onOptionSelected = { select -> location = select }
@@ -74,7 +74,7 @@ fun SettingsScreen(modifier: Modifier) {
         SettingsCard(
             title = "Wind Speed Unit",
             icon = R.drawable.wind,
-                    options = listOf("m/s", "mph"),
+            options = listOf("m/s", "mph"),
             selectedOption = windSpeed,
             onOptionSelected = { select -> windSpeed = select }
         )
@@ -82,7 +82,7 @@ fun SettingsScreen(modifier: Modifier) {
         SettingsCard(
             title = "Theme",
             icon = R.drawable.color,
-                    options = listOf("System", "Dark", "Light"),
+            options = listOf("System", "Dark", "Light"),
             selectedOption = theme,
             onOptionSelected = { select -> theme = select }
         )
