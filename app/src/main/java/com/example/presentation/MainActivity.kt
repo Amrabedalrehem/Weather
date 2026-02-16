@@ -12,6 +12,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.presentation.alarms.view.AlarmsScreen
 import com.example.presentation.favorite.view.FavoriteScreen
 import com.example.presentation.home.view.HomeScreen
 import com.example.presentation.splash.view.SplashScreen
@@ -30,7 +31,7 @@ class MainActivity : ComponentActivity() {
 
                     NavHost(
                         navController = navController,
-                        startDestination = RouteScreen.Favorite
+                        startDestination = RouteScreen.Alarms
                     ) {
                         composable<RouteScreen.Splash> {
                             SplashScreen(
@@ -62,6 +63,13 @@ class MainActivity : ComponentActivity() {
                         }
                         composable<RouteScreen.Favorite> {
                             FavoriteScreen(
+                                modifier = Modifier.padding(innerPadding),
+
+                                )
+                        }
+
+                        composable<RouteScreen.Alarms> {
+                            AlarmsScreen(
                                 modifier = Modifier.padding(innerPadding),
 
                                 )

@@ -1,4 +1,5 @@
-package com.example.presentation.favorite.view
+package com.example.presentation.alarms.view
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -26,20 +27,21 @@ import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.example.weather.R
 
+
 @Composable
-fun FavoriteScreen(modifier: Modifier = Modifier) {
+fun AlarmsScreen(modifier: Modifier = Modifier) {
 
     Scaffold(
 
         floatingActionButton = {
 
             FloatingActionButton(
-                onClick = {   },
+                onClick = { },
                 shape = RoundedCornerShape(30.dp),
-                 containerColor = Color.White.copy(0.8F)
+                containerColor = Color.White.copy(0.8F)
             ) {
                 val composition by rememberLottieComposition(
-                    LottieCompositionSpec.RawRes(R.raw.quick)
+                    LottieCompositionSpec.RawRes(R.raw.notificationbell)
                 )
                 LottieAnimation(
                     composition = composition,
@@ -51,20 +53,24 @@ fun FavoriteScreen(modifier: Modifier = Modifier) {
     ) { padding ->
 
         Column(
-            modifier = Modifier.background(brush = Brush.verticalGradient(
-                colors = listOf(
-                    Color(0xFF6B8CB5),
-                    Color(0xFF8BA5C9),
-                    Color(0xFF9FB5D1)
+            modifier = Modifier
+                .background(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            Color(0xFF6B8CB5),
+                            Color(0xFF8BA5C9),
+                            Color(0xFF9FB5D1)
+                        )
+                    )
                 )
-            )).fillMaxSize()
+                .fillMaxSize()
                 .padding(padding),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
 
-             val composition by rememberLottieComposition(
-                LottieCompositionSpec.RawRes(R.raw.cat)
+            val composition by rememberLottieComposition(
+                LottieCompositionSpec.RawRes(R.raw.notification)
             )
 
             LottieAnimation(
@@ -76,7 +82,7 @@ fun FavoriteScreen(modifier: Modifier = Modifier) {
             Spacer(modifier = Modifier.height(5.dp))
 
             Text(
-                text = "No favorites yet",
+                text = "The journey's quit!",
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.White
@@ -85,7 +91,7 @@ fun FavoriteScreen(modifier: Modifier = Modifier) {
             Spacer(modifier = Modifier.height(4.dp))
 
             Text(
-                text = "Tap the button to add a city",
+                text = "No weather alarms on your path",
                 fontSize = 16.sp,
                 color = Color.White.copy(alpha = 0.7f)
             )

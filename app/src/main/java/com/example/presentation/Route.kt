@@ -21,4 +21,9 @@ sealed class RouteScreen {
     @Serializable
     data object Favorite : RouteScreen()
 
+
+    @Serializable
+    data object Alarms : RouteScreen()
+
+
 }
