@@ -18,4 +18,7 @@ sealed class RouteScreen {
     @Serializable
     data object Home : RouteScreen()
 
+    @Serializable
+    data object Favorite : RouteScreen()
+
 }
