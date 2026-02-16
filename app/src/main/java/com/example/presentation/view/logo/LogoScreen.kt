@@ -37,6 +37,8 @@ fun LogoScreen(modifier: Modifier = Modifier, onNavigateToHome: Any) {
     LaunchedEffect(Unit) {
         delay(300)
         isVisible = true
+        onNavigateToHome
+        delay(2000)
     }
 
     Column(

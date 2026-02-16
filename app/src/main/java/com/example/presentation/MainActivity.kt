@@ -14,6 +14,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.presentation.view.logo.LogoScreen
 import com.example.presentation.view.permission.PermissionScreen
+import com.example.presentation.view.setting.SettingsScreen
 import com.example.presentation.view.theme.WeatherTheme
 
 class MainActivity : ComponentActivity() {
@@ -27,13 +28,13 @@ class MainActivity : ComponentActivity() {
 
                     NavHost(
                         navController = navController,
-                        startDestination = RouteScreen.Logo
+                        startDestination = RouteScreen.Settings
                     ) {
                         composable<RouteScreen.Logo> {
                             LogoScreen(
                                 modifier = Modifier.padding(innerPadding),
                                 onNavigateToHome = {
-                                 //   navController.navigate(RouteScreen.Home)
+                                navController.navigate(RouteScreen.Permission)
                                 }
                             )
                         }
@@ -43,6 +44,13 @@ class MainActivity : ComponentActivity() {
                                 onNavigateToHome = {
                                     //   navController.navigate(RouteScreen.Home)
                                 }
+                            )
+                        }
+
+                        composable<RouteScreen.Settings> {
+                                SettingsScreen(
+                                modifier = Modifier.padding(innerPadding),
+
                             )
                         }
 
