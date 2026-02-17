@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -22,10 +23,35 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.example.data.model.weather.WeatherDto
+import com.example.presentation.ErrorState
+import com.example.presentation.LoadingState
+import com.example.presentation.UiState
+import com.example.presentation.home.viewmodel.HomeViewModel
 import kotlinx.coroutines.delay
 
 @Composable
-fun HomeScreen(modifier: Modifier = Modifier) {
+fun HomeScreen(modifier: Modifier = Modifier, viewModel: HomeViewModel) {
+    val uiState by viewModel.currentWeather.collectAsState()
+
+    when (val state = uiState) {
+        is UiState.Loading -> LoadingState()
+
+        is UiState.Error -> ErrorState(
+            errorMessage = state.message,
+            onRetry = { viewModel.getCurrentWeather() }
+        )
+
+        is UiState.Success -> {
+             HomeScreenContent(weatherData = state.data)
+        }
+    }
+}
+
+@Composable
+fun HomeScreenContent(weatherData: WeatherDto, modifier: Modifier = Modifier)
+{
+
     var isVisible by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
@@ -57,7 +83,7 @@ fun HomeScreen(modifier: Modifier = Modifier) {
                     visible = isVisible,
                     enter = fadeIn(tween(800)) + slideInVertically(tween(800)) { -it }
                 ) {
-                    CurrentWeatherSection()
+                    CurrentWeatherSection(weatherData)
                 }
             }
 
@@ -69,7 +95,7 @@ fun HomeScreen(modifier: Modifier = Modifier) {
                     enter = fadeIn(tween(800, delayMillis = 200)) +
                             slideInHorizontally(tween(800, delayMillis = 200)) { -it }
                 ) {
-                    WeatherDetailsGrid()
+                    WeatherDetailsGrid(weatherData)
                 }
             }
 
