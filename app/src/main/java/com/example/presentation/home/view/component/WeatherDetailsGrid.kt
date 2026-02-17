@@ -1,4 +1,4 @@
-package com.example.presentation.home.view
+package com.example.presentation.home.view.component
  import androidx.compose.foundation.layout.Arrangement
  import androidx.compose.foundation.layout.Column
  import androidx.compose.foundation.layout.Row
@@ -23,11 +23,11 @@ package com.example.presentation.home.view
  import com.airbnb.lottie.compose.LottieCompositionSpec
  import com.airbnb.lottie.compose.LottieConstants
  import com.airbnb.lottie.compose.rememberLottieComposition
- import com.example.data.model.weather.WeatherDto
+ import com.example.data.model.weather.CurrentWeatherDto
  import com.example.weather.R
 
 @Composable
-fun WeatherDetailsGrid(weatherData: WeatherDto) {
+fun WeatherDetailsGrid(weatherData: CurrentWeatherDto) {
     Column(
         modifier = Modifier
             .fillMaxWidth()

@@ -1,4 +1,4 @@
-package com.example.presentation.home.view
+package com.example.presentation.home.view.component
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -31,13 +31,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import com.example.data.model.weather.WeatherDto
+import com.example.data.model.weather.CurrentWeatherDto
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 
 @Composable
-fun CurrentWeatherSection(currentWeather: WeatherDto) {
+fun CurrentWeatherSection(currentWeather: CurrentWeatherDto) {
 
 
     val scale by rememberInfiniteTransition().animateFloat(

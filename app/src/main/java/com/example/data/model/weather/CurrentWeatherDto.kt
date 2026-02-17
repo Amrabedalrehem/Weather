@@ -3,7 +3,7 @@ package com.example.data.model.weather
 
 import com.google.gson.annotations.SerializedName
 
-data class WeatherDto(
+data class CurrentWeatherDto(
     @SerializedName("weather")
     val weather: List<Weather>,
 
@@ -66,3 +66,7 @@ data class Sys(
     @SerializedName("country")
     val country: String
 )
+
+
+
+
