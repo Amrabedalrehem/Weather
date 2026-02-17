@@ -1,4 +1,4 @@
- import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -7,8 +7,8 @@ import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
- import androidx.compose.foundation.layout.Box
- import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -21,7 +21,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
-import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
@@ -38,14 +37,23 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
- 
-
+import coil.compose.AsyncImage
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.rememberLottieComposition
+import com.example.data.model.weather.FiveDayForecastResponse
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+import com.example.weather.R
 
 
 @Composable
-fun FiveDayForecastSection() {
+fun FiveDayForecastSection(fiveDayData: FiveDayForecastResponse) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -59,20 +67,20 @@ fun FiveDayForecastSection() {
             modifier = Modifier.padding(bottom = 16.dp)
         )
 
-        val days = listOf("Monday", "Tuesday", "Wednesday", "Thursday", "Friday")
-        days.forEachIndexed { index, day ->
+
+        fiveDayData.fiveDay.forEachIndexed { index, day ->
             FiveDayForecastCard(
-                day = day,
-                highTemp = "${30 + index}°",
-                lowTemp = "${20 + index}°",
-                icon = Icons.Default.Warning,
-                humidity = "${60 + index}%",
-                windSpeed = "${10 + index} km/h",
-                pressure = "${1010 + index} hPa",
-                clouds = "${15 + index * 5}%",
-                description = "Clear Sky"
+                day = "${dateFormat(fiveDayData.fiveDay[index].dt)}",
+                highTemp = "${fiveDayData.fiveDay[index].temp.max}°",
+                lowTemp = "${fiveDayData.fiveDay[index].temp.min}°",
+                icon =fiveDayData.fiveDay[index].weather[0].icon,
+                humidity = "${fiveDayData.fiveDay[index].humidity}%",
+                windSpeed = "${fiveDayData.fiveDay[index].speed} km/h",
+                pressure = "${fiveDayData.fiveDay[index].pressure} hPa",
+                clouds = "${fiveDayData.fiveDay[index].clouds}%",
+                description = fiveDayData.fiveDay[index].weather[0].description
             )
-            if (index < days.size - 1) {
+            if (index < fiveDayData.fiveDay.size - 1) {
                 Spacer(modifier = Modifier.height(16.dp))
             }
         }
@@ -84,7 +92,7 @@ fun FiveDayForecastCard(
     day: String,
     highTemp: String,
     lowTemp: String,
-    icon: ImageVector,
+    icon: String,
     humidity: String,
     windSpeed: String,
     pressure: String,
@@ -117,15 +125,17 @@ fun FiveDayForecastCard(
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.White,
-                    modifier = Modifier.weight(1f)
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.weight(1.5f)
                 )
 
-                Icon(
-                    imageVector = icon,
-                    contentDescription = null,
-                    tint = Color(0xFFFCD34D),
-                    modifier = Modifier.size(36.dp)
-                )
+
+                 AsyncImage(
+                     model = "https://openweathermap.org/img/wn/${icon}@2x.png",
+                     contentDescription = null,
+                     modifier = Modifier.size(40.dp)
+                 )
 
                 Spacer(modifier = Modifier.width(16.dp))
 
@@ -136,19 +146,27 @@ fun FiveDayForecastCard(
                 ) {
                     Text(
                         text = highTemp,
-                        fontSize = 20.sp,
+                        fontSize = 14.sp,
+                        maxLines = 1,
                         fontWeight = FontWeight.Bold,
                         color = Color.White
+                        ,overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.weight(1.5f)
+
                     )
                     Text(
                         text = " / ",
-                        fontSize = 16.sp,
+                        fontSize = 14.sp,
+                        maxLines = 1,
                         color = Color.White.copy(alpha = 0.5f)
                     )
+
                     Text(
                         text = lowTemp,
-                        fontSize = 18.sp,
-                        color = Color.White.copy(alpha = 0.7f)
+                        fontSize = 14.sp,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.weight(1.5f)
                     )
                 }
 
@@ -184,12 +202,14 @@ fun FiveDayForecastCard(
                         modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Icon(
-                            imageVector = Icons.Default.Info,
-                            contentDescription = null,
-                            tint = Color.White.copy(alpha = 0.7f),
-                            modifier = Modifier.size(18.dp)
-                        )
+                         val composition by rememberLottieComposition(
+                             LottieCompositionSpec.RawRes(R.raw.cloud_and_sun_animation)
+                         )
+                         LottieAnimation(
+                             composition = composition,
+                             iterations = LottieConstants.IterateForever,
+                             modifier = Modifier.size(40.dp)
+                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
                             text = description,
@@ -199,6 +219,7 @@ fun FiveDayForecastCard(
                         )
                     }
 
+
                     Spacer(modifier = Modifier.height(16.dp))
 
                      Row(
@@ -206,13 +227,13 @@ fun FiveDayForecastCard(
                         horizontalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
                         DayDetailItem(
-                            icon = Icons.Default.Info,
+                            R.raw.waterdrop,
                             label = "Humidity",
                             value = humidity,
                             modifier = Modifier.weight(1f)
                         )
                         DayDetailItem(
-                            icon = Icons.Default.Info,
+                            icon = R.raw.cloud,
                             label = "Wind",
                             value = windSpeed,
                             modifier = Modifier.weight(1f)
@@ -226,13 +247,13 @@ fun FiveDayForecastCard(
                         horizontalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
                         DayDetailItem(
-                            icon = Icons.Default.KeyboardArrowUp,
+                            icon = R.raw.speed,
                             label = "Pressure",
                             value = pressure,
                             modifier = Modifier.weight(1f)
                         )
                         DayDetailItem(
-                            icon = Icons.Default.KeyboardArrowUp,
+                            icon = R.raw.cloud_and_sun_animation,
                             label = "Clouds",
                             value = clouds,
                             modifier = Modifier.weight(1f)
@@ -245,7 +266,7 @@ fun FiveDayForecastCard(
 }
  @Composable
  fun DayDetailItem(
-     icon: ImageVector,
+     icon: Int,
      label: String,
      value: String,
      modifier: Modifier = Modifier
@@ -261,11 +282,15 @@ fun FiveDayForecastCard(
              horizontalAlignment = Alignment.CenterHorizontally,
              verticalArrangement = Arrangement.Center
          ) {
-             Icon(
-                 imageVector = icon,
-                 contentDescription = null,
-                 tint = Color.White.copy(alpha = 0.8f),
-                 modifier = Modifier.size(20.dp)
+
+
+             val composition by rememberLottieComposition(
+                 LottieCompositionSpec.RawRes(icon)
+             )
+             LottieAnimation(
+                 composition = composition,
+                 iterations = LottieConstants.IterateForever,
+                 modifier = Modifier.size(40.dp)
              )
              Spacer(modifier = Modifier.height(6.dp))
              Text(
@@ -283,3 +308,9 @@ fun FiveDayForecastCard(
          }
      }
  }
+fun dateFormat(dt: Long): String {
+    val date = Date(dt * 1000)
+    val format = SimpleDateFormat("EEE, dd MMM", Locale.ENGLISH)
+    return format.format(date)
+}
+

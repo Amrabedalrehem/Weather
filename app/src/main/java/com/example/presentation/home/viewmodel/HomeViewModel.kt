@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.data.Repository
 import com.example.data.model.weather.CurrentWeatherDto
+import com.example.data.model.weather.FiveDayForecastResponse
 import com.example.data.model.weather.HourlyForecastResponse
 import com.example.presentation.UiState
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -20,6 +21,10 @@ class HomeViewModel(val repository: Repository) : ViewModel() {
     private var _hourlyForecast = MutableStateFlow<UiState<HourlyForecastResponse>>(UiState.Loading)
     val hourlyForecast: StateFlow<UiState<HourlyForecastResponse>> = _hourlyForecast
 
+    private var _fiveDayForecast =
+        MutableStateFlow<UiState<FiveDayForecastResponse>>(UiState.Loading)
+    val fiveDayForecast: StateFlow<UiState<FiveDayForecastResponse>> = _fiveDayForecast
+
 
     val handleCurrentWeatherException = CoroutineExceptionHandler { _, exception ->
         _currentWeather.value = UiState.Error(exception.message.toString())
@@ -28,10 +33,14 @@ class HomeViewModel(val repository: Repository) : ViewModel() {
     val handleHourlyException = CoroutineExceptionHandler { _, exception ->
         _hourlyForecast.value = UiState.Error(exception.message.toString())
     }
+    val handleFiveDayException = CoroutineExceptionHandler { _, exception ->
+        _fiveDayForecast.value = UiState.Error(exception.message.toString())
+    }
 
     fun getInfoWeather() {
 
         viewModelScope.launch {
+
             val current = launch(handleCurrentWeatherException) {
                 _currentWeather.value = UiState.Loading
                 val response = repository.getCurrentWeather(
@@ -56,11 +65,13 @@ class HomeViewModel(val repository: Repository) : ViewModel() {
 
             }
             current.join()
+
             val cityName = (_currentWeather.value as? UiState.Success)?.data?.name ?: "Cairo"
 
-            val hourly = launch(handleHourlyException){
+            val hourly = launch(handleHourlyException) {
                 _hourlyForecast.value = UiState.Loading
-                val response = repository.getHourlyForecast(cityName)
+                val response = repository.getHourlyForecast(cityName, "en", "metric")
+
                 if (response.isSuccessful) {
                     val data = response.body()
                     if (data != null) {
@@ -74,8 +85,29 @@ class HomeViewModel(val repository: Repository) : ViewModel() {
 
             }
 
-            hourly.join()
+            val fiveDay = launch(handleFiveDayException) {
 
+                _fiveDayForecast.value = UiState.Loading
+                val response = repository.getFiveDayForecast(
+                    cityName,
+                    lat = 30.599405,
+                    lon = 31.489460,
+                    "en", "metric"
+                )
+
+                if (response.isSuccessful) {
+                    val data = response.body()
+                    if (data != null) {
+                        _fiveDayForecast.value = UiState.Success(data)
+                    } else {
+                        _fiveDayForecast.value = UiState.Error("No Data")
+                    }
+                } else {
+                    _fiveDayForecast.value = UiState.Error("Error ${response.code()}")
+                }
+            }
+
+            joinAll(hourly, fiveDay)
         }
     }
 

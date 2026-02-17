@@ -63,24 +63,26 @@ fun HourlyForecastCard(
                 modifier = Modifier.size(40.dp)
             )
             Text(
-                text = "$temperature",
+                text = "$temperature °",
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.White
             )
             Row(
-                horizontalArrangement = Arrangement.spacedBy(6.dp),
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "↑$temp_max",
-                    fontSize = 11.sp,
-                    color = Color(0xFFFCD34D)
+                    text = "↑${"%.0f".format(temp_max)}°",
+                    fontSize = 10.sp,
+                    color = Color(0xFFFCD34D),
+                    maxLines = 1
                 )
                 Text(
-                    text = "↓$temp_min",
-                    fontSize = 11.sp,
-                    color = Color.White.copy(alpha = 0.7f)
+                    text = "↓${"%.0f".format(temp_min)}°",
+                    fontSize = 10.sp,
+                    color = Color.White.copy(alpha = 0.7f),
+                    maxLines = 1
                 )
             }
             Row(

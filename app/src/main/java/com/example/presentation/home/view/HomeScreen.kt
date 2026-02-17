@@ -24,6 +24,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.data.model.weather.CurrentWeatherDto
+import com.example.data.model.weather.FiveDayForecastResponse
 import com.example.data.model.weather.HourlyForecastResponse
 import com.example.presentation.ErrorState
 import com.example.presentation.LoadingState
@@ -38,15 +39,17 @@ import kotlinx.coroutines.delay
 fun HomeScreen(modifier: Modifier = Modifier, viewModel: HomeViewModel) {
     val currentUiState by viewModel.currentWeather.collectAsState()
     val hourlyUiState by viewModel.hourlyForecast.collectAsState()
+    val fiveDayUiState by viewModel.fiveDayForecast.collectAsState()
 
-      if (currentUiState is UiState.Loading || hourlyUiState is UiState.Loading) {
+
+      if (currentUiState is UiState.Loading || hourlyUiState is UiState.Loading|| fiveDayUiState is UiState.Loading) {
         LoadingState()
         return
     }
 
-     if (currentUiState is UiState.Error || hourlyUiState is UiState.Error) {
+     if (currentUiState is UiState.Error || hourlyUiState is UiState.Error|| fiveDayUiState is UiState.Error) {
         val errorMessage = (currentUiState as? UiState.Error)?.message
-            ?: (hourlyUiState as? UiState.Error)?.message
+            ?: (hourlyUiState as? UiState.Error)?.message?: (fiveDayUiState as? UiState.Error)?.message
             ?: "Unknown Error"
         ErrorState(
             errorMessage = errorMessage,
@@ -58,15 +61,17 @@ fun HomeScreen(modifier: Modifier = Modifier, viewModel: HomeViewModel) {
      if (currentUiState is UiState.Success && hourlyUiState is UiState.Success) {
         val currentData = (currentUiState as UiState.Success).data
         val hourlyData = (hourlyUiState as UiState.Success).data
+         val  fiveDayData = (fiveDayUiState as UiState.Success).data
         HomeScreenContent(
             weatherData = currentData,
-            hourlyForecast = hourlyData
+            hourlyForecast = hourlyData,
+            fiveDayData =fiveDayData
         )
     }
 }
 
 @Composable
-fun HomeScreenContent(weatherData: CurrentWeatherDto, hourlyForecast : HourlyForecastResponse, modifier: Modifier = Modifier)
+fun HomeScreenContent(weatherData: CurrentWeatherDto, hourlyForecast : HourlyForecastResponse, fiveDayData : FiveDayForecastResponse,modifier: Modifier = Modifier)
 {
 
     var isVisible by remember { mutableStateOf(false) }
@@ -134,7 +139,7 @@ fun HomeScreenContent(weatherData: CurrentWeatherDto, hourlyForecast : HourlyFor
                     visible = isVisible,
                     enter = fadeIn(tween(800, delayMillis = 600))
                 ) {
-                    FiveDayForecastSection()
+                    FiveDayForecastSection(fiveDayData)
                 }
             }
         }
