@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -31,10 +30,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
+import com.example.data.model.weather.WeatherDto
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 
 @Composable
-fun CurrentWeatherSection() {
+fun CurrentWeatherSection(currentWeather: WeatherDto) {
+
+
     val scale by rememberInfiniteTransition().animateFloat(
         initialValue = 1f,
         targetValue = 1.16f,
@@ -60,7 +65,7 @@ fun CurrentWeatherSection() {
                 modifier = Modifier.size(20.dp)
             )
             Text(
-                text = "Cairo, Egypt",
+                text =currentWeather.name + " " + currentWeather.sys.country,
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Medium,
                 color = Color.White.copy(alpha = 0.9f)
@@ -70,13 +75,13 @@ fun CurrentWeatherSection() {
         Spacer(modifier = Modifier.height(16.dp))
 
          Text(
-            text = "CurrentDate",
+            text = getCurrentDate(),
             fontSize = 14.sp,
             color = Color.White.copy(alpha = 0.7f)
         )
 
         Text(
-            text ="CurrentTime",
+            text =getCurrentTime(),
             fontSize = 14.sp,
             color = Color.White.copy(alpha = 0.7f)
         )
@@ -88,18 +93,18 @@ fun CurrentWeatherSection() {
                 .size(180.dp).scale(scale).clip(CircleShape).background(Color.White.copy(alpha = 0.2f)),
                contentAlignment = Alignment.Center
         ) {
-            Icon(
-                imageVector = Icons.Default.AccountCircle,
-                contentDescription = null,
-                tint =Color.Unspecified,
-                modifier = Modifier.size(100.dp)
-            )
-        }
+             AsyncImage(
+                 model = "https://openweathermap.org/img/wn/${currentWeather.weather[0].icon}@2x.png",
+                 contentDescription = "Weather Icon",
+                 modifier = Modifier.size(100.dp)
+             )
+         }
 
-        Spacer(modifier = Modifier.height(32.dp))
+
+             Spacer(modifier = Modifier.height(32.dp))
 
          Text(
-            text = "28°",
+             text = "${currentWeather.main.temp.toInt()}°",
             fontSize = 96.sp,
             fontWeight = FontWeight.Bold,
             color = Color.White,
@@ -109,16 +114,33 @@ fun CurrentWeatherSection() {
         Spacer(modifier = Modifier.height(8.dp))
 
          Text(
-            text = "Clear Sky",
+            text = currentWeather.weather[0].main,
             fontSize = 24.sp,
             fontWeight = FontWeight.Medium,
             color = Color.White.copy(alpha = 0.9f)
         )
 
         Text(
-            text = "Feels like 30°",
+            text = "Feels like ${currentWeather.weather[0].description}",
             fontSize = 16.sp,
             color = Color.White.copy(alpha = 0.7f)
         )
     }
 }
+@Composable
+fun getCurrentDate(): String {
+    val current = LocalDateTime.now()
+    val formatter = DateTimeFormatter.ofPattern("EEEE, MMMM dd, yyyy")
+    return current.format(formatter)
+}
+
+@Composable
+fun getCurrentTime(): String {
+    val current = LocalDateTime.now()
+    val formatter = DateTimeFormatter.ofPattern("hh:mm a")
+    return current.format(formatter)
+}
+
+
+
+

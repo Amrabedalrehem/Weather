@@ -92,6 +92,7 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
+    implementation("io.coil-kt:coil-compose:2.4.0")
 
     // Debug
     debugImplementation(libs.androidx.compose.ui.tooling)
