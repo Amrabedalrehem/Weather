@@ -31,70 +31,48 @@ import com.example.weather.R
 @Composable
 fun AlarmsScreen(modifier: Modifier = Modifier) {
 
-    Scaffold(
 
-        floatingActionButton = {
-
-            FloatingActionButton(
-                onClick = { },
-                shape = RoundedCornerShape(30.dp),
-                containerColor = Color.White.copy(0.8F)
-            ) {
-                val composition by rememberLottieComposition(
-                    LottieCompositionSpec.RawRes(R.raw.notificationbell)
-                )
-                LottieAnimation(
-                    composition = composition,
-                    iterations = LottieConstants.IterateForever,
-                    modifier = Modifier.size(40.dp)
-                )
-            }
-        }
-    ) { padding ->
-
-        Column(
-            modifier = Modifier
-                .background(
-                    brush = Brush.verticalGradient(
-                        colors = listOf(
-                            Color(0xFF6B8CB5),
-                            Color(0xFF8BA5C9),
-                            Color(0xFF9FB5D1)
-                        )
+    Column(
+        modifier = Modifier
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(
+                        Color(0xFF6B8CB5),
+                        Color(0xFF8BA5C9),
+                        Color(0xFF9FB5D1)
                     )
                 )
-                .fillMaxSize()
-                .padding(padding),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-
-            val composition by rememberLottieComposition(
-                LottieCompositionSpec.RawRes(R.raw.notification)
             )
+            .fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
 
-            LottieAnimation(
-                composition = composition,
-                iterations = LottieConstants.IterateForever,
-                modifier = Modifier.size(220.dp)
-            )
+        val composition by rememberLottieComposition(
+            LottieCompositionSpec.RawRes(R.raw.notification)
+        )
 
-            Spacer(modifier = Modifier.height(5.dp))
+        LottieAnimation(
+            composition = composition,
+            iterations = LottieConstants.IterateForever,
+            modifier = Modifier.size(220.dp)
+        )
 
-            Text(
-                text = "The journey's quit!",
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.White
-            )
+        Spacer(modifier = Modifier.height(5.dp))
 
-            Spacer(modifier = Modifier.height(4.dp))
+        Text(
+            text = "The journey's quit!",
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color.White
+        )
 
-            Text(
-                text = "No weather alarms on your path",
-                fontSize = 16.sp,
-                color = Color.White.copy(alpha = 0.7f)
-            )
-        }
+        Spacer(modifier = Modifier.height(4.dp))
+
+        Text(
+            text = "No weather alarms on your path",
+            fontSize = 16.sp,
+            color = Color.White.copy(alpha = 0.7f)
+        )
     }
 }
