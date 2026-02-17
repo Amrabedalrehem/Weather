@@ -1,6 +1,7 @@
 package com.example.data.datasource.remote
 
-import com.example.data.model.weather.WeatherDto
+import com.example.data.model.weather.CurrentWeatherDto
+import com.example.data.model.weather.HourlyForecastResponse
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query
@@ -15,7 +16,16 @@ interface WeatherService {
         @Query("appid") appid: String = KEY_,
         @Query("lang") lang: String = "en",
         @Query("units") units: String = "metric"
-    ): Response<WeatherDto>
+    ): Response<CurrentWeatherDto>
 
+
+    @GET("data/2.5/forecast/hourly")
+    suspend fun getHourlyForecast(
+        @Query("q") city: String,
+        @Query("appid") apiKey: String = KEY_,
+        @Query("units") units: String = "metric",
+        @Query("lang") lang: String = "ar",
+        @Query("cnt") count: Int = 24
+    ):Response<HourlyForecastResponse>
 
 }
