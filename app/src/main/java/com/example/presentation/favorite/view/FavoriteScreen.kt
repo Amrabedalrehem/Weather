@@ -29,27 +29,6 @@ import com.example.weather.R
 @Composable
 fun FavoriteScreen(modifier: Modifier = Modifier) {
 
-    Scaffold(
-
-        floatingActionButton = {
-
-            FloatingActionButton(
-                onClick = {   },
-                shape = RoundedCornerShape(30.dp),
-                 containerColor = Color.White.copy(0.8F)
-            ) {
-                val composition by rememberLottieComposition(
-                    LottieCompositionSpec.RawRes(R.raw.quick)
-                )
-                LottieAnimation(
-                    composition = composition,
-                    iterations = LottieConstants.IterateForever,
-                    modifier = Modifier.size(40.dp)
-                )
-            }
-        }
-    ) { padding ->
-
         Column(
             modifier = Modifier.background(brush = Brush.verticalGradient(
                 colors = listOf(
@@ -57,9 +36,8 @@ fun FavoriteScreen(modifier: Modifier = Modifier) {
                     Color(0xFF8BA5C9),
                     Color(0xFF9FB5D1)
                 )
-            )).fillMaxSize()
-                .padding(padding),
-            verticalArrangement = Arrangement.Center,
+            )).fillMaxSize(),
+             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
 
@@ -90,5 +68,7 @@ fun FavoriteScreen(modifier: Modifier = Modifier) {
                 color = Color.White.copy(alpha = 0.7f)
             )
         }
-    }
+
 }
+
+
