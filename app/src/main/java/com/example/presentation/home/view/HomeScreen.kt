@@ -26,12 +26,12 @@ import androidx.compose.ui.unit.dp
 import com.example.data.model.weather.CurrentWeatherDto
 import com.example.data.model.weather.FiveDayForecastResponse
 import com.example.data.model.weather.HourlyForecastResponse
-import com.example.presentation.ErrorState
-import com.example.presentation.LoadingState
-import com.example.presentation.UiState
-import com.example.presentation.home.view.component.CurrentWeatherSection
-import com.example.presentation.home.view.component.HourlyForecastSection
-import com.example.presentation.home.view.component.WeatherDetailsGrid
+import com.example.presentation.component.helper.ErrorState
+import com.example.presentation.component.helper.LoadingState
+import com.example.presentation.component.helper.UiState
+import com.example.presentation.component.home.CurrentWeatherSection
+import com.example.presentation.component.home.HourlyForecastSection
+import com.example.presentation.component.home.WeatherDetailsGrid
 import com.example.presentation.home.viewmodel.HomeViewModel
 import kotlinx.coroutines.delay
 

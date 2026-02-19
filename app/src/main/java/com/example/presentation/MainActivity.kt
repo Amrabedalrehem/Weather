@@ -7,7 +7,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.getValue
@@ -28,14 +28,22 @@ import com.example.data.Repository
 import com.example.data.datasource.local.DataSourceLocal
 import com.example.data.datasource.remote.DataSourceRemote
 import com.example.presentation.alarms.view.AlarmsScreen
+import com.example.presentation.component.location.MapPickerScreen
+import com.example.presentation.component.location.MapPickerViewModel
+import com.example.presentation.component.location.MapPickerViewModelFactory
 import com.example.presentation.favorite.view.FavoriteScreen
 import com.example.presentation.home.view.HomeScreen
 import com.example.presentation.home.viewmodel.HomeViewModel
 import com.example.presentation.home.viewmodel.HomeViewModelFactory
+import com.example.presentation.navigation.BottomNavigationBar
+import com.example.presentation.navigation.RouteScreen
 import com.example.presentation.permission.view.PermissionScreen
 import com.example.presentation.setting.view.SettingsScreen
 import com.example.presentation.splash.view.SplashScreen
 import com.example.presentation.theme.WeatherTheme
+import com.example.weather.BuildConfig
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.libraries.places.api.Places
 
 class MainActivity : ComponentActivity() {
     private val dataSourceRemote = DataSourceRemote()
@@ -46,12 +54,12 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+         Places.initialize(applicationContext, BuildConfig.PLACES_API_KEY)
         enableEdgeToEdge()
         setContent {
             val navController: NavHostController = rememberNavController()
-            val viewModel: HomeViewModel = viewModel(factory = factory)
-
-            WeatherTheme {
+            val homeViewModel: HomeViewModel = viewModel(factory = factory)
+             WeatherTheme {
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
                 val currentRoute = navBackStackEntry?.destination?.route
                 val showBottomBar = currentRoute in listOf(
@@ -62,103 +70,146 @@ class MainActivity : ComponentActivity() {
                 )
 
                 val showFavoriteAB = currentRoute == RouteScreen.Favorite::class.qualifiedName
-                val showAlarmsAB = currentRoute == RouteScreen.Alarms::class.qualifiedName
+                 val showAlarmsAB = currentRoute == RouteScreen.Alarms::class.qualifiedName
 
-                Scaffold(
-                    bottomBar = {
-                        if (showBottomBar) BottomNavigationBar(navController)
-                    },
-                    floatingActionButton = {
-                        if (showFavoriteAB) {
-                            FloatingActionButton(
-                                onClick = { },
-                                shape = RoundedCornerShape(30.dp),
-                                containerColor = Color.White.copy(0.8f)
-                            ) {
-                                val composition by rememberLottieComposition(
-                                    LottieCompositionSpec.RawRes(R.raw.quick)
-                                )
-                                LottieAnimation(
-                                    composition = composition,
-                                    iterations = LottieConstants.IterateForever,
-                                    modifier = Modifier.size(40.dp)
-                                )
+                /*
+                var currentLatLng by remember { mutableStateOf<LatLng?>(null) }
+
+                    val fusedLocationClient = remember {
+                       LocationServices.getFusedLocationProviderClient(context)
+                   }
+
+                   val locationPermission = rememberLauncherForActivityResult(
+                       ActivityResultContracts.RequestPermission()
+                   ) { isGranted ->
+                       if (isGranted) {
+                           fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+                               location?.let {
+                                   currentLatLng = LatLng(it.latitude, it.longitude)
+                                   showMapPicker = true
+                               }
+                           }
+                       }
+                   }
+
+                    Button(onClick = {
+                       locationPermission.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+                   }) {
+                       Text("اختر الموقع")
+                   }
+   */
+                    Scaffold(
+                        bottomBar = {
+                            if (showBottomBar) BottomNavigationBar(navController)
+                        },
+                        floatingActionButton = {
+                            if (showFavoriteAB) {
+                                FloatingActionButton(
+                                    onClick = {
+                                        navController.navigate(RouteScreen.Map)
+                                    },
+                                    shape = CircleShape,
+                                    containerColor = Color.White.copy(0.8f)
+                                ) {
+                                    val composition by rememberLottieComposition(
+                                        LottieCompositionSpec.RawRes(R.raw.quick)
+                                    )
+                                    LottieAnimation(
+                                        composition = composition,
+                                        iterations = LottieConstants.IterateForever,
+                                        modifier = Modifier.size(40.dp)
+                                    )
+                                }
+
+                            }
+                            if (showAlarmsAB) {
+                                FloatingActionButton(
+                                    onClick = { },
+                                    shape = CircleShape,
+                                    containerColor = Color.White.copy(0.8f)
+                                ) {
+                                    val composition by rememberLottieComposition(
+                                        LottieCompositionSpec.RawRes(R.raw.notificationbell)
+                                    )
+                                    LottieAnimation(
+                                        composition = composition,
+                                        iterations = LottieConstants.IterateForever,
+                                        modifier = Modifier.size(40.dp)
+                                    )
+                                }
+
                             }
                         }
-                        if (showAlarmsAB) {
-                            FloatingActionButton(
-                                onClick = { },
-                                shape = RoundedCornerShape(30.dp),
-                                containerColor = Color.White.copy(0.8f)
-                            ) {
-                                val composition by rememberLottieComposition(
-                                    LottieCompositionSpec.RawRes(R.raw.notificationbell)
+                    ) { innerPadding ->
+
+
+                        NavHost(
+                            navController = navController,
+                            startDestination = RouteScreen.Home
+                        ) {
+                            composable<RouteScreen.Splash> {
+                                SplashScreen(
+                                    modifier = Modifier.padding(innerPadding),
+                                    onNavigateToHome = {
+                                        navController.navigate(RouteScreen.Permission)
+                                    }
                                 )
-                                LottieAnimation(
-                                    composition = composition,
-                                    iterations = LottieConstants.IterateForever,
-                                    modifier = Modifier.size(40.dp)
+                            }
+                            composable<RouteScreen.Map> {
+                                val mapViewModel: MapPickerViewModel = viewModel(
+                                    factory = MapPickerViewModelFactory(repository)
                                 )
+                                MapPickerScreen(
+                                    nav = navController,
+                                    viewModel = mapViewModel,
+                                    initialLocation = LatLng(30.0444, 31.2357),
+                                    showInitialMarker = true,
+                                    onLocationSelected = { _, _ ->
+                                        navController.popBackStack()
+                                    }
+                                )
+                            }
+                            composable<RouteScreen.Permission> {
+                                PermissionScreen(
+                                    modifier = Modifier.padding(innerPadding),
+                                    onNavigateToHome = {
+                                        //   navController.navigate(RouteScreen.Home)
+                                    }
+                                )
+                            }
+                            composable<RouteScreen.Home> {
+                                HomeScreen(
+                                    viewModel = homeViewModel,
+                                    modifier = Modifier.padding(innerPadding),
+
+                                    )
+                            }
+                            composable<RouteScreen.Settings> {
+                                SettingsScreen(
+                                    modifier = Modifier.padding(innerPadding),
+
+                                    )
+                            }
+                            composable<RouteScreen.Favorite> {
+                                FavoriteScreen(
+                                    modifier = Modifier.padding(innerPadding),
+
+                                    )
+                            }
+
+                            composable<RouteScreen.Alarms> {
+                                AlarmsScreen(
+                                    modifier = Modifier.padding(innerPadding),
+
+                                    )
                             }
 
                         }
                     }
-                ) { innerPadding ->
 
 
-                    NavHost(
-                        navController = navController,
-                        startDestination = RouteScreen.Home
-                    ) {
-                        composable<RouteScreen.Splash> {
-                            SplashScreen(
-                                modifier = Modifier.padding(innerPadding),
-                                onNavigateToHome = {
-                                    navController.navigate(RouteScreen.Permission)
-                                }
-                            )
-                        }
-                        composable<RouteScreen.Permission> {
-                            PermissionScreen(
-                                modifier = Modifier.padding(innerPadding),
-                                onNavigateToHome = {
-                                    //   navController.navigate(RouteScreen.Home)
-                                }
-                            )
-                        }
-                        composable<RouteScreen.Home> {
-                            HomeScreen(
-                                viewModel = viewModel,
-                                modifier = Modifier.padding(innerPadding),
-
-                                )
-                        }
-                        composable<RouteScreen.Settings> {
-                            SettingsScreen(
-                                modifier = Modifier.padding(innerPadding),
-
-                                )
-                        }
-                        composable<RouteScreen.Favorite> {
-                            FavoriteScreen(
-                                modifier = Modifier.padding(innerPadding),
-
-                                )
-                        }
-
-                        composable<RouteScreen.Alarms> {
-                            AlarmsScreen(
-                                modifier = Modifier.padding(innerPadding),
-
-                                )
-                        }
-
-                    }
                 }
-
-
             }
         }
     }
-}
 

@@ -1,4 +1,4 @@
-package com.example.presentation
+package com.example.presentation.component.helper
 
 sealed class UiState<out T> {
     object Loading : UiState<Nothing>()

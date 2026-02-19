@@ -1,4 +1,4 @@
-package com.example.presentation
+package com.example.presentation.navigation
 
 import kotlinx.serialization.Serializable
 
@@ -25,5 +25,7 @@ sealed class RouteScreen {
     @Serializable
     data object Alarms : RouteScreen()
 
+    @Serializable
+    data object Map : RouteScreen()
 
 }
