@@ -1,4 +1,4 @@
-package com.example.presentation
+package com.example.presentation.component.helper
 
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable

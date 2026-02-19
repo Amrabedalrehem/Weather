@@ -1,4 +1,4 @@
-package com.example.presentation
+package com.example.presentation.component.helper
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,8 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Refresh
+
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -78,8 +77,8 @@ fun ErrorState(
                 shape = RoundedCornerShape(25.dp)
             ) {
                 Icon(
-                    imageVector = Icons.Default.Refresh,
-                    contentDescription = null,
+                   painter = painterResource(id = R.drawable.map),
+                     contentDescription = null,
                     modifier = Modifier.size(20.dp)
                 )
                 Spacer(modifier = Modifier.width(8.dp))

@@ -1,4 +1,4 @@
-package com.example.presentation.home.view.component
+package com.example.presentation.component.home
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
