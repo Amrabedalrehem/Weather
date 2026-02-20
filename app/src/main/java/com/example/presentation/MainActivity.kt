@@ -1,5 +1,4 @@
 package com.example.presentation
-
 import com.example.weather.R
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -71,33 +70,6 @@ class MainActivity : ComponentActivity() {
 
                 val showFavoriteAB = currentRoute == RouteScreen.Favorite::class.qualifiedName
                  val showAlarmsAB = currentRoute == RouteScreen.Alarms::class.qualifiedName
-
-                /*
-                var currentLatLng by remember { mutableStateOf<LatLng?>(null) }
-
-                    val fusedLocationClient = remember {
-                       LocationServices.getFusedLocationProviderClient(context)
-                   }
-
-                   val locationPermission = rememberLauncherForActivityResult(
-                       ActivityResultContracts.RequestPermission()
-                   ) { isGranted ->
-                       if (isGranted) {
-                           fusedLocationClient.lastLocation.addOnSuccessListener { location ->
-                               location?.let {
-                                   currentLatLng = LatLng(it.latitude, it.longitude)
-                                   showMapPicker = true
-                               }
-                           }
-                       }
-                   }
-
-                    Button(onClick = {
-                       locationPermission.launch(Manifest.permission.ACCESS_FINE_LOCATION)
-                   }) {
-                       Text("اختر الموقع")
-                   }
-   */
                     Scaffold(
                         bottomBar = {
                             if (showBottomBar) BottomNavigationBar(navController)
@@ -145,7 +117,7 @@ class MainActivity : ComponentActivity() {
 
                         NavHost(
                             navController = navController,
-                            startDestination = RouteScreen.Home
+                            startDestination = RouteScreen.Splash
                         ) {
                             composable<RouteScreen.Splash> {
                                 SplashScreen(
@@ -173,7 +145,7 @@ class MainActivity : ComponentActivity() {
                                 PermissionScreen(
                                     modifier = Modifier.padding(innerPadding),
                                     onNavigateToHome = {
-                                        //   navController.navigate(RouteScreen.Home)
+                                        navController.navigate(RouteScreen.Home)
                                     }
                                 )
                             }
