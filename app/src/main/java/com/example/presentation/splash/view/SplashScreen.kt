@@ -31,14 +31,15 @@ import kotlinx.coroutines.delay
 
 
 @Composable
-fun SplashScreen(modifier: Modifier = Modifier, onNavigateToHome: Any) {
-    var isVisible by remember { mutableStateOf(false) }
+fun SplashScreen(modifier: Modifier = Modifier, onNavigateToHome: () -> Unit)
+{
+var isVisible by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         delay(300)
         isVisible = true
-        onNavigateToHome
-        delay(2000)
+         delay(2000)
+        onNavigateToHome()
     }
 
     Column(

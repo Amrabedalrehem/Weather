@@ -60,10 +60,11 @@ fun LocationDetailsContent(
             .padding(horizontal = 24.dp)
             .padding(bottom = 32.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
+    ) {val apiCityName = (currentUiState as? UiState.Success)?.data?.name
+
         Text(
-            text = city.ifEmpty { address },
-            style = MaterialTheme.typography.titleLarge,
+            text = apiCityName ?: city.ifEmpty { address },
+                style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold,
             color = Color.White
         )

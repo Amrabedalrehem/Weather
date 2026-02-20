@@ -108,7 +108,13 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
     //maps
+    implementation("com.google.accompanist:accompanist-permissions:0.32.0")
     implementation("com.google.maps.android:maps-compose:4.3.3")
     implementation("com.google.android.gms:play-services-maps:19.0.0")
     implementation("com.google.android.libraries.places:places:3.5.0")
+    implementation("com.google.accompanist:accompanist-permissions:0.32.0")
+    // Location
+
+    implementation("com.google.android.gms:play-services-location:21.0.1")
+      implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.7.3")
 }
