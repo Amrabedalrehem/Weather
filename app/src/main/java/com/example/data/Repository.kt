@@ -76,4 +76,10 @@ class Repository(
             city = city, lat = lat, lon = lon, units = units, lang = lang
         )
     }
+    private fun convertWindSpeed(speed: Double, windUnit: String): Double {
+        return when (windUnit) {
+            "mph" -> speed * 2.23694
+            else  -> speed
+        }
+    }
 }

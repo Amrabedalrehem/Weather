@@ -40,6 +40,7 @@ fun HomeScreen(modifier: Modifier = Modifier, viewModel: HomeViewModel) {
     val currentUiState by viewModel.currentWeather.collectAsState()
     val hourlyUiState by viewModel.hourlyForecast.collectAsState()
     val fiveDayUiState by viewModel.fiveDayForecast.collectAsState()
+    val windUnit by viewModel.windSpeedUnit.collectAsState()
 
 
       if (currentUiState is UiState.Loading || hourlyUiState is UiState.Loading|| fiveDayUiState is UiState.Loading) {
@@ -68,13 +69,16 @@ fun HomeScreen(modifier: Modifier = Modifier, viewModel: HomeViewModel) {
         HomeScreenContent(
             weatherData = currentData,
             hourlyForecast = hourlyData,
-            fiveDayData =fiveDayData
+            fiveDayData =fiveDayData,
+            windUnit  = windUnit
         )
     }
 }
 
 @Composable
-fun HomeScreenContent(weatherData: CurrentWeatherDto, hourlyForecast : HourlyForecastResponse, fiveDayData : FiveDayForecastResponse,modifier: Modifier = Modifier)
+fun HomeScreenContent(weatherData: CurrentWeatherDto, hourlyForecast : HourlyForecastResponse, fiveDayData : FiveDayForecastResponse,modifier: Modifier = Modifier
+                      ,  windUnit :String
+)
 {
 
     var isVisible by remember { mutableStateOf(false) }
@@ -109,7 +113,7 @@ fun HomeScreenContent(weatherData: CurrentWeatherDto, hourlyForecast : HourlyFor
                     visible = isVisible,
                     enter = fadeIn(tween(800)) + slideInVertically(tween(800)) { -it }
                 ) {
-                    CurrentWeatherSection(weatherData)
+                    CurrentWeatherSection(weatherData,)
                 }
             }
 
@@ -121,7 +125,9 @@ fun HomeScreenContent(weatherData: CurrentWeatherDto, hourlyForecast : HourlyFor
                     enter = fadeIn(tween(800, delayMillis = 200)) +
                             slideInHorizontally(tween(800, delayMillis = 200)) { -it }
                 ) {
-                    WeatherDetailsGrid(weatherData)
+                    WeatherDetailsGrid(weatherData
+                    ,  windUnit = windUnit
+                    )
                 }
             }
 
@@ -132,7 +138,8 @@ fun HomeScreenContent(weatherData: CurrentWeatherDto, hourlyForecast : HourlyFor
                     visible = isVisible,
                     enter = fadeIn(tween(800, delayMillis = 400))
                 ) {
-                    HourlyForecastSection(hourlyForecast)
+                    HourlyForecastSection(hourlyForecast,    windUnit = windUnit
+                    )
                 }
             }
 
@@ -143,7 +150,8 @@ fun HomeScreenContent(weatherData: CurrentWeatherDto, hourlyForecast : HourlyFor
                     visible = isVisible,
                     enter = fadeIn(tween(800, delayMillis = 600))
                 ) {
-                    FiveDayForecastSection(fiveDayData)
+                    FiveDayForecastSection(fiveDayData,    windUnit = windUnit
+                    )
                 }
             }
         }

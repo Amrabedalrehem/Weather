@@ -15,8 +15,10 @@ import com.example.presentation.component.helper.UiState
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import java.util.Locale
@@ -26,7 +28,12 @@ class MapPickerViewModel(val repository: Repository) : ViewModel() {
         private set
     var isLocationLoaded by mutableStateOf(false)
         private set
-
+    val windSpeedUnit: StateFlow<String> = repository.windSpeedUnit
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Lazily,
+            initialValue = "m/s"
+        )
     init {
         viewModelScope.launch {
             val lat = repository.latitude.first()

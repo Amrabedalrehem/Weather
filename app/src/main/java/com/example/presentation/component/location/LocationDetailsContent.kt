@@ -41,7 +41,8 @@ fun LocationDetailsContent(
     latLng: LatLng?,
     viewModel: MapPickerViewModel,
     onConfirm: () -> Unit,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
+    windUnit :String
 ) {
     val currentUiState by viewModel.currentWeather.collectAsState()
     val hourlyUiState by viewModel.hourlyForecast.collectAsState()
@@ -94,11 +95,11 @@ fun LocationDetailsContent(
                 LazyColumn {
                     item { CurrentWeatherSection(currentData) }
                     item { Spacer(Modifier.height(16.dp)) }
-                    item { WeatherDetailsGrid(currentData) }
+                    item { WeatherDetailsGrid(currentData,windUnit = windUnit) }
                     item { Spacer(Modifier.height(16.dp)) }
-                    item { HourlyForecastSection(hourlyData) }
+                    item { HourlyForecastSection(hourlyData,windUnit = windUnit) }
                     item { Spacer(Modifier.height(16.dp)) }
-                    item { FiveDayForecastSection(fiveDayData) }
+                    item { FiveDayForecastSection(fiveDayData,windUnit = windUnit) }
                     item { Spacer(Modifier.height(16.dp)) }
                     item {
                         Row(

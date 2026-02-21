@@ -10,10 +10,12 @@ import com.example.data.model.weather.HourlyForecastResponse
 import com.example.presentation.component.helper.UiState
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class HomeViewModel(val repository: Repository) : ViewModel() {
@@ -36,6 +38,12 @@ class HomeViewModel(val repository: Repository) : ViewModel() {
     val handleFiveDayException = CoroutineExceptionHandler { _, exception ->
         _fiveDayForecast.value = UiState.Error(exception.message.toString())
     }
+    val windSpeedUnit: StateFlow<String> = repository.windSpeedUnit
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Lazily,
+            initialValue = "m/s"
+        )
 
     fun getInfoWeather() {
         _currentWeather.value = UiState.Loading

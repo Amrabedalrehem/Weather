@@ -51,7 +51,9 @@ import com.example.weather.R
 
 
 @Composable
-fun FiveDayForecastSection(fiveDayData: FiveDayForecastResponse) {
+fun FiveDayForecastSection(fiveDayData: FiveDayForecastResponse,
+                           windUnit: String = "m/s"
+) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -73,7 +75,11 @@ fun FiveDayForecastSection(fiveDayData: FiveDayForecastResponse) {
                 lowTemp = "${fiveDayData.fiveDay[index].temp.min}°",
                 icon =fiveDayData.fiveDay[index].weather[0].icon,
                 humidity = "${fiveDayData.fiveDay[index].humidity}%",
-                windSpeed = "${fiveDayData.fiveDay[index].speed} km/h",
+                windSpeed =  if (windUnit == "mph") {
+                    "${"%.1f".format(fiveDayData.fiveDay[index].speed * 2.23694)} mph"
+                } else {
+                    "${fiveDayData.fiveDay[index].speed} m/s"
+                },
                 pressure = "${fiveDayData.fiveDay[index].pressure} hPa",
                 clouds = "${fiveDayData.fiveDay[index].clouds}%",
                 description = fiveDayData.fiveDay[index].weather[0].description
