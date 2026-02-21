@@ -84,7 +84,11 @@ class MapPickerViewModel(val repository: Repository) : ViewModel() {
         selectedLocation = latLng
         selectedAddress = address
     }
-
+    fun saveLocation(lat: Double, lon: Double) {
+        viewModelScope.launch {
+            repository.saveLocation(lat, lon)
+        }
+    }
     fun getWeatherByLocation(lat: Double, lon: Double) {
         viewModelScope.launch {
             _currentWeather.value = UiState.Loading

@@ -5,11 +5,17 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -23,13 +29,15 @@ import kotlinx.coroutines.launch
 fun SettingsScreen(
     modifier: Modifier = Modifier,
     viewModel: SettingsViewModel,
-    snackbarHostState: SnackbarHostState
-) {
+    snackbarHostState: SnackbarHostState,
+    onNavigateToMap: () -> Unit,
+ ) {
     val temperature by viewModel.temperature.collectAsState(initial = "Celsius (°C)")
     val windSpeed by viewModel.windSpeed.collectAsState(initial = "m/s")
     val language by viewModel.language.collectAsState(initial = "English")
     val locationType by viewModel.locationType.collectAsState(initial = "Gps")
     val theme by viewModel.theme.collectAsState(initial = "System")
+    var showMapDialog by remember { mutableStateOf(false) }
 
     val scope = rememberCoroutineScope()
 
@@ -38,6 +46,34 @@ fun SettingsScreen(
             snackbarHostState.currentSnackbarData?.dismiss()
             snackbarHostState.showSnackbar("✔ \"$selectedOption\" selected")
         }
+    }
+    if (showMapDialog) {
+        AlertDialog(
+            onDismissRequest = { showMapDialog = false },
+            title = {
+                Text(text = "Change Location?")
+            },
+            text = {
+                Text(text = "Do you want to change your location using the map?")
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    showMapDialog = false
+                    viewModel.saveLocationType("Map")
+                    showSnackbar("Map")
+                    onNavigateToMap()
+                }) {
+                    Text("Yes", color = Color(0xFF3B82F6))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = {
+                    showMapDialog = false
+                }) {
+                    Text("No", color = Color.Gray)
+                }
+            }
+        )
     }
      LazyColumn(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -86,8 +122,12 @@ fun SettingsScreen(
                 options = listOf("Gps", "Map"),
                 selectedOption = locationType,
                 onOptionSelected = {
-                    viewModel.saveLocationType(it)
-                    showSnackbar(it)
+                    if (it == "Map") {
+                        showMapDialog = true
+                    } else {
+                        viewModel.saveLocationType(it)
+                        showSnackbar(it)
+                    }
                 }
             )
         }

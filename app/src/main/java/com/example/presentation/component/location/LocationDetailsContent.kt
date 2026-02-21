@@ -61,11 +61,12 @@ fun LocationDetailsContent(
             .padding(horizontal = 24.dp)
             .padding(bottom = 32.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {val apiCityName = (currentUiState as? UiState.Success)?.data?.name
+    ) {
+        val apiCityName = (currentUiState as? UiState.Success)?.data?.name
 
         Text(
             text = apiCityName ?: city.ifEmpty { address },
-                style = MaterialTheme.typography.titleLarge,
+            style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold,
             color = Color.White
         )
@@ -95,31 +96,56 @@ fun LocationDetailsContent(
                 LazyColumn {
                     item { CurrentWeatherSection(currentData) }
                     item { Spacer(Modifier.height(16.dp)) }
-                    item { WeatherDetailsGrid(currentData,windUnit = windUnit) }
+                    item { WeatherDetailsGrid(currentData, windUnit = windUnit) }
                     item { Spacer(Modifier.height(16.dp)) }
-                    item { HourlyForecastSection(hourlyData,windUnit = windUnit) }
+                    item { HourlyForecastSection(hourlyData, windUnit = windUnit) }
                     item { Spacer(Modifier.height(16.dp)) }
-                    item { FiveDayForecastSection(fiveDayData,windUnit = windUnit) }
+                    item { FiveDayForecastSection(fiveDayData, windUnit = windUnit) }
                     item { Spacer(Modifier.height(16.dp)) }
                     item {
-                        Row(
+                        Column(
                             modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
-                            OutlinedButton(
-                                onClick = onDismiss,
-                                modifier = Modifier.weight(1f),
-                                border = BorderStroke(1.dp, Color.White),
-                                colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.White)
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
-                                Text("Cancel")
+                                OutlinedButton(
+                                    onClick = onDismiss,
+                                    modifier = Modifier.weight(1f),
+                                    border = BorderStroke(1.dp, Color.White),
+                                    colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.White)
+                                ) {
+                                    Text("Cancel")
+                                }
+                                Button(
+                                    onClick = {
+                                        latLng?.let { location ->
+                                            viewModel.saveLocation(
+                                                location.latitude,
+                                                location.longitude
+                                            )
+                                            onConfirm()
+                                        }
+                                    },
+                                    modifier = Modifier.weight(1f),
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = Color(
+                                            0xFF4A90D9
+                                        )
+                                    )
+                                ) {
+                                    Text("Change Location")
+                                }
                             }
+
                             Button(
-                                onClick = onConfirm,
-                                modifier = Modifier.weight(1f),
-                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4A90D9))
+                                onClick = { },
+                                modifier = Modifier.fillMaxWidth(),
+                                colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
                             ) {
-                                Text("Confirm Location")
+                                Text("Add Favourite")
                             }
                         }
                     }

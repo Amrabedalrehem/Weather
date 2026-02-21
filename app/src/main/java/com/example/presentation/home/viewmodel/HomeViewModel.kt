@@ -82,23 +82,24 @@ class HomeViewModel(val repository: Repository) : ViewModel() {
 
         }
     }
-
     init {
         viewModelScope.launch {
             getInfoWeather()
 
             combine(
                 repository.language,
-                repository.temperatureUnit
-            ) { lang, units ->
-                Pair(lang, units)
+                repository.temperatureUnit,
+                repository.latitude,
+                repository.longitude
+            ) { lang, units, lat, lon ->
+                Triple(lang, units, Pair(lat, lon))
             }.drop(1)
                 .collectLatest {
                     getInfoWeather()
                 }
         }
     }
-    }
+}
 class HomeViewModelFactory(private val repository: Repository) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return HomeViewModel(repository) as T

@@ -208,7 +208,10 @@ class MainActivity : ComponentActivity() {
                                 SettingsScreen(
                                     modifier = Modifier.padding(innerPadding),
                                     viewModel = settingsViewModel,
-                                    snackbarHostState = snackbarHostState
+                                    snackbarHostState = snackbarHostState,
+                                    onNavigateToMap = {
+                                        navController.navigate(RouteScreen.Map)
+                                    }
                                 )
                             }
                             composable<RouteScreen.Favorite> {
