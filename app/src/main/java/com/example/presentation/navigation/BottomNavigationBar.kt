@@ -93,12 +93,14 @@ fun BottomNavigationBar(navController: NavHostController) {
                         .clip(RoundedCornerShape(16.dp))
                         .background(if (isSelected) Color.White else Color.Transparent)
                         .clickable {
-                            navController.navigate(item.route) {
-                                popUpTo(navController.graph.findStartDestination().id) {
-                                    saveState = true
+                             if (!isSelected) {
+                                navController.navigate(item.route) {
+                                    popUpTo(navController.graph.findStartDestination().id) {
+                                        saveState = true
+                                    }
+                                    launchSingleTop = true
+                                    restoreState = true
                                 }
-                                launchSingleTop = true
-                                restoreState = true
                             }
                         },
                     contentAlignment = Alignment.Center

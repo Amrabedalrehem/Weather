@@ -21,6 +21,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -66,6 +67,7 @@ fun MapPickerScreen(
     val selectedAddress = viewModel.selectedAddress
     val selectedCity = viewModel.selectedCity
     val selectedCountry = viewModel.selectedCountry
+    val windUnit by viewModel.windSpeedUnit.collectAsState()
 
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = false)
     var showBottomSheet by remember { mutableStateOf(false) }
@@ -209,7 +211,8 @@ fun MapPickerScreen(
                 onDismiss = {
                     scope.launch { sheetState.hide() }
                         .invokeOnCompletion { showBottomSheet = false }
-                }
+                },
+                windUnit  =windUnit
             )
         }
     }

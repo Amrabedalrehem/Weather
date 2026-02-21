@@ -87,6 +87,7 @@ dependencies {
     implementation(libs.androidx.compose.foundation.layout)
     implementation(libs.androidx.compose.foundation)
     implementation(libs.androidx.compose.ui.unit)
+    implementation(libs.androidx.datastore.core)
     ksp("androidx.room:room-compiler:2.6.1")
 
     // Coil for Image Loading
@@ -117,4 +118,7 @@ dependencies {
 
     implementation("com.google.android.gms:play-services-location:21.0.1")
       implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.7.3")
+
+    // data store
+    implementation("androidx.datastore:datastore-preferences:1.1.1")
 }

@@ -15,7 +15,10 @@ import com.example.presentation.component.helper.UiState
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import java.util.Locale
@@ -23,6 +26,22 @@ import java.util.Locale
 class MapPickerViewModel(val repository: Repository) : ViewModel() {
     var defaultLocation by mutableStateOf(LatLng(30.0444, 31.2357))
         private set
+    var isLocationLoaded by mutableStateOf(false)
+        private set
+    val windSpeedUnit: StateFlow<String> = repository.windSpeedUnit
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Lazily,
+            initialValue = "m/s"
+        )
+    init {
+        viewModelScope.launch {
+            val lat = repository.latitude.first()
+            val lon = repository.longitude.first()
+            defaultLocation = LatLng(lat, lon)
+            isLocationLoaded = true
+        }
+    }
     var selectedLocation by mutableStateOf<LatLng?>(null)
         private set
     var selectedAddress by mutableStateOf("")
@@ -65,51 +84,45 @@ class MapPickerViewModel(val repository: Repository) : ViewModel() {
         selectedLocation = latLng
         selectedAddress = address
     }
-
+    fun saveLocation(lat: Double, lon: Double) {
+        viewModelScope.launch {
+            repository.saveLocation(lat, lon)
+        }
+    }
     fun getWeatherByLocation(lat: Double, lon: Double) {
         viewModelScope.launch {
-            val current = launch(handleCurrentWeatherException) {
-                _currentWeather.value = UiState.Loading
-                val response = repository.getCurrentWeather(lat, lon, "en", "metric")
-                if (response.isSuccessful) {
-                    val data = response.body()
-                    if (data != null) _currentWeather.value = UiState.Success(data)
-                    else _currentWeather.value = UiState.Error("No Data")
-                } else {
-                    _currentWeather.value = UiState.Error("Error ${response.code()}")
-                }
+            _currentWeather.value = UiState.Loading
+            val responseFromCurrent = repository.getCurrentWeather(lat, lon)
+            if (responseFromCurrent.isSuccessful) {
+                val data = responseFromCurrent.body()
+                if (data != null) _currentWeather.value = UiState.Success(data)
+                else _currentWeather.value = UiState.Error("No Data")
+            } else {
+                _currentWeather.value = UiState.Error("Error ${responseFromCurrent.code()}")
             }
-            current.join()
 
             val cityName = (_currentWeather.value as? UiState.Success)?.data?.name ?: "Cairo"
 
-            val hourly = launch(handleHourlyException) {
-                _hourlyForecast.value = UiState.Loading
-                val response = repository.getHourlyForecast(cityName, "en", "metric")
-                if (response.isSuccessful) {
-                    val data = response.body()
-                    if (data != null) _hourlyForecast.value = UiState.Success(data)
-                    else _hourlyForecast.value = UiState.Error("No Data")
-                } else {
-                    _hourlyForecast.value = UiState.Error("Error ${response.code()}")
-                }
+            _hourlyForecast.value = UiState.Loading
+            val responseFromHourlyForecast = repository.getHourlyForecast(cityName)
+            if (responseFromHourlyForecast.isSuccessful) {
+                val data = responseFromHourlyForecast.body()
+                if (data != null) _hourlyForecast.value = UiState.Success(data)
+                else _hourlyForecast.value = UiState.Error("No Data")
+            } else {
+                _hourlyForecast.value = UiState.Error("Error ${responseFromHourlyForecast.code()}")
             }
 
-            val fiveDay = launch(handleFiveDayException) {
-                _fiveDayForecast.value = UiState.Loading
-                val response = repository.getFiveDayForecast(cityName, lat, lon, "en", "metric")
-                if (response.isSuccessful) {
-                    val data = response.body()
-                    if (data != null) _fiveDayForecast.value = UiState.Success(data)
-                    else _fiveDayForecast.value = UiState.Error("No Data")
-                } else {
-                    _fiveDayForecast.value = UiState.Error("Error ${response.code()}")
-                }
+            _fiveDayForecast.value = UiState.Loading
+            val responseFromDayForecast = repository.getFiveDayForecast(cityName)
+            if (responseFromDayForecast.isSuccessful) {
+                val data = responseFromDayForecast.body()
+                if (data != null) _fiveDayForecast.value = UiState.Success(data)
+                else _fiveDayForecast.value = UiState.Error("No Data")
+            } else {
+                _fiveDayForecast.value = UiState.Error("Error ${responseFromDayForecast.code()}")
             }
-
-            joinAll(hourly, fiveDay)
-        }
-    }
+        }}
 }
 
 class MapPickerViewModelFactory(private val repository: Repository) : ViewModelProvider.Factory {

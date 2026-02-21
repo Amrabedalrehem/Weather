@@ -51,7 +51,9 @@ import com.example.weather.R
 
 
 @Composable
-fun FiveDayForecastSection(fiveDayData: FiveDayForecastResponse) {
+fun FiveDayForecastSection(fiveDayData: FiveDayForecastResponse,
+                           windUnit: String = "m/s"
+) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -73,7 +75,11 @@ fun FiveDayForecastSection(fiveDayData: FiveDayForecastResponse) {
                 lowTemp = "${fiveDayData.fiveDay[index].temp.min}°",
                 icon =fiveDayData.fiveDay[index].weather[0].icon,
                 humidity = "${fiveDayData.fiveDay[index].humidity}%",
-                windSpeed = "${fiveDayData.fiveDay[index].speed} km/h",
+                windSpeed =  if (windUnit == "mph") {
+                    "${"%.1f".format(fiveDayData.fiveDay[index].speed * 2.23694)} mph"
+                } else {
+                    "${fiveDayData.fiveDay[index].speed} m/s"
+                },
                 pressure = "${fiveDayData.fiveDay[index].pressure} hPa",
                 clouds = "${fiveDayData.fiveDay[index].clouds}%",
                 description = fiveDayData.fiveDay[index].weather[0].description
@@ -111,60 +117,53 @@ fun FiveDayForecastCard(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(20.dp)
+                .padding(12.dp)
         ) {
-             Row(
+            Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
+                 Text(
                     text = day,
-                    fontSize = 16.sp,
+                    fontSize = 13.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.White,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.weight(1.5f)
+                    modifier = Modifier.weight(1.3f)
                 )
 
-
                  AsyncImage(
-                     model = "https://openweathermap.org/img/wn/${icon}@2x.png",
-                     contentDescription = null,
-                     modifier = Modifier.size(40.dp)
-                 )
+                    model = "https://openweathermap.org/img/wn/${icon}@2x.png",
+                    contentDescription = null,
+                    modifier = Modifier.size(32.dp)
+                )
 
-                Spacer(modifier = Modifier.width(16.dp))
+                Spacer(modifier = Modifier.width(8.dp))
 
-                Row(
-                    modifier = Modifier.weight(1f),
+                 Row(
+                    modifier = Modifier.weight(1.5f),
                     horizontalArrangement = Arrangement.End,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
                         text = highTemp,
-                        fontSize = 14.sp,
-                        maxLines = 1,
+                        fontSize = 13.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color.White
-                        ,overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.weight(1.5f)
-
+                        color = Color.White,
+                        maxLines = 1
                     )
                     Text(
-                        text = " / ",
-                        fontSize = 14.sp,
-                        maxLines = 1,
+                        text = "/",
+                        fontSize = 13.sp,
                         color = Color.White.copy(alpha = 0.5f)
                     )
-
                     Text(
                         text = lowTemp,
-                        fontSize = 14.sp,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.weight(1.5f)
+                        fontSize = 13.sp,
+                        color = Color.White.copy(alpha = 0.7f),
+                        maxLines = 1
                     )
                 }
 
@@ -176,10 +175,11 @@ fun FiveDayForecastCard(
                     contentDescription = null,
                     tint = Color.White.copy(alpha = 0.7f),
                     modifier = Modifier
-                        .padding(start = 8.dp)
-                        .size(24.dp)
+                        .size(20.dp)
                 )
             }
+        }
+    }
 
              AnimatedVisibility(
                 visible = isExpanded,
@@ -260,8 +260,8 @@ fun FiveDayForecastCard(
                 }
             }
         }
-    }
-}
+
+
  @Composable
  fun DayDetailItem(
      icon: Int,

@@ -34,9 +34,14 @@ fun HourlyForecastCard(
     icon: String,
     temp_max: Double,
     temp_min: Double,
-    speed: Double
-
+    speed: Double,
+    windUnit: String = "m/s"
 ) {
+    val displaySpeed = if (windUnit == "mph") {
+        "${"%.1f".format(speed * 2.23694)} mph"
+    } else {
+        "$speed m/s"
+    }
     Card(
         shape = RoundedCornerShape(30.dp),
         colors = CardDefaults.cardColors(
@@ -91,7 +96,7 @@ fun HourlyForecastCard(
             ) {
 
                 Text(
-                    text = "$speed m/s",
+                    text = displaySpeed,
                     fontSize = 11.sp,
                     color = Color.White.copy(alpha = 0.7f)
                 )
@@ -109,7 +114,9 @@ fun HourlyForecastCard(
 }
 
 @Composable
-fun HourlyForecastSection(hourlyForecast: HourlyForecastResponse) {
+fun HourlyForecastSection(hourlyForecast: HourlyForecastResponse,
+                          windUnit: String = "m/s"
+) {
     Column(
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -133,7 +140,8 @@ fun HourlyForecastSection(hourlyForecast: HourlyForecastResponse) {
                     icon = hourlyForecast.hourly[hour].weather[0].icon,
                     temp_max = hourlyForecast.hourly[hour].main.tempMax,
                     temp_min = hourlyForecast.hourly[hour].main.tempMin,
-                    speed = hourlyForecast.hourly[hour].wind.speed
+                    speed = hourlyForecast.hourly[hour].wind.speed,
+                    windUnit = windUnit
                 )
             }
         }

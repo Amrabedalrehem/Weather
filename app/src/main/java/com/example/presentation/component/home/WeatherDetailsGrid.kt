@@ -27,7 +27,14 @@ package com.example.presentation.component.home
  import com.example.weather.R
 
 @Composable
-fun WeatherDetailsGrid(weatherData: CurrentWeatherDto) {
+fun WeatherDetailsGrid(weatherData: CurrentWeatherDto
+,   windUnit: String = "m/s"
+) {
+    val windSpeed = if (windUnit == "mph") {
+        "%.1f mph".format(weatherData.wind.speed * 2.23694)
+    } else {
+        "${weatherData.wind.speed} m/s"
+    }
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -55,7 +62,7 @@ fun WeatherDetailsGrid(weatherData: CurrentWeatherDto) {
             WeatherDetailCard(
                 icon =  R.raw.windgust,
                 label = "Wind",
-                value = "${weatherData.wind.speed} km/h",
+                value = windSpeed,
                 modifier = Modifier.weight(1f)
             )
         }
