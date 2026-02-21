@@ -1,4 +1,7 @@
 package com.example.presentation.splash.view
+
+import android.Manifest
+import android.content.pm.PackageManager
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -15,6 +18,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -23,23 +27,42 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
 import com.example.presentation.component.helper.MyLottieAnimation
+import com.example.presentation.splash.viewmodel.SplashViewModel
 import kotlinx.coroutines.delay
 
-
 @Composable
-fun SplashScreen(modifier: Modifier = Modifier, onNavigateToHome: () -> Unit)
-{
-var isVisible by remember { mutableStateOf(false) }
+fun SplashScreen(
+    modifier: Modifier = Modifier,
+    viewModel: SplashViewModel,
+    onNavigateToHome: () -> Unit,
+    onNavigateToPermission: () -> Unit
+) {
+    var isVisible by remember { mutableStateOf(false) }
+    val navigateTo by viewModel.navigateTo.collectAsState()
+
+    val hasPermission = ContextCompat.checkSelfPermission(
+        LocalContext.current,
+        Manifest.permission.ACCESS_FINE_LOCATION
+    ) == PackageManager.PERMISSION_GRANTED
 
     LaunchedEffect(Unit) {
         delay(300)
         isVisible = true
-         delay(2000)
-        onNavigateToHome()
+        delay(2000)
+        viewModel.checkPermission(hasPermission)
+    }
+
+    LaunchedEffect(navigateTo) {
+        when (navigateTo) {
+            "home" -> onNavigateToHome()
+            "permission" -> onNavigateToPermission()
+        }
     }
 
     Column(

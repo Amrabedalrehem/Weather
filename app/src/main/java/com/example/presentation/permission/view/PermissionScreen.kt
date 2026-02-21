@@ -24,7 +24,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.presentation.component.helper.MyLottieAnimation
 import com.example.presentation.component.permission.PermissionUiState
 import com.example.presentation.permission.viewmodel.PermissionViewModel
@@ -37,7 +36,7 @@ import kotlinx.coroutines.delay
 fun PermissionScreen(
     modifier: Modifier = Modifier,
     onNavigateToHome: () -> Unit,
-    viewModel: PermissionViewModel = viewModel()
+    viewModel: PermissionViewModel
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
@@ -50,21 +49,21 @@ fun PermissionScreen(
         onPermissionsResult = { permissions ->
             val isGranted = permissions.values.all { it }
 
-             viewModel.onPermissionResult(
+            viewModel.onPermissionResult(
                 isGranted = isGranted,
                 shouldShowRationale = permissions.keys.any { permission ->
-                     !permissions[permission]!!
+                    !permissions[permission]!!
                 }
-             )
+            )
         }
     )
 
-     val shouldShowRationale = locationPermissionState.shouldShowRationale
+    val shouldShowRationale = locationPermissionState.shouldShowRationale
 
-     LaunchedEffect(locationPermissionState.allPermissionsGranted) {
-     }
+    LaunchedEffect(locationPermissionState.allPermissionsGranted) {
+    }
 
-     LaunchedEffect(uiState) {
+    LaunchedEffect(uiState) {
         when (uiState) {
             is PermissionUiState.NavigateToHome -> {
                 onNavigateToHome()
@@ -78,7 +77,7 @@ fun PermissionScreen(
         }
     }
 
-     if (uiState is PermissionUiState.ShowRationale) {
+    if (uiState is PermissionUiState.ShowRationale) {
         AlertDialog(
             onDismissRequest = { viewModel.resetState() },
             title = { Text("Location Needed") },
@@ -98,8 +97,28 @@ fun PermissionScreen(
             }
         )
     }
-
-     if (uiState is PermissionUiState.GoToSettings) {
+    if (uiState is PermissionUiState.ShowLocationError) {
+        AlertDialog(
+            onDismissRequest = { viewModel.resetState() },
+            title = { Text("GPS Disabled") },
+            text = { Text("Please turn on your GPS to get accurate weather data.") },
+            confirmButton = {
+                TextButton(onClick = {
+                    viewModel.resetState()
+                     val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+                    context.startActivity(intent)
+                }) {
+                    Text("Enable GPS", color = Color(0xFF4A6A8F))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { viewModel.resetState() }) {
+                    Text("Cancel", color = Color.Gray)
+                }
+            }
+        )
+    }
+    if (uiState is PermissionUiState.GoToSettings) {
         AlertDialog(
             onDismissRequest = { viewModel.resetState() },
             title = { Text("Permission Denied") },
@@ -205,7 +224,7 @@ fun PermissionScreen(
 
         Spacer(modifier = Modifier.height(40.dp))
 
-         AnimatedVisibility(
+        AnimatedVisibility(
             visible = isVisible,
             enter = fadeIn(tween(1000, 1100)) + scaleIn(tween(1000, 1100))
         ) {
@@ -230,7 +249,7 @@ fun PermissionScreen(
                     pressedElevation = 8.dp
                 )
             ) {
-                 Text(
+                Text(
                     text = when {
                         locationPermissionState.allPermissionsGranted -> "Get Started →"
                         locationPermissionState.shouldShowRationale -> "Why We Need Location"

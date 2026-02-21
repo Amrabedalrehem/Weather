@@ -9,7 +9,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -26,6 +30,8 @@ import com.airbnb.lottie.compose.rememberLottieComposition
 import com.example.data.Repository
 import com.example.data.datasource.local.DataSourceLocal
 import com.example.data.datasource.remote.DataSourceRemote
+import com.example.data.datasource.sharedPreference.DataStorePermission
+import com.example.data.datasource.sharedPreference.DataStoreSettings
 import com.example.presentation.alarms.view.AlarmsScreen
 import com.example.presentation.component.location.MapPickerScreen
 import com.example.presentation.component.location.MapPickerViewModel
@@ -37,19 +43,28 @@ import com.example.presentation.home.viewmodel.HomeViewModelFactory
 import com.example.presentation.navigation.BottomNavigationBar
 import com.example.presentation.navigation.RouteScreen
 import com.example.presentation.permission.view.PermissionScreen
+import com.example.presentation.permission.viewmodel.PermissionViewModel
+import com.example.presentation.permission.viewmodel.PermissionViewModelFactory
 import com.example.presentation.setting.view.SettingsScreen
+import com.example.presentation.setting.viewmodel.SettingsViewModel
+import com.example.presentation.setting.viewmodel.SettingsViewModelFactory
 import com.example.presentation.splash.view.SplashScreen
+import com.example.presentation.splash.viewmodel.SplashViewModel
+import com.example.presentation.splash.viewmodel.SplashViewModelFactory
 import com.example.presentation.theme.WeatherTheme
 import com.example.weather.BuildConfig
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.libraries.places.api.Places
+ import com.google.android.libraries.places.api.Places
 
 class MainActivity : ComponentActivity() {
     private val dataSourceRemote = DataSourceRemote()
     private val dataSourceLocal = DataSourceLocal()
-    private val repository = Repository(dataSourceLocal, dataSourceRemote)
+    private val dataStoreSettings by lazy { DataStoreSettings(this) }
+    private val dataStorePermission by lazy { DataStorePermission(this) }
+    private val repository by lazy {
+        Repository(dataSourceLocal, dataSourceRemote, dataStoreSettings, dataStorePermission)
+    }
+    private val factory by lazy { HomeViewModelFactory(repository) }
 
-    private val factory = HomeViewModelFactory(repository)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -70,7 +85,17 @@ class MainActivity : ComponentActivity() {
 
                 val showFavoriteAB = currentRoute == RouteScreen.Favorite::class.qualifiedName
                  val showAlarmsAB = currentRoute == RouteScreen.Alarms::class.qualifiedName
-                    Scaffold(
+                 val snackbarHostState = remember { SnackbarHostState() }
+                 Scaffold(
+                        snackbarHost = {
+                            SnackbarHost(hostState = snackbarHostState) { data ->
+                                Snackbar(
+                                    snackbarData = data,
+                                    containerColor = Color(0xFF2E4A6B),
+                                    contentColor = Color.White,
+                                )
+                            }
+                        },
                         bottomBar = {
                             if (showBottomBar) BottomNavigationBar(navController)
                         },
@@ -120,10 +145,21 @@ class MainActivity : ComponentActivity() {
                             startDestination = RouteScreen.Splash
                         ) {
                             composable<RouteScreen.Splash> {
+                                val splashViewModel: SplashViewModel = viewModel(
+                                    factory = SplashViewModelFactory(repository)
+                                )
                                 SplashScreen(
                                     modifier = Modifier.padding(innerPadding),
+                                    viewModel = splashViewModel,
                                     onNavigateToHome = {
-                                        navController.navigate(RouteScreen.Permission)
+                                        navController.navigate(RouteScreen.Home) {
+                                            popUpTo(RouteScreen.Splash) { inclusive = true }
+                                        }
+                                    },
+                                    onNavigateToPermission = {
+                                        navController.navigate(RouteScreen.Permission) {
+                                            popUpTo(RouteScreen.Splash) { inclusive = true }
+                                        }
                                     }
                                 )
                             }
@@ -131,21 +167,30 @@ class MainActivity : ComponentActivity() {
                                 val mapViewModel: MapPickerViewModel = viewModel(
                                     factory = MapPickerViewModelFactory(repository)
                                 )
-                                MapPickerScreen(
-                                    nav = navController,
-                                    viewModel = mapViewModel,
-                                    initialLocation = LatLng(30.0444, 31.2357),
-                                    showInitialMarker = true,
-                                    onLocationSelected = { _, _ ->
-                                        navController.popBackStack()
-                                    }
-                                )
+
+                                if (mapViewModel.isLocationLoaded) {
+                                    MapPickerScreen(
+                                        nav = navController,
+                                        viewModel = mapViewModel,
+                                        initialLocation = mapViewModel.defaultLocation,
+                                        showInitialMarker = true,
+                                        onLocationSelected = { _, _ ->
+                                            navController.popBackStack()
+                                        }
+                                    )
+                                }
                             }
                             composable<RouteScreen.Permission> {
+                                val permissionViewModel: PermissionViewModel = viewModel(
+                                    factory = PermissionViewModelFactory(application, repository)
+                                )
                                 PermissionScreen(
                                     modifier = Modifier.padding(innerPadding),
+                                    viewModel = permissionViewModel,
                                     onNavigateToHome = {
-                                        navController.navigate(RouteScreen.Home)
+                                        navController.navigate(RouteScreen.Home) {
+                                            popUpTo(RouteScreen.Permission) { inclusive = true }
+                                        }
                                     }
                                 )
                             }
@@ -157,10 +202,14 @@ class MainActivity : ComponentActivity() {
                                     )
                             }
                             composable<RouteScreen.Settings> {
+                                val settingsViewModel: SettingsViewModel = viewModel(
+                                    factory = SettingsViewModelFactory(repository)
+                                )
                                 SettingsScreen(
                                     modifier = Modifier.padding(innerPadding),
-
-                                    )
+                                    viewModel = settingsViewModel,
+                                    snackbarHostState = snackbarHostState
+                                )
                             }
                             composable<RouteScreen.Favorite> {
                                 FavoriteScreen(

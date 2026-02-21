@@ -6,4 +6,6 @@ sealed class PermissionUiState {
     data object ShowRationale : PermissionUiState()
     data object GoToSettings : PermissionUiState()
     data object NavigateToHome : PermissionUiState()
+    object ShowLocationError : PermissionUiState()
+
 }

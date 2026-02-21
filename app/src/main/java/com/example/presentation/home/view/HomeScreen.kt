@@ -53,7 +53,10 @@ fun HomeScreen(modifier: Modifier = Modifier, viewModel: HomeViewModel) {
             ?: "Unknown Error"
         ErrorState(
             errorMessage = errorMessage,
-            onRetry = { viewModel.getInfoWeather() }
+            onRetry = {
+
+                //viewModel.getInfoWeather()
+             }
         )
         return
     }
@@ -98,8 +101,9 @@ fun HomeScreenContent(weatherData: CurrentWeatherDto, hourlyForecast : HourlyFor
 
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(bottom = 24.dp)
-        ) {
+            contentPadding = PaddingValues(bottom = 100.dp)
+
+         ) {
             item {
                 AnimatedVisibility(
                     visible = isVisible,
