@@ -23,7 +23,7 @@ package com.example.presentation.component.home
  import com.airbnb.lottie.compose.LottieCompositionSpec
  import com.airbnb.lottie.compose.LottieConstants
  import com.airbnb.lottie.compose.rememberLottieComposition
- import com.example.data.model.weather.CurrentWeatherDto
+ import com.example.data.model.dto.CurrentWeatherDto
  import com.example.weather.R
 
 @Composable

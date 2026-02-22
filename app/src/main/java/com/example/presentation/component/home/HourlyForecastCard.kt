@@ -23,7 +23,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import com.example.data.model.weather.HourlyForecastResponse
+import com.example.data.model.dto.HourlyForecastResponse
 
 
 @Composable

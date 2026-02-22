@@ -4,9 +4,9 @@ import com.example.data.datasource.local.DataSourceLocal
 import com.example.data.datasource.remote.DataSourceRemote
 import com.example.data.datasource.sharedPreference.DataStorePermission
 import com.example.data.datasource.sharedPreference.DataStoreSettings
-import com.example.data.model.weather.CurrentWeatherDto
-import com.example.data.model.weather.FiveDayForecastResponse
-import com.example.data.model.weather.HourlyForecastResponse
+import com.example.data.model.dto.CurrentWeatherDto
+import com.example.data.model.dto.FiveDayForecastResponse
+import com.example.data.model.dto.HourlyForecastResponse
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import retrofit2.Response

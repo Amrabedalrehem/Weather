@@ -1,8 +1,8 @@
 package com.example.data.datasource.remote
 
-import com.example.data.model.weather.CurrentWeatherDto
-import com.example.data.model.weather.FiveDayForecastResponse
-import com.example.data.model.weather.HourlyForecastResponse
+import com.example.data.model.dto.CurrentWeatherDto
+import com.example.data.model.dto.FiveDayForecastResponse
+import com.example.data.model.dto.HourlyForecastResponse
 import com.example.data.network.RetrofitHelper
 import retrofit2.Response
 

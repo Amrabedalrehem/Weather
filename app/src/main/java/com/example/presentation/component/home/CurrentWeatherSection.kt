@@ -31,7 +31,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import com.example.data.model.weather.CurrentWeatherDto
+import com.example.data.model.dto.CurrentWeatherDto
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
