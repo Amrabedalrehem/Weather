@@ -15,8 +15,12 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -50,7 +54,7 @@ fun MapPickerScreen(
     val selectedCountry = viewModel.selectedCountry
     val windUnit by viewModel.windSpeedUnit.collectAsState()
 
-    var showSearchBar by remember { mutableStateOf(false) }
+     var showSearchBar by remember { mutableStateOf(false) }
     var searchQuery by remember { mutableStateOf("") }
     var searchResults by remember { mutableStateOf<List<Address>>(emptyList()) }
     var showResults by remember { mutableStateOf(false) }
@@ -64,7 +68,7 @@ fun MapPickerScreen(
 
     Box(modifier = Modifier.fillMaxSize()) {
 
-        GoogleMap(
+         GoogleMap(
             modifier = Modifier.fillMaxSize(),
             cameraPositionState = cameraPositionState,
             onMapClick = { latLng ->
@@ -75,10 +79,66 @@ fun MapPickerScreen(
         ) {
             val markerPosition = selectedLocation ?: if (showInitialMarker) initialLocation else null
             markerPosition?.let {
-                Marker(state = MarkerState(position = it))
+                Marker(
+                    state = MarkerState(position = it),
+                    anchor = Offset(0.5f, 1.0f)
+                )
             }
         }
-        if (showSearchBar) {
+
+         if (selectedLocation != null) {
+            val cameraPos = cameraPositionState.position
+            val projection = cameraPositionState.projection
+            val markerScreenPos = remember(cameraPos, selectedLocation) {
+                projection?.toScreenLocation(selectedLocation!!)
+            }
+
+            markerScreenPos?.let { screenPoint ->
+                var cardWidth by remember { mutableStateOf(0) }
+                var cardHeight by remember { mutableStateOf(0) }
+
+                Box(
+                    modifier = Modifier
+                        .offset {
+                            IntOffset(
+                                x = screenPoint.x - (cardWidth / 2),
+                                y = screenPoint.y - cardHeight - 120
+                            )
+                        }
+                        .onGloballyPositioned { coords ->
+                            cardWidth = coords.size.width
+                            cardHeight = coords.size.height
+                        }
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .background(
+                                color = Color(0xFF2C3E6B).copy(alpha = 0.92f),
+                                shape = RoundedCornerShape(14.dp)
+                            )
+                            .padding(horizontal = 20.dp, vertical = 14.dp)
+                    ) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Text(
+                                text = selectedCity.ifEmpty { selectedAddress.take(20) },
+                                color = Color.White,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 17.sp
+                            )
+                            if (selectedCountry.isNotEmpty()) {
+                                Text(
+                                    text = selectedCountry,
+                                    color = Color.White,
+                                    fontSize = 14.sp
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+         if (showSearchBar) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -187,7 +247,7 @@ fun MapPickerScreen(
                 contentDescription = "Search"
             )
         }
-        FloatingActionButton(
+         FloatingActionButton(
             onClick = { nav.popBackStack() },
             modifier = Modifier
                 .align(Alignment.TopStart)

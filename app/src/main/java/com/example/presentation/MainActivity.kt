@@ -233,7 +233,7 @@ class MainActivity : ComponentActivity() {
                                     modifier = Modifier.padding(innerPadding),
                                    viewModel = favoriteViewModel,
                                     onFavouriteClick = {
-                                        navController.navigate(RouteScreen.Map)
+                                        navController.navigate(RouteScreen.Home)
                                     }
                                 )
                             }
