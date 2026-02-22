@@ -16,11 +16,15 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -32,6 +36,7 @@ import com.example.presentation.component.home.CurrentWeatherSection
 import com.example.presentation.component.home.HourlyForecastSection
 import com.example.presentation.component.home.WeatherDetailsGrid
 import com.google.android.gms.maps.model.LatLng
+import kotlinx.coroutines.launch
 
 @Composable
 fun LocationDetailsContent(
@@ -42,12 +47,13 @@ fun LocationDetailsContent(
     viewModel: MapPickerViewModel,
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,
-    windUnit :String
+    windUnit: String,
+    snackbarHostState: SnackbarHostState
 ) {
     val currentUiState by viewModel.currentWeather.collectAsState()
     val hourlyUiState by viewModel.hourlyForecast.collectAsState()
     val fiveDayUiState by viewModel.fiveDayForecast.collectAsState()
-
+    val scope = rememberCoroutineScope()
     LaunchedEffect(latLng) {
         latLng?.let {
             viewModel.getWeatherByLocation(it.latitude, it.longitude)
@@ -140,8 +146,33 @@ fun LocationDetailsContent(
                                 }
                             }
 
+
                             Button(
-                                onClick = { },
+                                onClick = {
+                                    latLng?.let { location ->
+                                        viewModel.addFavourite(
+                                            city = city,
+                                            country = country,
+                                            lat = location.latitude,
+                                            lon = location.longitude
+                                        )
+                                        scope.launch {
+                                            val result = snackbarHostState.showSnackbar(
+                                                message = "$city added to favourites ⭐",
+                                                actionLabel = "Undo",
+                                                duration = SnackbarDuration.Short
+                                            )
+                                            if (result == SnackbarResult.ActionPerformed) {
+                                                viewModel.deleteFavourite(
+                                                    city = city,
+                                                    country = country,
+                                                    lat = location.latitude,
+                                                    lon = location.longitude
+                                                )
+                                            }
+                                        }
+                                    }
+                                },
                                 modifier = Modifier.fillMaxWidth(),
                                 colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
                             ) {
@@ -151,6 +182,6 @@ fun LocationDetailsContent(
                     }
                 }
             }
-        }
-    }
-}
+                    }
+                }
+            }

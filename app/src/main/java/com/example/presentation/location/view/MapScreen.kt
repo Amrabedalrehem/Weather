@@ -17,6 +17,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -58,7 +59,8 @@ fun MapPickerScreen(
     initialZoom: Float = 12f,
     nav: NavController,
     showInitialMarker: Boolean = false,
-    viewModel: MapPickerViewModel
+    viewModel: MapPickerViewModel,
+    snackbarHostState: SnackbarHostState
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -212,7 +214,8 @@ fun MapPickerScreen(
                     scope.launch { sheetState.hide() }
                         .invokeOnCompletion { showBottomSheet = false }
                 },
-                windUnit  =windUnit
+                windUnit  =windUnit,
+                snackbarHostState = snackbarHostState
             )
         }
     }

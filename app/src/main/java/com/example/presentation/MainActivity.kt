@@ -170,14 +170,18 @@ class MainActivity : ComponentActivity() {
 
                                 if (mapViewModel.isLocationLoaded) {
                                     MapPickerScreen(
-                                        nav = navController,
-                                        viewModel = mapViewModel,
-                                        initialLocation = mapViewModel.defaultLocation,
-                                        showInitialMarker = true,
+
                                         onLocationSelected = { _, _ ->
                                             navController.popBackStack()
-                                        }
-                                    )
+
+                                        },
+                                        initialLocation = mapViewModel.defaultLocation,
+                                        nav = navController,
+                                        showInitialMarker = true,
+                                        viewModel = mapViewModel,
+                                        snackbarHostState = snackbarHostState,
+
+                                        )
                                 }
                             }
                             composable<RouteScreen.Permission> {
