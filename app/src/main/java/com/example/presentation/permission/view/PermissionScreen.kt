@@ -28,6 +28,7 @@ import com.example.presentation.component.helper.MyLottieAnimation
 import com.example.presentation.component.permission.PermissionUiState
 import com.example.presentation.permission.viewmodel.PermissionViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.MultiplePermissionsState
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import kotlinx.coroutines.delay
 
@@ -41,28 +42,28 @@ fun PermissionScreen(
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
 
-    val locationPermissionState = rememberMultiplePermissionsState(
+     lateinit var locationPermissionState: MultiplePermissionsState
+    locationPermissionState = rememberMultiplePermissionsState(
         permissions = listOf(
             Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.ACCESS_COARSE_LOCATION
-        ),
-        onPermissionsResult = { permissions ->
-            val isGranted = permissions.values.all { it }
-
-            viewModel.onPermissionResult(
-                isGranted = isGranted,
-                shouldShowRationale = permissions.keys.any { permission ->
-                    !permissions[permission]!!
-                }
-            )
-        }
-    )
-
-    val shouldShowRationale = locationPermissionState.shouldShowRationale
-
-    LaunchedEffect(locationPermissionState.allPermissionsGranted) {
+        )
+    ) { permissions ->
+        val isGranted = permissions.values.all { it }
+         viewModel.onPermissionResult(
+            isGranted = isGranted,
+            shouldShowRationale = locationPermissionState.shouldShowRationale
+        )
     }
 
+    LaunchedEffect(locationPermissionState.allPermissionsGranted) {
+        if (locationPermissionState.allPermissionsGranted) {
+            viewModel.onButtonClicked(
+                hasPermission = true,
+                shouldShowRationale = false
+            )
+        }
+    }
     LaunchedEffect(uiState) {
         when (uiState) {
             is PermissionUiState.NavigateToHome -> {
@@ -77,17 +78,17 @@ fun PermissionScreen(
         }
     }
 
-    if (uiState is PermissionUiState.ShowRationale) {
+if (uiState is PermissionUiState.ShowRationale) {
         AlertDialog(
             onDismissRequest = { viewModel.resetState() },
-            title = { Text("Location Needed") },
+            title = { Text("Location Needed", fontWeight = FontWeight.Bold) },
             text = { Text("We need your location to show accurate weather for your area. Please allow it.") },
             confirmButton = {
                 TextButton(onClick = {
                     viewModel.resetState()
                     locationPermissionState.launchMultiplePermissionRequest()
                 }) {
-                    Text("Allow", color = Color(0xFF4A6A8F))
+                    Text("Allow", color = Color(0xFF4A6A8F), fontWeight = FontWeight.Bold)
                 }
             },
             dismissButton = {
@@ -97,18 +98,19 @@ fun PermissionScreen(
             }
         )
     }
+
     if (uiState is PermissionUiState.ShowLocationError) {
         AlertDialog(
             onDismissRequest = { viewModel.resetState() },
-            title = { Text("GPS Disabled") },
+            title = { Text("GPS Disabled", fontWeight = FontWeight.Bold) },
             text = { Text("Please turn on your GPS to get accurate weather data.") },
             confirmButton = {
                 TextButton(onClick = {
                     viewModel.resetState()
-                     val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+                    val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
                     context.startActivity(intent)
                 }) {
-                    Text("Enable GPS", color = Color(0xFF4A6A8F))
+                    Text("Enable GPS", color = Color(0xFF4A6A8F), fontWeight = FontWeight.Bold)
                 }
             },
             dismissButton = {
@@ -118,10 +120,11 @@ fun PermissionScreen(
             }
         )
     }
+
     if (uiState is PermissionUiState.GoToSettings) {
         AlertDialog(
             onDismissRequest = { viewModel.resetState() },
-            title = { Text("Permission Denied") },
+            title = { Text("Permission Denied", fontWeight = FontWeight.Bold) },
             text = { Text("You've denied location permission. Please enable it from Settings to use the app.") },
             confirmButton = {
                 TextButton(onClick = {
@@ -132,7 +135,7 @@ fun PermissionScreen(
                     )
                     context.startActivity(intent)
                 }) {
-                    Text("Go to Settings", color = Color(0xFF4A6A8F))
+                    Text("Go to Settings", color = Color(0xFF4A6A8F), fontWeight = FontWeight.Bold)
                 }
             },
             dismissButton = {
@@ -154,11 +157,7 @@ fun PermissionScreen(
             .fillMaxSize()
             .background(
                 brush = Brush.verticalGradient(
-                    colors = listOf(
-                        Color(0xFF6B8CB5),
-                        Color(0xFF8BA5C9),
-                        Color(0xFF9FB5D1)
-                    )
+                    colors = listOf(Color(0xFF6B8CB5), Color(0xFF8BA5C9), Color(0xFF9FB5D1))
                 )
             )
             .padding(horizontal = 32.dp),
@@ -186,39 +185,19 @@ fun PermissionScreen(
                 fontSize = 40.sp,
                 color = Color(0xFF4A6A8F),
                 fontWeight = FontWeight.Bold,
-                letterSpacing = 0.5.sp,
                 textAlign = TextAlign.Center
             )
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        AnimatedVisibility(
-            visible = isVisible,
-            enter = fadeIn(tween(1000, 700))
-        ) {
+        AnimatedVisibility(visible = isVisible, enter = fadeIn(tween(1000, 700))) {
             Text(
                 text = "Track the weather anywhere.",
                 fontSize = 16.sp,
                 color = Color(0xFF5A7A9F),
                 textAlign = TextAlign.Center,
                 fontWeight = FontWeight.Bold
-            )
-        }
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        AnimatedVisibility(
-            visible = isVisible,
-            enter = fadeIn(tween(1000, 900))
-        ) {
-            Text(
-                text = "Real-time forecasts, interactive maps,\nand smart alerts—all in one place.",
-                fontSize = 14.sp,
-                color = Color(0xFFE0E8F0),
-                textAlign = TextAlign.Center,
-                lineHeight = 20.sp,
-                fontWeight = FontWeight.Medium
             )
         }
 
@@ -230,7 +209,7 @@ fun PermissionScreen(
         ) {
             Button(
                 onClick = {
-                    viewModel.onButtonClicked(
+                     viewModel.onButtonClicked(
                         hasPermission = locationPermissionState.allPermissionsGranted,
                         shouldShowRationale = locationPermissionState.shouldShowRationale
                     )
@@ -243,11 +222,7 @@ fun PermissionScreen(
                     containerColor = Color.White,
                     contentColor = Color(0xFF4A6A8F)
                 ),
-                shape = RoundedCornerShape(20.dp),
-                elevation = ButtonDefaults.buttonElevation(
-                    defaultElevation = 4.dp,
-                    pressedElevation = 8.dp
-                )
+                shape = RoundedCornerShape(20.dp)
             ) {
                 Text(
                     text = when {
@@ -256,8 +231,7 @@ fun PermissionScreen(
                         else -> "Allow Location"
                     },
                     fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    letterSpacing = 0.5.sp
+                    fontWeight = FontWeight.Bold
                 )
             }
         }
