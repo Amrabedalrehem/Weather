@@ -7,6 +7,7 @@ import com.example.data.datasource.sharedPreference.DataStoreSettings
 import com.example.data.model.dto.CurrentWeatherDto
 import com.example.data.model.dto.FiveDayForecastResponse
 import com.example.data.model.dto.HourlyForecastResponse
+import com.example.data.model.entity.FavouriteLocation
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import retrofit2.Response
@@ -82,4 +83,10 @@ class Repository(
             else  -> speed
         }
     }
+
+    fun getAllFavourites() = local.getAllFavourites()
+
+    suspend fun insert(location: FavouriteLocation) = local.insert(location)
+
+    suspend fun delete(location: FavouriteLocation) = local.delete(location)
 }
