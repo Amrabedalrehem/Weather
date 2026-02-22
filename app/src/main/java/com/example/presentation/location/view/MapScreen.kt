@@ -49,6 +49,7 @@ import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -60,7 +61,8 @@ fun MapPickerScreen(
     nav: NavController,
     showInitialMarker: Boolean = false,
     viewModel: MapPickerViewModel,
-    snackbarHostState: SnackbarHostState
+    snackbarHostState: SnackbarHostState,
+    appScope: CoroutineScope
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -201,6 +203,7 @@ fun MapPickerScreen(
             shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
         ) {
             LocationDetailsContent(
+                appScope = appScope,
                 address = selectedAddress,
                 city = selectedCity,
                 country = selectedCountry,

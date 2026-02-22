@@ -14,6 +14,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -38,6 +39,8 @@ import com.example.presentation.component.location.MapPickerScreen
 import com.example.presentation.component.location.MapPickerViewModel
 import com.example.presentation.component.location.MapPickerViewModelFactory
 import com.example.presentation.favorite.view.FavoriteScreen
+import com.example.presentation.favorite.viewmodel.FavoritesViewModel
+import com.example.presentation.favorite.viewmodel.FavoritesViewModelFactory
 import com.example.presentation.home.view.HomeScreen
 import com.example.presentation.home.viewmodel.HomeViewModel
 import com.example.presentation.home.viewmodel.HomeViewModelFactory
@@ -71,6 +74,7 @@ class MainActivity : ComponentActivity() {
          Places.initialize(applicationContext, BuildConfig.PLACES_API_KEY)
         enableEdgeToEdge()
         setContent {
+            val appScope = rememberCoroutineScope()
             val navController: NavHostController = rememberNavController()
             val homeViewModel: HomeViewModel = viewModel(factory = factory)
              WeatherTheme {
@@ -170,16 +174,18 @@ class MainActivity : ComponentActivity() {
 
                                 if (mapViewModel.isLocationLoaded) {
                                     MapPickerScreen(
-
                                         onLocationSelected = { _, _ ->
                                             navController.popBackStack()
 
                                         },
+
                                         initialLocation = mapViewModel.defaultLocation,
                                         nav = navController,
                                         showInitialMarker = true,
                                         viewModel = mapViewModel,
                                         snackbarHostState = snackbarHostState,
+                                        appScope = appScope
+
 
                                         )
                                 }
@@ -219,10 +225,17 @@ class MainActivity : ComponentActivity() {
                                 )
                             }
                             composable<RouteScreen.Favorite> {
+                                val favoriteViewModel: FavoritesViewModel = viewModel(
+                                    factory = FavoritesViewModelFactory(repository)
+                                )
                                 FavoriteScreen(
+                                    snackbarHostState = snackbarHostState,
                                     modifier = Modifier.padding(innerPadding),
-
-                                    )
+                                   viewModel = favoriteViewModel,
+                                    onFavouriteClick = {
+                                        navController.navigate(RouteScreen.Map)
+                                    }
+                                )
                             }
 
                             composable<RouteScreen.Alarms> {

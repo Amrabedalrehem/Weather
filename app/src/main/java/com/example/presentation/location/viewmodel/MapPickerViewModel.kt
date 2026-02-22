@@ -123,15 +123,20 @@ class MapPickerViewModel(val repository: Repository) : ViewModel() {
                 _fiveDayForecast.value = UiState.Error("Error ${responseFromDayForecast.code()}")
             }
         }}
-    fun addFavourite(city: String, country: String, lat: Double, lon: Double) {
+     fun addFavourite(city: String, country: String, lat: Double, lon: Double, onSuccess: (FavouriteLocation) -> Unit) {
         viewModelScope.launch {
-            repository.insert(FavouriteLocation(city = city, country = country, lat = lat, lon = lon))
+            val newLocation = FavouriteLocation(city = city, country = country, lat = lat, lon = lon)
+             repository.insert(newLocation)
+            val savedLocation = repository.getAllFavourites().first().find {
+                it.lat == lat && it.lon == lon
+            }
+
+            savedLocation?.let { onSuccess(it) }
         }
     }
-
-    fun deleteFavourite(city: String, country: String, lat: Double, lon: Double) {
+    fun deleteFavourite(location: FavouriteLocation) {
         viewModelScope.launch {
-            repository.delete(FavouriteLocation(city = city, country = country, lat = lat, lon = lon))
+            repository.delete(location)
         }
     }
 

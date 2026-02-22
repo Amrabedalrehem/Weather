@@ -7,12 +7,16 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Scaffold
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -24,11 +28,23 @@ import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
+import com.example.data.model.entity.FavouriteLocation
+import com.example.presentation.component.favourites.FavouriteCard
+import com.example.presentation.favorite.viewmodel.FavoritesViewModel
 import com.example.weather.R
+import kotlinx.coroutines.launch
 
 @Composable
-fun FavoriteScreen(modifier: Modifier = Modifier) {
+fun FavoriteScreen(
+    modifier: Modifier = Modifier,
+    viewModel: FavoritesViewModel,
+    onFavouriteClick: (FavouriteLocation) -> Unit,
+    snackbarHostState: SnackbarHostState
+) {
+    val favourites by viewModel.favourites.collectAsState()
+     val scope = rememberCoroutineScope()
 
+    if (favourites.isEmpty()) {
         Column(
             modifier = Modifier.background(brush = Brush.verticalGradient(
                 colors = listOf(
@@ -68,7 +84,41 @@ fun FavoriteScreen(modifier: Modifier = Modifier) {
                 color = Color.White.copy(alpha = 0.7f)
             )
         }
-
-}
-
-
+    }
+       else {
+            LazyColumn(
+                modifier = modifier
+                    .fillMaxSize()
+                    .background(brush = Brush.verticalGradient(
+                        colors = listOf(
+                            Color(0xFF6B8CB5),
+                            Color(0xFF8BA5C9),
+                            Color(0xFF9FB5D1)
+                        )
+                    ))
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                items(favourites) { location ->
+                    FavouriteCard(
+                        location = location,
+                        onClick = { onFavouriteClick(location) },
+                        onDeleteWithUndo = {
+                            viewModel.markForDeletion(location)
+                            scope.launch {
+                                val result = snackbarHostState.showSnackbar(
+                                    message = "${location.city} removed ⭐",
+                                    actionLabel = "Undo",
+                                    duration = SnackbarDuration.Short
+                                )
+                                when (result) {
+                                    SnackbarResult.Dismissed -> viewModel.confirmDelete(location)
+                                    SnackbarResult.ActionPerformed -> viewModel.undoDelete(location)
+                                }
+                            }
+                        }
+                    )
+                }
+            }
+        }
+    }
