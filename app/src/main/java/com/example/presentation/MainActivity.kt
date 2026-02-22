@@ -14,6 +14,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -32,11 +33,14 @@ import com.example.data.datasource.local.DataSourceLocal
 import com.example.data.datasource.remote.DataSourceRemote
 import com.example.data.datasource.sharedPreference.DataStorePermission
 import com.example.data.datasource.sharedPreference.DataStoreSettings
+import com.example.data.dp.AppDatabase
 import com.example.presentation.alarms.view.AlarmsScreen
 import com.example.presentation.component.location.MapPickerScreen
 import com.example.presentation.component.location.MapPickerViewModel
 import com.example.presentation.component.location.MapPickerViewModelFactory
 import com.example.presentation.favorite.view.FavoriteScreen
+import com.example.presentation.favorite.viewmodel.FavoritesViewModel
+import com.example.presentation.favorite.viewmodel.FavoritesViewModelFactory
 import com.example.presentation.home.view.HomeScreen
 import com.example.presentation.home.viewmodel.HomeViewModel
 import com.example.presentation.home.viewmodel.HomeViewModelFactory
@@ -57,20 +61,20 @@ import com.example.weather.BuildConfig
 
 class MainActivity : ComponentActivity() {
     private val dataSourceRemote = DataSourceRemote()
-    private val dataSourceLocal = DataSourceLocal()
+    private val database by lazy { AppDatabase.getInstance(this) }
+    private val dataSourceLocal by lazy { DataSourceLocal(database.favouriteDao()) }
     private val dataStoreSettings by lazy { DataStoreSettings(this) }
     private val dataStorePermission by lazy { DataStorePermission(this) }
     private val repository by lazy {
         Repository(dataSourceLocal, dataSourceRemote, dataStoreSettings, dataStorePermission)
     }
     private val factory by lazy { HomeViewModelFactory(repository) }
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
          Places.initialize(applicationContext, BuildConfig.PLACES_API_KEY)
         enableEdgeToEdge()
         setContent {
+            val appScope = rememberCoroutineScope()
             val navController: NavHostController = rememberNavController()
             val homeViewModel: HomeViewModel = viewModel(factory = factory)
              WeatherTheme {
@@ -170,14 +174,20 @@ class MainActivity : ComponentActivity() {
 
                                 if (mapViewModel.isLocationLoaded) {
                                     MapPickerScreen(
-                                        nav = navController,
-                                        viewModel = mapViewModel,
-                                        initialLocation = mapViewModel.defaultLocation,
-                                        showInitialMarker = true,
                                         onLocationSelected = { _, _ ->
                                             navController.popBackStack()
-                                        }
-                                    )
+
+                                        },
+
+                                        initialLocation = mapViewModel.defaultLocation,
+                                        nav = navController,
+                                        showInitialMarker = true,
+                                        viewModel = mapViewModel,
+                                        snackbarHostState = snackbarHostState,
+                                        appScope = appScope
+
+
+                                        )
                                 }
                             }
                             composable<RouteScreen.Permission> {
@@ -215,10 +225,17 @@ class MainActivity : ComponentActivity() {
                                 )
                             }
                             composable<RouteScreen.Favorite> {
+                                val favoriteViewModel: FavoritesViewModel = viewModel(
+                                    factory = FavoritesViewModelFactory(repository)
+                                )
                                 FavoriteScreen(
+                                    snackbarHostState = snackbarHostState,
                                     modifier = Modifier.padding(innerPadding),
-
-                                    )
+                                   viewModel = favoriteViewModel,
+                                    onFavouriteClick = {
+                                        navController.navigate(RouteScreen.Map)
+                                    }
+                                )
                             }
 
                             composable<RouteScreen.Alarms> {

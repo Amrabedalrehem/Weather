@@ -11,6 +11,7 @@ import com.example.data.Repository
 import com.example.data.model.dto.CurrentWeatherDto
 import com.example.data.model.dto.FiveDayForecastResponse
 import com.example.data.model.dto.HourlyForecastResponse
+import com.example.data.model.entity.FavouriteLocation
 import com.example.presentation.component.helper.UiState
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -122,6 +123,24 @@ class MapPickerViewModel(val repository: Repository) : ViewModel() {
                 _fiveDayForecast.value = UiState.Error("Error ${responseFromDayForecast.code()}")
             }
         }}
+     fun addFavourite(city: String, country: String, lat: Double, lon: Double, onSuccess: (FavouriteLocation) -> Unit) {
+        viewModelScope.launch {
+            val newLocation = FavouriteLocation(city = city, country = country, lat = lat, lon = lon)
+             repository.insert(newLocation)
+            val savedLocation = repository.getAllFavourites().first().find {
+                it.lat == lat && it.lon == lon
+            }
+
+            savedLocation?.let { onSuccess(it) }
+        }
+    }
+    fun deleteFavourite(location: FavouriteLocation) {
+        viewModelScope.launch {
+            repository.delete(location)
+        }
+    }
+
+
 }
 
 class MapPickerViewModelFactory(private val repository: Repository) : ViewModelProvider.Factory {

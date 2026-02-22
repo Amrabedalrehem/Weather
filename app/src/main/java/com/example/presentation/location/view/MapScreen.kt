@@ -17,6 +17,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -48,6 +49,7 @@ import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -58,7 +60,9 @@ fun MapPickerScreen(
     initialZoom: Float = 12f,
     nav: NavController,
     showInitialMarker: Boolean = false,
-    viewModel: MapPickerViewModel
+    viewModel: MapPickerViewModel,
+    snackbarHostState: SnackbarHostState,
+    appScope: CoroutineScope
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -199,6 +203,7 @@ fun MapPickerScreen(
             shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
         ) {
             LocationDetailsContent(
+                appScope = appScope,
                 address = selectedAddress,
                 city = selectedCity,
                 country = selectedCountry,
@@ -212,7 +217,8 @@ fun MapPickerScreen(
                     scope.launch { sheetState.hide() }
                         .invokeOnCompletion { showBottomSheet = false }
                 },
-                windUnit  =windUnit
+                windUnit  =windUnit,
+                snackbarHostState = snackbarHostState
             )
         }
     }
