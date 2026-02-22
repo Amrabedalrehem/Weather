@@ -41,16 +41,18 @@ class PermissionViewModel(application: Application,
     ) {
         viewModelScope.launch {
             val wasPermissionRequestedBefore = repository.wasPermissionRequested.first()
-            _uiState.value = when {
 
-                hasPermission -> PermissionUiState.NavigateToHome
+            if (hasPermission) {
+                 getCurrentLocation()
+            } else {
+                _uiState.value = when {
+                    !hasPermission && !shouldShowRationale && wasPermissionRequestedBefore ->
+                        PermissionUiState.GoToSettings
 
-                !hasPermission && !shouldShowRationale && wasPermissionRequestedBefore ->
-                    PermissionUiState.GoToSettings
+                    shouldShowRationale -> PermissionUiState.ShowRationale
 
-                shouldShowRationale -> PermissionUiState.ShowRationale
-
-                else -> PermissionUiState.RequestPermission
+                    else -> PermissionUiState.RequestPermission
+                }
             }
         }
     }
