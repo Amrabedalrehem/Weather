@@ -43,7 +43,7 @@ import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
-import com.example.data.model.weather.FiveDayForecastResponse
+import com.example.data.model.dto.FiveDayForecastResponse
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale

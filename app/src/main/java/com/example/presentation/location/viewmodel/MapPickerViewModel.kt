@@ -8,9 +8,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.data.Repository
-import com.example.data.model.weather.CurrentWeatherDto
-import com.example.data.model.weather.FiveDayForecastResponse
-import com.example.data.model.weather.HourlyForecastResponse
+import com.example.data.model.dto.CurrentWeatherDto
+import com.example.data.model.dto.FiveDayForecastResponse
+import com.example.data.model.dto.HourlyForecastResponse
 import com.example.presentation.component.helper.UiState
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -19,7 +19,6 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import java.util.Locale
 

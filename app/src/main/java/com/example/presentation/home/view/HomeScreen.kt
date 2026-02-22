@@ -23,9 +23,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.example.data.model.weather.CurrentWeatherDto
-import com.example.data.model.weather.FiveDayForecastResponse
-import com.example.data.model.weather.HourlyForecastResponse
+import com.example.data.model.dto.CurrentWeatherDto
+import com.example.data.model.dto.FiveDayForecastResponse
+import com.example.data.model.dto.HourlyForecastResponse
 import com.example.presentation.component.helper.ErrorState
 import com.example.presentation.component.helper.LoadingState
 import com.example.presentation.component.helper.UiState

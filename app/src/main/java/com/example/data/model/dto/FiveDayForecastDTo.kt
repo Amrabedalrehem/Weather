@@ -1,6 +1,5 @@
-package com.example.data.model.weather
+package com.example.data.model.dto
 
-import android.util.Log
 import com.google.gson.annotations.SerializedName
 
 data class FiveDayForecastDTo(
