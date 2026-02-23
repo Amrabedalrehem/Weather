@@ -86,6 +86,7 @@ class MainActivity : ComponentActivity() {
         DataSourceLocal(
             database.favouriteDao(),
             database.homeWeatherDao()
+            ,database.alarmDao()
         )
     }
     private val dataStoreSettings by lazy { DataStoreSettings(this) }
