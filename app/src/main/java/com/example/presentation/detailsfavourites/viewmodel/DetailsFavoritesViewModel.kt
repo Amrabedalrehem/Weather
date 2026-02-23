@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.data.Repository
-import com.example.data.model.entity.FavouriteLocation
+import com.example.data.model.entity.FavouriteLocationCache
 import com.example.data.network.CheckNetwork
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -19,7 +19,7 @@ class DetailsFavoritesViewModel(
     private val networkObserver: CheckNetwork
 ) : ViewModel() {
 
-    val itemFavourite: StateFlow<FavouriteLocation?> = repository.getFavouriteById(locationId)
+    val itemFavourite: StateFlow<FavouriteLocationCache?> = repository.getFavouriteById(locationId)
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
@@ -39,7 +39,6 @@ class DetailsFavoritesViewModel(
             val lat = current.lat
             val lon = current.lon
             val city = current.city
-
             try {
                 val currentWeather = repository.getCurrentWeather(lat, lon)
                 val hourly = repository.getHourlyForecast(city)

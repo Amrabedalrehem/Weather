@@ -11,7 +11,7 @@ import com.example.data.Repository
 import com.example.data.model.dto.CurrentWeatherDto
 import com.example.data.model.dto.FiveDayForecastResponse
 import com.example.data.model.dto.HourlyForecastResponse
-import com.example.data.model.entity.FavouriteLocation
+import com.example.data.model.entity.FavouriteLocationCache
 import com.example.presentation.component.helper.UiState
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -128,14 +128,14 @@ class MapPickerViewModel(val repository: Repository) : ViewModel() {
         country: String,
         lat: Double,
         lon: Double,
-        onSuccess: (FavouriteLocation) -> Unit
+        onSuccess: (FavouriteLocationCache) -> Unit
     ) {
         viewModelScope.launch {
              val currentWeatherData = (_currentWeather.value as? UiState.Success)?.data
             val hourlyData = (_hourlyForecast.value as? UiState.Success)?.data
             val fiveDayData = (_fiveDayForecast.value as? UiState.Success)?.data
 
-            val newLocation = FavouriteLocation(
+            val newLocation = FavouriteLocationCache(
                 city = city,
                 country = country,
                 lat = lat,
@@ -154,7 +154,7 @@ class MapPickerViewModel(val repository: Repository) : ViewModel() {
             savedLocation?.let { onSuccess(it) }
         }
     }
-    fun deleteFavourite(location: FavouriteLocation) {
+    fun deleteFavourite(location: FavouriteLocationCache) {
         viewModelScope.launch {
             repository.delete(location)
         }

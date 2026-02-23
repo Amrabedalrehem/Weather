@@ -1,6 +1,6 @@
 package com.example.data.datasource.local
 
-import com.example.data.model.entity.FavouriteLocation
+import com.example.data.model.entity.FavouriteLocationCache
 
 class DataSourceLocal(private val favouriteDao: FavouriteDao) {
 
@@ -8,7 +8,7 @@ class DataSourceLocal(private val favouriteDao: FavouriteDao) {
 
     fun getFavouriteById(id: Int)= favouriteDao.getFavouriteById(id)
 
-    suspend fun insert(location: FavouriteLocation) = favouriteDao.insert(location)
+    suspend fun insert(location: FavouriteLocationCache) = favouriteDao.insert(location)
 
-    suspend fun delete(location: FavouriteLocation) = favouriteDao.delete(location)
+    suspend fun delete(location: FavouriteLocationCache) = favouriteDao.delete(location)
 }

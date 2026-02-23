@@ -10,7 +10,7 @@ import com.example.data.model.dto.HourlyForecastResponse
 @Entity(tableName = "favourites",
         indices = [Index(value = ["city"], unique = true)]
 )
-data class FavouriteLocation(
+data class FavouriteLocationCache(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val city: String,
     val country: String,

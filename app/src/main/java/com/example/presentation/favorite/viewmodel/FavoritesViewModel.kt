@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.data.Repository
-import com.example.data.model.entity.FavouriteLocation
+import com.example.data.model.entity.FavouriteLocationCache
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -16,7 +16,7 @@ class FavoritesViewModel(val repository: Repository) : ViewModel() {
 
     private val pendingDeletion = MutableStateFlow<Set<Int>>(emptySet())
 
-    val favourites: StateFlow<List<FavouriteLocation>> =
+    val favourites: StateFlow<List<FavouriteLocationCache>> =
         repository.getAllFavourites()
             .combine(pendingDeletion) { list, pending ->
                 list.filter { it.id !in pending }
@@ -27,18 +27,18 @@ class FavoritesViewModel(val repository: Repository) : ViewModel() {
                 initialValue = emptyList()
             )
 
-    fun markForDeletion(location: FavouriteLocation) {
+    fun markForDeletion(location: FavouriteLocationCache) {
         pendingDeletion.value += location.id
     }
 
-    fun confirmDelete(location: FavouriteLocation) {
+    fun confirmDelete(location: FavouriteLocationCache) {
         viewModelScope.launch {
             pendingDeletion.value -= location.id
             repository.delete(location)
         }
     }
 
-    fun undoDelete(location: FavouriteLocation) {
+    fun undoDelete(location: FavouriteLocationCache) {
         pendingDeletion.value -= location.id
     }
 }

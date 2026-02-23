@@ -6,12 +6,12 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.example.data.datasource.local.FavouriteDao
-import com.example.data.model.entity.FavouriteLocation
+import com.example.data.model.entity.FavouriteLocationCache
 import com.example.data.model.mapper.WeatherTypeConverters
 
 
 @Database(
-    entities = [FavouriteLocation::class],
+    entities = [FavouriteLocationCache::class],
     version = 3,
     exportSchema = false
 )@TypeConverters(WeatherTypeConverters::class)

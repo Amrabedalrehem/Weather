@@ -39,7 +39,7 @@ import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
-import com.example.data.model.entity.FavouriteLocation
+import com.example.data.model.entity.FavouriteLocationCache
 import com.example.presentation.component.favourites.FavouriteCard
 import com.example.presentation.favorite.viewmodel.FavoritesViewModel
 import com.example.weather.R
@@ -49,7 +49,7 @@ import kotlinx.coroutines.launch
 fun FavoriteScreen(
     modifier: Modifier = Modifier,
     viewModel: FavoritesViewModel,
-    onFavouriteClick: (FavouriteLocation) -> Unit,
+    onFavouriteClick: (FavouriteLocationCache) -> Unit,
     snackbarHostState: SnackbarHostState
 ) {
     val favourites by viewModel.favourites.collectAsState()
