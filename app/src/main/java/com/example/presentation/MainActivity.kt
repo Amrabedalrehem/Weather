@@ -66,14 +66,14 @@ import com.example.weather.BuildConfig
 class MainActivity : ComponentActivity() {
     private val dataSourceRemote = DataSourceRemote()
     private val database by lazy { AppDatabase.getInstance(this) }
-    private val dataSourceLocal by lazy { DataSourceLocal(database.favouriteDao()) }
+     private val dataSourceLocal by lazy { DataSourceLocal(database.favouriteDao(), database.homeWeatherDao()) }
     private val dataStoreSettings by lazy { DataStoreSettings(this) }
     private val dataStorePermission by lazy { DataStorePermission(this) }
     private val networkObserver by lazy { com.example.data.network.CheckNetwork(this) }
     private val repository by lazy {
         Repository(dataSourceLocal, dataSourceRemote, dataStoreSettings, dataStorePermission)
     }
-    private val factory by lazy { HomeViewModelFactory(repository) }
+    private val factory by lazy { HomeViewModelFactory(repository, networkObserver) }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Places.initialize(applicationContext, BuildConfig.PLACES_API_KEY)
