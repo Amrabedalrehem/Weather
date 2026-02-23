@@ -4,6 +4,13 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -12,12 +19,16 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -66,7 +77,12 @@ import com.example.weather.BuildConfig
 class MainActivity : ComponentActivity() {
     private val dataSourceRemote = DataSourceRemote()
     private val database by lazy { AppDatabase.getInstance(this) }
-     private val dataSourceLocal by lazy { DataSourceLocal(database.favouriteDao(), database.homeWeatherDao()) }
+    private val dataSourceLocal by lazy {
+        DataSourceLocal(
+            database.favouriteDao(),
+            database.homeWeatherDao()
+        )
+    }
     private val dataStoreSettings by lazy { DataStoreSettings(this) }
     private val dataStorePermission by lazy { DataStorePermission(this) }
     private val networkObserver by lazy { com.example.data.network.CheckNetwork(this) }
@@ -147,133 +163,153 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                 ) { innerPadding ->
-
-
-                    NavHost(
-                        navController = navController,
-                        startDestination = RouteScreen.Splash
-                    ) {
-                        composable<RouteScreen.Splash> {
-                            val splashViewModel: SplashViewModel = viewModel(
-                                factory = SplashViewModelFactory(repository)
-                            )
-                            SplashScreen(
-                                modifier = Modifier.padding(innerPadding),
-                                viewModel = splashViewModel,
-                                onNavigateToHome = {
-                                    navController.navigate(RouteScreen.Home) {
-                                        popUpTo(RouteScreen.Splash) { inclusive = true }
-                                    }
-                                },
-                                onNavigateToPermission = {
-                                    navController.navigate(RouteScreen.Permission) {
-                                        popUpTo(RouteScreen.Splash) { inclusive = true }
-                                    }
-                                }
-                            )
-                        }
-                        composable<RouteScreen.Map> {
-                            val mapViewModel: MapPickerViewModel = viewModel(
-                                factory = MapPickerViewModelFactory(repository)
-                            )
-
-                            if (mapViewModel.isLocationLoaded) {
-                                MapPickerScreen(
-                                    onLocationSelected = { _, _ ->
-                                        navController.popBackStack()
-
+                    val isConnected by networkObserver.isConnected.collectAsState(initial = true)
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        NavHost(
+                            navController = navController,
+                            startDestination = RouteScreen.Splash
+                        ) {
+                            composable<RouteScreen.Splash> {
+                                val splashViewModel: SplashViewModel = viewModel(
+                                    factory = SplashViewModelFactory(repository)
+                                )
+                                SplashScreen(
+                                    modifier = Modifier.padding(innerPadding),
+                                    viewModel = splashViewModel,
+                                    onNavigateToHome = {
+                                        navController.navigate(RouteScreen.Home) {
+                                            popUpTo(RouteScreen.Splash) { inclusive = true }
+                                        }
                                     },
+                                    onNavigateToPermission = {
+                                        navController.navigate(RouteScreen.Permission) {
+                                            popUpTo(RouteScreen.Splash) { inclusive = true }
+                                        }
+                                    }
+                                )
+                            }
+                            composable<RouteScreen.Map> {
+                                val mapViewModel: MapPickerViewModel = viewModel(
+                                    factory = MapPickerViewModelFactory(repository)
+                                )
 
-                                    initialLocation = mapViewModel.defaultLocation,
-                                    nav = navController,
-                                    showInitialMarker = true,
-                                    viewModel = mapViewModel,
+                                if (mapViewModel.isLocationLoaded) {
+                                    MapPickerScreen(
+                                        onLocationSelected = { _, _ ->
+                                            navController.popBackStack()
+
+                                        },
+
+                                        initialLocation = mapViewModel.defaultLocation,
+                                        nav = navController,
+                                        showInitialMarker = true,
+                                        viewModel = mapViewModel,
+                                        snackbarHostState = snackbarHostState,
+                                        appScope = appScope
+
+
+                                    )
+                                }
+                            }
+                            composable<RouteScreen.Permission> {
+                                val permissionViewModel: PermissionViewModel = viewModel(
+                                    factory = PermissionViewModelFactory(application, repository)
+                                )
+                                PermissionScreen(
+                                    modifier = Modifier.padding(innerPadding),
+                                    viewModel = permissionViewModel,
+                                    onNavigateToHome = {
+                                        navController.navigate(RouteScreen.Home) {
+                                            popUpTo(RouteScreen.Permission) { inclusive = true }
+                                        }
+                                    }
+                                )
+                            }
+                            composable<RouteScreen.Home> {
+                                HomeScreen(
+                                    viewModel = homeViewModel,
+                                    modifier = Modifier.padding(innerPadding),
+
+                                    )
+                            }
+                            composable<RouteScreen.Settings> {
+                                val settingsViewModel: SettingsViewModel = viewModel(
+                                    factory = SettingsViewModelFactory(repository)
+                                )
+                                SettingsScreen(
+                                    modifier = Modifier.padding(innerPadding),
+                                    viewModel = settingsViewModel,
                                     snackbarHostState = snackbarHostState,
-                                    appScope = appScope
+                                    onNavigateToMap = {
+                                        navController.navigate(RouteScreen.Map)
+                                    }
+                                )
+                            }
+                            composable<RouteScreen.Favorite> {
+                                val favoriteViewModel: FavoritesViewModel = viewModel(
+                                    factory = FavoritesViewModelFactory(repository)
+                                )
+                                FavoriteScreen(
+                                    snackbarHostState = snackbarHostState,
+                                    modifier = Modifier.padding(innerPadding),
+                                    viewModel = favoriteViewModel,
+                                    onFavouriteClick = { location ->
+                                        navController.navigate(RouteScreen.DetailsFavorites(id = location.id))
+                                    }
+                                )
+                            }
 
+                            composable<RouteScreen.Alarms> {
+                                AlarmsScreen(
+                                    modifier = Modifier.padding(innerPadding),
 
+                                    )
+                            }
+
+                            composable<RouteScreen.DetailsFavorites> { backStackEntry ->
+                                val detailsRoute =
+                                    backStackEntry.toRoute<RouteScreen.DetailsFavorites>()
+                                val locationId = detailsRoute.id
+                                val detailsViewModel: DetailsFavoritesViewModel = viewModel(
+                                    factory = DetailsViewModelFactory(
+                                        repository,
+                                        locationId,
+                                        networkObserver
+
+                                    )
+                                )
+                                DetailsFavoritesScreen(
+                                    locationId = locationId,
+                                    viewModel = detailsViewModel,
+                                    modifier = Modifier.padding(innerPadding)
                                 )
                             }
                         }
-                        composable<RouteScreen.Permission> {
-                            val permissionViewModel: PermissionViewModel = viewModel(
-                                factory = PermissionViewModelFactory(application, repository)
-                            )
-                            PermissionScreen(
-                                modifier = Modifier.padding(innerPadding),
-                                viewModel = permissionViewModel,
-                                onNavigateToHome = {
-                                    navController.navigate(RouteScreen.Home) {
-                                        popUpTo(RouteScreen.Permission) { inclusive = true }
-                                    }
-                                }
-                            )
-                        }
-                        composable<RouteScreen.Home> {
-                            HomeScreen(
-                                viewModel = homeViewModel,
-                                modifier = Modifier.padding(innerPadding),
 
+                        AnimatedVisibility(
+                            visible = !isConnected,
+                            enter = slideInVertically { -it },
+                            exit = slideOutVertically { -it },
+                            modifier = Modifier.align(Alignment.TopCenter)
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .background(Color.Red.copy(alpha = 0.8f))
+                                    .padding(12.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = "No Internet Connection",
+                                    color = Color.White,
+                                    fontSize = 18.sp
                                 )
+                            }
                         }
-                        composable<RouteScreen.Settings> {
-                            val settingsViewModel: SettingsViewModel = viewModel(
-                                factory = SettingsViewModelFactory(repository)
-                            )
-                            SettingsScreen(
-                                modifier = Modifier.padding(innerPadding),
-                                viewModel = settingsViewModel,
-                                snackbarHostState = snackbarHostState,
-                                onNavigateToMap = {
-                                    navController.navigate(RouteScreen.Map)
-                                }
-                            )
-                        }
-                        composable<RouteScreen.Favorite> {
-                            val favoriteViewModel: FavoritesViewModel = viewModel(
-                                factory = FavoritesViewModelFactory(repository)
-                            )
-                            FavoriteScreen(
-                                snackbarHostState = snackbarHostState,
-                                modifier = Modifier.padding(innerPadding),
-                                viewModel = favoriteViewModel,
-                                onFavouriteClick = { location ->
-                                     navController.navigate(RouteScreen.DetailsFavorites(id = location.id))
-                                }
-                            )
-                        }
-
-                        composable<RouteScreen.Alarms> {
-                            AlarmsScreen(
-                                modifier = Modifier.padding(innerPadding),
-
-                                )
-                        }
-
-                                    composable<RouteScreen.DetailsFavorites> { backStackEntry ->
-                                        val detailsRoute =
-                                            backStackEntry.toRoute<RouteScreen.DetailsFavorites>()
-                                        val locationId = detailsRoute.id
-                                        val detailsViewModel: DetailsFavoritesViewModel = viewModel(
-                                            factory = DetailsViewModelFactory(
-                                                repository,
-                                                locationId,
-                                                networkObserver
-
-                                            )
-                                        )
-                                        DetailsFavoritesScreen(
-                                            locationId = locationId,
-                                            viewModel = detailsViewModel,
-                                            modifier = Modifier.padding(innerPadding)
-                                        )
-                                    }
                     }
-
-
                 }
+
             }
         }
-
-    } }
-
+    }
+}
