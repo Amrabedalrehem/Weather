@@ -85,7 +85,7 @@ class Repository(
     }
 
     fun getAllFavourites() = local.getAllFavourites()
-
+    fun getFavouriteById(id: Int) = local.getFavouriteById(id)
     suspend fun insert(location: FavouriteLocation) = local.insert(location)
 
     suspend fun delete(location: FavouriteLocation) = local.delete(location)

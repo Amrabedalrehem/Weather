@@ -24,6 +24,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
@@ -38,6 +39,9 @@ import com.example.presentation.alarms.view.AlarmsScreen
 import com.example.presentation.component.location.MapPickerScreen
 import com.example.presentation.component.location.MapPickerViewModel
 import com.example.presentation.component.location.MapPickerViewModelFactory
+import com.example.presentation.detailsfavourites.view.DetailsFavoritesScreen
+import com.example.presentation.detailsfavourites.viewmodel.DetailsFavoritesViewModel
+import com.example.presentation.detailsfavourites.viewmodel.DetailsViewModelFactory
 import com.example.presentation.favorite.view.FavoriteScreen
 import com.example.presentation.favorite.viewmodel.FavoritesViewModel
 import com.example.presentation.favorite.viewmodel.FavoritesViewModelFactory
@@ -71,13 +75,13 @@ class MainActivity : ComponentActivity() {
     private val factory by lazy { HomeViewModelFactory(repository) }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-         Places.initialize(applicationContext, BuildConfig.PLACES_API_KEY)
+        Places.initialize(applicationContext, BuildConfig.PLACES_API_KEY)
         enableEdgeToEdge()
         setContent {
             val appScope = rememberCoroutineScope()
             val navController: NavHostController = rememberNavController()
             val homeViewModel: HomeViewModel = viewModel(factory = factory)
-             WeatherTheme {
+            WeatherTheme {
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
                 val currentRoute = navBackStackEntry?.destination?.route
                 val showBottomBar = currentRoute in listOf(
@@ -88,169 +92,185 @@ class MainActivity : ComponentActivity() {
                 )
 
                 val showFavoriteAB = currentRoute == RouteScreen.Favorite::class.qualifiedName
-                 val showAlarmsAB = currentRoute == RouteScreen.Alarms::class.qualifiedName
-                 val snackbarHostState = remember { SnackbarHostState() }
-                 Scaffold(
-                        snackbarHost = {
-                            SnackbarHost(hostState = snackbarHostState) { data ->
-                                Snackbar(
-                                    snackbarData = data,
-                                    containerColor = Color(0xFF2E4A6B),
-                                    contentColor = Color.White,
+                val showAlarmsAB = currentRoute == RouteScreen.Alarms::class.qualifiedName
+                val snackbarHostState = remember { SnackbarHostState() }
+                Scaffold(
+                    snackbarHost = {
+                        SnackbarHost(hostState = snackbarHostState) { data ->
+                            Snackbar(
+                                snackbarData = data,
+                                containerColor = Color(0xFF2E4A6B),
+                                contentColor = Color.White,
+                            )
+                        }
+                    },
+                    bottomBar = {
+                        if (showBottomBar) BottomNavigationBar(navController)
+                    },
+                    floatingActionButton = {
+                        if (showFavoriteAB) {
+                            FloatingActionButton(
+                                onClick = {
+                                    navController.navigate(RouteScreen.Map)
+                                },
+                                shape = CircleShape,
+                                containerColor = Color.White.copy(0.8f)
+                            ) {
+                                val composition by rememberLottieComposition(
+                                    LottieCompositionSpec.RawRes(R.raw.quick)
+                                )
+                                LottieAnimation(
+                                    composition = composition,
+                                    iterations = LottieConstants.IterateForever,
+                                    modifier = Modifier.size(40.dp)
                                 )
                             }
-                        },
-                        bottomBar = {
-                            if (showBottomBar) BottomNavigationBar(navController)
-                        },
-                        floatingActionButton = {
-                            if (showFavoriteAB) {
-                                FloatingActionButton(
-                                    onClick = {
-                                        navController.navigate(RouteScreen.Map)
-                                    },
-                                    shape = CircleShape,
-                                    containerColor = Color.White.copy(0.8f)
-                                ) {
-                                    val composition by rememberLottieComposition(
-                                        LottieCompositionSpec.RawRes(R.raw.quick)
-                                    )
-                                    LottieAnimation(
-                                        composition = composition,
-                                        iterations = LottieConstants.IterateForever,
-                                        modifier = Modifier.size(40.dp)
-                                    )
-                                }
 
+                        }
+                        if (showAlarmsAB) {
+                            FloatingActionButton(
+                                onClick = { },
+                                shape = CircleShape,
+                                containerColor = Color.White.copy(0.8f)
+                            ) {
+                                val composition by rememberLottieComposition(
+                                    LottieCompositionSpec.RawRes(R.raw.notificationbell)
+                                )
+                                LottieAnimation(
+                                    composition = composition,
+                                    iterations = LottieConstants.IterateForever,
+                                    modifier = Modifier.size(40.dp)
+                                )
                             }
-                            if (showAlarmsAB) {
-                                FloatingActionButton(
-                                    onClick = { },
-                                    shape = CircleShape,
-                                    containerColor = Color.White.copy(0.8f)
-                                ) {
-                                    val composition by rememberLottieComposition(
-                                        LottieCompositionSpec.RawRes(R.raw.notificationbell)
-                                    )
-                                    LottieAnimation(
-                                        composition = composition,
-                                        iterations = LottieConstants.IterateForever,
-                                        modifier = Modifier.size(40.dp)
-                                    )
-                                }
 
+                        }
+                    }
+                ) { innerPadding ->
+
+
+                    NavHost(
+                        navController = navController,
+                        startDestination = RouteScreen.Splash
+                    ) {
+                        composable<RouteScreen.Splash> {
+                            val splashViewModel: SplashViewModel = viewModel(
+                                factory = SplashViewModelFactory(repository)
+                            )
+                            SplashScreen(
+                                modifier = Modifier.padding(innerPadding),
+                                viewModel = splashViewModel,
+                                onNavigateToHome = {
+                                    navController.navigate(RouteScreen.Home) {
+                                        popUpTo(RouteScreen.Splash) { inclusive = true }
+                                    }
+                                },
+                                onNavigateToPermission = {
+                                    navController.navigate(RouteScreen.Permission) {
+                                        popUpTo(RouteScreen.Splash) { inclusive = true }
+                                    }
+                                }
+                            )
+                        }
+                        composable<RouteScreen.Map> {
+                            val mapViewModel: MapPickerViewModel = viewModel(
+                                factory = MapPickerViewModelFactory(repository)
+                            )
+
+                            if (mapViewModel.isLocationLoaded) {
+                                MapPickerScreen(
+                                    onLocationSelected = { _, _ ->
+                                        navController.popBackStack()
+
+                                    },
+
+                                    initialLocation = mapViewModel.defaultLocation,
+                                    nav = navController,
+                                    showInitialMarker = true,
+                                    viewModel = mapViewModel,
+                                    snackbarHostState = snackbarHostState,
+                                    appScope = appScope
+
+
+                                )
                             }
                         }
-                    ) { innerPadding ->
-
-
-                        NavHost(
-                            navController = navController,
-                            startDestination = RouteScreen.Splash
-                        ) {
-                            composable<RouteScreen.Splash> {
-                                val splashViewModel: SplashViewModel = viewModel(
-                                    factory = SplashViewModelFactory(repository)
-                                )
-                                SplashScreen(
-                                    modifier = Modifier.padding(innerPadding),
-                                    viewModel = splashViewModel,
-                                    onNavigateToHome = {
-                                        navController.navigate(RouteScreen.Home) {
-                                            popUpTo(RouteScreen.Splash) { inclusive = true }
-                                        }
-                                    },
-                                    onNavigateToPermission = {
-                                        navController.navigate(RouteScreen.Permission) {
-                                            popUpTo(RouteScreen.Splash) { inclusive = true }
-                                        }
+                        composable<RouteScreen.Permission> {
+                            val permissionViewModel: PermissionViewModel = viewModel(
+                                factory = PermissionViewModelFactory(application, repository)
+                            )
+                            PermissionScreen(
+                                modifier = Modifier.padding(innerPadding),
+                                viewModel = permissionViewModel,
+                                onNavigateToHome = {
+                                    navController.navigate(RouteScreen.Home) {
+                                        popUpTo(RouteScreen.Permission) { inclusive = true }
                                     }
+                                }
+                            )
+                        }
+                        composable<RouteScreen.Home> {
+                            HomeScreen(
+                                viewModel = homeViewModel,
+                                modifier = Modifier.padding(innerPadding),
+
                                 )
-                            }
-                            composable<RouteScreen.Map> {
-                                val mapViewModel: MapPickerViewModel = viewModel(
-                                    factory = MapPickerViewModelFactory(repository)
+                        }
+                        composable<RouteScreen.Settings> {
+                            val settingsViewModel: SettingsViewModel = viewModel(
+                                factory = SettingsViewModelFactory(repository)
+                            )
+                            SettingsScreen(
+                                modifier = Modifier.padding(innerPadding),
+                                viewModel = settingsViewModel,
+                                snackbarHostState = snackbarHostState,
+                                onNavigateToMap = {
+                                    navController.navigate(RouteScreen.Map)
+                                }
+                            )
+                        }
+                        composable<RouteScreen.Favorite> {
+                            val favoriteViewModel: FavoritesViewModel = viewModel(
+                                factory = FavoritesViewModelFactory(repository)
+                            )
+                            FavoriteScreen(
+                                snackbarHostState = snackbarHostState,
+                                modifier = Modifier.padding(innerPadding),
+                                viewModel = favoriteViewModel,
+                                onFavouriteClick = { location ->
+                                     navController.navigate(RouteScreen.DetailsFavorites(id = location.id))
+                                }
+                            )
+                        }
+
+                        composable<RouteScreen.Alarms> {
+                            AlarmsScreen(
+                                modifier = Modifier.padding(innerPadding),
+
                                 )
+                        }
 
-                                if (mapViewModel.isLocationLoaded) {
-                                    MapPickerScreen(
-                                        onLocationSelected = { _, _ ->
-                                            navController.popBackStack()
-
-                                        },
-
-                                        initialLocation = mapViewModel.defaultLocation,
-                                        nav = navController,
-                                        showInitialMarker = true,
-                                        viewModel = mapViewModel,
-                                        snackbarHostState = snackbarHostState,
-                                        appScope = appScope
-
-
+                                    composable<RouteScreen.DetailsFavorites> { backStackEntry ->
+                                        val detailsRoute =
+                                            backStackEntry.toRoute<RouteScreen.DetailsFavorites>()
+                                        val locationId = detailsRoute.id
+                                        val detailsViewModel: DetailsFavoritesViewModel = viewModel(
+                                            factory = DetailsViewModelFactory(
+                                                repository,
+                                                locationId
+                                            )
                                         )
-                                }
-                            }
-                            composable<RouteScreen.Permission> {
-                                val permissionViewModel: PermissionViewModel = viewModel(
-                                    factory = PermissionViewModelFactory(application, repository)
-                                )
-                                PermissionScreen(
-                                    modifier = Modifier.padding(innerPadding),
-                                    viewModel = permissionViewModel,
-                                    onNavigateToHome = {
-                                        navController.navigate(RouteScreen.Home) {
-                                            popUpTo(RouteScreen.Permission) { inclusive = true }
-                                        }
+                                        DetailsFavoritesScreen(
+                                            locationId = locationId,
+                                            viewModel = detailsViewModel,
+                                            modifier = Modifier.padding(innerPadding)
+                                        )
                                     }
-                                )
-                            }
-                            composable<RouteScreen.Home> {
-                                HomeScreen(
-                                    viewModel = homeViewModel,
-                                    modifier = Modifier.padding(innerPadding),
-
-                                    )
-                            }
-                            composable<RouteScreen.Settings> {
-                                val settingsViewModel: SettingsViewModel = viewModel(
-                                    factory = SettingsViewModelFactory(repository)
-                                )
-                                SettingsScreen(
-                                    modifier = Modifier.padding(innerPadding),
-                                    viewModel = settingsViewModel,
-                                    snackbarHostState = snackbarHostState,
-                                    onNavigateToMap = {
-                                        navController.navigate(RouteScreen.Map)
-                                    }
-                                )
-                            }
-                            composable<RouteScreen.Favorite> {
-                                val favoriteViewModel: FavoritesViewModel = viewModel(
-                                    factory = FavoritesViewModelFactory(repository)
-                                )
-                                FavoriteScreen(
-                                    snackbarHostState = snackbarHostState,
-                                    modifier = Modifier.padding(innerPadding),
-                                   viewModel = favoriteViewModel,
-                                    onFavouriteClick = {
-                                        navController.navigate(RouteScreen.Home)
-                                    }
-                                )
-                            }
-
-                            composable<RouteScreen.Alarms> {
-                                AlarmsScreen(
-                                    modifier = Modifier.padding(innerPadding),
-
-                                    )
-                            }
-
-                        }
                     }
 
 
                 }
             }
         }
-    }
+
+    } }
 

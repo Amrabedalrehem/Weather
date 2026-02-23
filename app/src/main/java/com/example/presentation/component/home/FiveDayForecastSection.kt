@@ -51,8 +51,8 @@ import com.example.weather.R
 
 
 @Composable
-fun FiveDayForecastSection(fiveDayData: FiveDayForecastResponse,
-                           windUnit: String = "m/s"
+fun FiveDayForecastSection(fiveDayData: FiveDayForecastResponse?,
+                           windUnit: String? = "m/s"
 ) {
     Column(
         modifier = Modifier
@@ -68,9 +68,9 @@ fun FiveDayForecastSection(fiveDayData: FiveDayForecastResponse,
         )
 
 
-        fiveDayData.fiveDay.forEachIndexed { index, day ->
+        fiveDayData?.fiveDay?.forEachIndexed { index, day ->
             FiveDayForecastCard(
-                day = "${dateFormat(fiveDayData.fiveDay[index].dt)}",
+                day = "${dateFormat(fiveDayData.fiveDay[index].dt )}",
                 highTemp = "${fiveDayData.fiveDay[index].temp.max}°",
                 lowTemp = "${fiveDayData.fiveDay[index].temp.min}°",
                 icon =fiveDayData.fiveDay[index].weather[0].icon,

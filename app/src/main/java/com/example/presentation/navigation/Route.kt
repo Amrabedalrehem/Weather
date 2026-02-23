@@ -28,4 +28,7 @@ sealed class RouteScreen {
     @Serializable
     data object Map : RouteScreen()
 
+
+    @Serializable
+    data class DetailsFavorites(val id: Int) : RouteScreen()
 }
