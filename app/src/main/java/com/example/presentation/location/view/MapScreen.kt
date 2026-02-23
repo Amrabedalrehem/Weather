@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.data.network.CheckNetwork
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
@@ -53,11 +54,11 @@ fun MapPickerScreen(
     val selectedCity = viewModel.selectedCity
     val selectedCountry = viewModel.selectedCountry
     val windUnit by viewModel.windSpeedUnit.collectAsState()
-
-     var showSearchBar by remember { mutableStateOf(false) }
+      var showSearchBar by remember { mutableStateOf(false) }
     var searchQuery by remember { mutableStateOf("") }
     var searchResults by remember { mutableStateOf<List<Address>>(emptyList()) }
     var showResults by remember { mutableStateOf(false) }
+    val isConnected by viewModel.isConnected.collectAsState()
 
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = false)
     var showBottomSheet by remember { mutableStateOf(false) }
@@ -257,6 +258,36 @@ fun MapPickerScreen(
             shape = CircleShape
         ) {
             Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+        }
+        if (!isConnected) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black.copy(alpha = 0.3f))
+                    .clickable(enabled = false) {}
+            )
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.BottomCenter)
+                    .background(Color.Red.copy(alpha = 0.8f))
+                    .padding(12.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(text = "No Internet Connection", color = Color.White, fontSize = 14.sp)
+            }
+
+            FloatingActionButton(
+                onClick = { nav.popBackStack() },
+                modifier = Modifier
+                    .align(Alignment.TopStart)
+                    .padding(top = 48.dp, start = 16.dp),
+                containerColor = Color(0xFF1B2A4A),
+                contentColor = Color.White,
+                shape = CircleShape
+            ) {
+                Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+            }
         }
     }
 

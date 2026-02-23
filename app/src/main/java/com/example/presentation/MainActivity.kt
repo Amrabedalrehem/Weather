@@ -8,6 +8,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -20,10 +21,13 @@ import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -46,6 +50,7 @@ import com.example.data.datasource.remote.DataSourceRemote
 import com.example.data.datasource.sharedPreference.DataStorePermission
 import com.example.data.datasource.sharedPreference.DataStoreSettings
 import com.example.data.dp.AppDatabase
+import com.example.data.network.CheckNetwork
 import com.example.presentation.alarms.view.AlarmsScreen
 import com.example.presentation.component.location.MapPickerScreen
 import com.example.presentation.component.location.MapPickerViewModel
@@ -85,7 +90,7 @@ class MainActivity : ComponentActivity() {
     }
     private val dataStoreSettings by lazy { DataStoreSettings(this) }
     private val dataStorePermission by lazy { DataStorePermission(this) }
-    private val networkObserver by lazy { com.example.data.network.CheckNetwork(this) }
+    private val networkObserver by lazy { CheckNetwork(this) }
     private val repository by lazy {
         Repository(dataSourceLocal, dataSourceRemote, dataStoreSettings, dataStorePermission)
     }
@@ -190,7 +195,7 @@ class MainActivity : ComponentActivity() {
                             }
                             composable<RouteScreen.Map> {
                                 val mapViewModel: MapPickerViewModel = viewModel(
-                                    factory = MapPickerViewModelFactory(repository)
+                                    factory = MapPickerViewModelFactory(repository, networkObserver)
                                 )
 
                                 if (mapViewModel.isLocationLoaded) {
@@ -286,8 +291,14 @@ class MainActivity : ComponentActivity() {
                             }
                         }
 
+                        var showBanner by remember { mutableStateOf(true) }
+                        val isConnected by networkObserver.isConnected.collectAsState(initial = true)
+                        LaunchedEffect(isConnected) {
+                            if (!isConnected) showBanner = true
+                        }
+
                         AnimatedVisibility(
-                            visible = !isConnected,
+                            visible = !isConnected && showBanner,
                             enter = slideInVertically { -it },
                             exit = slideOutVertically { -it },
                             modifier = Modifier.align(Alignment.TopCenter)
@@ -296,19 +307,19 @@ class MainActivity : ComponentActivity() {
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .background(Color.Red.copy(alpha = 0.8f))
-                                    .padding(12.dp),
+                                    .padding(8.dp)
+                                    .clickable { showBanner = false },
                                 contentAlignment = Alignment.Center
                             ) {
                                 Text(
                                     text = "No Internet Connection",
                                     color = Color.White,
-                                    fontSize = 18.sp
+                                    fontSize = 14.sp
                                 )
                             }
                         }
                     }
                 }
-
             }
         }
     }
