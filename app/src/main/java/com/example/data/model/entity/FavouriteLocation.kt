@@ -2,6 +2,9 @@ package com.example.data.model.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.example.data.model.dto.CurrentWeatherDto
+import com.example.data.model.dto.FiveDayForecastResponse
+import com.example.data.model.dto.HourlyForecastResponse
 
 @Entity(tableName = "favourites")
 data class FavouriteLocation(
@@ -9,5 +12,8 @@ data class FavouriteLocation(
     val city: String,
     val country: String,
     val lat: Double,
-    val lon: Double
+    val lon: Double,
+    val currentWeather: CurrentWeatherDto? = null,
+    val hourlyForecast: HourlyForecastResponse? = null,
+    val fiveDayForecast: FiveDayForecastResponse? = null
 )

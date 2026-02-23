@@ -4,15 +4,17 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 import com.example.data.datasource.local.FavouriteDao
 import com.example.data.model.entity.FavouriteLocation
+import com.example.data.model.mapper.WeatherTypeConverters
 
 
 @Database(
     entities = [FavouriteLocation::class],
-    version = 1,
+    version = 2,
     exportSchema = false
-)
+)@TypeConverters(WeatherTypeConverters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun favouriteDao(): FavouriteDao
 

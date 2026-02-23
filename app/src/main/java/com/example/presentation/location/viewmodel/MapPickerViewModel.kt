@@ -123,10 +123,30 @@ class MapPickerViewModel(val repository: Repository) : ViewModel() {
                 _fiveDayForecast.value = UiState.Error("Error ${responseFromDayForecast.code()}")
             }
         }}
-     fun addFavourite(city: String, country: String, lat: Double, lon: Double, onSuccess: (FavouriteLocation) -> Unit) {
+    fun addFavourite(
+        city: String,
+        country: String,
+        lat: Double,
+        lon: Double,
+        onSuccess: (FavouriteLocation) -> Unit
+    ) {
         viewModelScope.launch {
-            val newLocation = FavouriteLocation(city = city, country = country, lat = lat, lon = lon)
-             repository.insert(newLocation)
+             val currentWeatherData = (_currentWeather.value as? UiState.Success)?.data
+            val hourlyData = (_hourlyForecast.value as? UiState.Success)?.data
+            val fiveDayData = (_fiveDayForecast.value as? UiState.Success)?.data
+
+            val newLocation = FavouriteLocation(
+                city = city,
+                country = country,
+                lat = lat,
+                lon = lon,
+                currentWeather = currentWeatherData,
+                hourlyForecast = hourlyData,
+                fiveDayForecast = fiveDayData
+            )
+
+            repository.insert(newLocation)
+
             val savedLocation = repository.getAllFavourites().first().find {
                 it.lat == lat && it.lon == lon
             }
