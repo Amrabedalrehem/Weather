@@ -239,7 +239,7 @@ class MainActivity : ComponentActivity() {
                             }
                             composable<RouteScreen.Settings> {
                                 val settingsViewModel: SettingsViewModel = viewModel(
-                                    factory = SettingsViewModelFactory(repository)
+                                    factory = SettingsViewModelFactory(repository, networkObserver)
                                 )
                                 SettingsScreen(
                                     modifier = Modifier.padding(innerPadding),
