@@ -49,15 +49,15 @@ fun HomeScreen(modifier: Modifier = Modifier, viewModel: HomeViewModel) {
     }
 
      if (currentUiState is UiState.Error || hourlyUiState is UiState.Error|| fiveDayUiState is UiState.Error) {
-        val errorMessage = (currentUiState as? UiState.Error)?.message
+         val isConnected by viewModel.isConnected.collectAsState()
+         val errorMessage = (currentUiState as? UiState.Error)?.message
             ?: (hourlyUiState as? UiState.Error)?.message?: (fiveDayUiState as? UiState.Error)?.message
             ?: "Unknown Error"
         ErrorState(
             errorMessage = errorMessage,
-            onRetry = {
-
-                //viewModel.getInfoWeather()
-             }
+                 onRetry = {
+                    if (isConnected) viewModel.getInfoWeather()
+                      }
         )
         return
     }

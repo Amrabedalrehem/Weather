@@ -11,7 +11,8 @@ import com.example.data.Repository
 import com.example.data.model.dto.CurrentWeatherDto
 import com.example.data.model.dto.FiveDayForecastResponse
 import com.example.data.model.dto.HourlyForecastResponse
-import com.example.data.model.entity.FavouriteLocation
+import com.example.data.model.entity.FavouriteLocationCache
+import com.example.data.network.CheckNetwork
 import com.example.presentation.component.helper.UiState
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -23,11 +24,19 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.util.Locale
 
-class MapPickerViewModel(val repository: Repository) : ViewModel() {
+class MapPickerViewModel(val repository: Repository,    private val networkObserver: CheckNetwork
+) : ViewModel() {
     var defaultLocation by mutableStateOf(LatLng(30.0444, 31.2357))
         private set
     var isLocationLoaded by mutableStateOf(false)
         private set
+
+    val isConnected: StateFlow<Boolean> = networkObserver.isConnected
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = true
+        )
     val windSpeedUnit: StateFlow<String> = repository.windSpeedUnit
         .stateIn(
             scope = viewModelScope,
@@ -123,10 +132,30 @@ class MapPickerViewModel(val repository: Repository) : ViewModel() {
                 _fiveDayForecast.value = UiState.Error("Error ${responseFromDayForecast.code()}")
             }
         }}
-     fun addFavourite(city: String, country: String, lat: Double, lon: Double, onSuccess: (FavouriteLocation) -> Unit) {
+    fun addFavourite(
+        city: String,
+        country: String,
+        lat: Double,
+        lon: Double,
+        onSuccess: (FavouriteLocationCache) -> Unit
+    ) {
         viewModelScope.launch {
-            val newLocation = FavouriteLocation(city = city, country = country, lat = lat, lon = lon)
-             repository.insert(newLocation)
+             val currentWeatherData = (_currentWeather.value as? UiState.Success)?.data
+            val hourlyData = (_hourlyForecast.value as? UiState.Success)?.data
+            val fiveDayData = (_fiveDayForecast.value as? UiState.Success)?.data
+
+            val newLocation = FavouriteLocationCache(
+                city = city,
+                country = country,
+                lat = lat,
+                lon = lon,
+                currentWeather = currentWeatherData,
+                hourlyForecast = hourlyData,
+                fiveDayForecast = fiveDayData
+            )
+
+            repository.insert(newLocation)
+
             val savedLocation = repository.getAllFavourites().first().find {
                 it.lat == lat && it.lon == lon
             }
@@ -134,7 +163,7 @@ class MapPickerViewModel(val repository: Repository) : ViewModel() {
             savedLocation?.let { onSuccess(it) }
         }
     }
-    fun deleteFavourite(location: FavouriteLocation) {
+    fun deleteFavourite(location: FavouriteLocationCache) {
         viewModelScope.launch {
             repository.delete(location)
         }
@@ -143,8 +172,10 @@ class MapPickerViewModel(val repository: Repository) : ViewModel() {
 
 }
 
-class MapPickerViewModelFactory(private val repository: Repository) : ViewModelProvider.Factory {
+class MapPickerViewModelFactory(private val repository: Repository,
+                                private val networkObserver: CheckNetwork
+) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return MapPickerViewModel(repository) as T
+        return MapPickerViewModel(repository, networkObserver) as T
     }
 }

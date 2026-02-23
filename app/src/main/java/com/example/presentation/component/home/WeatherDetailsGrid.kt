@@ -27,13 +27,13 @@ package com.example.presentation.component.home
  import com.example.weather.R
 
 @Composable
-fun WeatherDetailsGrid(weatherData: CurrentWeatherDto
+fun WeatherDetailsGrid(weatherData: CurrentWeatherDto?
 ,   windUnit: String = "m/s"
 ) {
     val windSpeed = if (windUnit == "mph") {
-        "%.1f mph".format(weatherData.wind.speed * 2.23694)
+        "%.1f mph".format(weatherData?.wind?.speed?.times(2.23694))
     } else {
-        "${weatherData.wind.speed} m/s"
+        "${weatherData?.wind?.speed} m/s"
     }
     Column(
         modifier = Modifier
@@ -56,7 +56,7 @@ fun WeatherDetailsGrid(weatherData: CurrentWeatherDto
             WeatherDetailCard(
                 icon = R.raw.humidity,
                 label = "Humidity",
-                 value = "${weatherData.main.humidity}%",
+                 value = "${weatherData?.main?.humidity}%",
                 modifier = Modifier.weight(1f)
             )
             WeatherDetailCard(
@@ -76,13 +76,13 @@ fun WeatherDetailsGrid(weatherData: CurrentWeatherDto
             WeatherDetailCard(
                 icon =R.raw.thermometercolder,
                 label = "Pressure",
-                value = "${weatherData.main.pressure} hPa",
+                value = "${weatherData?.main?.pressure} hPa",
                 modifier = Modifier.weight(1f)
             )
             WeatherDetailCard(
                 icon = R.raw.cloud_and_sun_animation,
                 label = "Clouds",
-                value = "${weatherData.main.feelsLike.toInt()}°",
+                value = "${weatherData?.main?.feelsLike?.toInt()}°",
                 modifier = Modifier.weight(1f)
             )
         }

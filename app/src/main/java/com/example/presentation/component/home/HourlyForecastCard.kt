@@ -114,8 +114,8 @@ fun HourlyForecastCard(
 }
 
 @Composable
-fun HourlyForecastSection(hourlyForecast: HourlyForecastResponse,
-                          windUnit: String = "m/s"
+fun HourlyForecastSection(hourlyForecast: HourlyForecastResponse?,
+                          windUnit: String? = "m/s"
 ) {
     Column(
         modifier = Modifier.fillMaxWidth()
@@ -132,16 +132,16 @@ fun HourlyForecastSection(hourlyForecast: HourlyForecastResponse,
             contentPadding = PaddingValues(horizontal = 24.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            items(hourlyForecast.hourly.size) { hour ->
+            items(hourlyForecast?.hourly?.size ?: 0) { hour ->
                 HourlyForecastCard(
-                    time = hourlyForecast.hourly[hour].time.toHourOnly(),
-                    main = hourlyForecast.hourly[hour].weather[0].main,
-                    temperature = hourlyForecast.hourly[hour].main.temp,
-                    icon = hourlyForecast.hourly[hour].weather[0].icon,
-                    temp_max = hourlyForecast.hourly[hour].main.tempMax,
-                    temp_min = hourlyForecast.hourly[hour].main.tempMin,
-                    speed = hourlyForecast.hourly[hour].wind.speed,
-                    windUnit = windUnit
+                    time = hourlyForecast?.hourly[hour]?.time?.toHourOnly() ?: "",
+                    main = hourlyForecast?.hourly[hour]?.weather[0]?.main ?: "",
+                    temperature = hourlyForecast?.hourly[hour]?.main?.temp ?: 0.0,
+                    icon = hourlyForecast?.hourly[hour]?.weather[0]?.icon ?: "",
+                    temp_max = hourlyForecast?.hourly[hour]?.main?.tempMax ?:0.0,
+                    temp_min = hourlyForecast?.hourly[hour]?.main?.tempMin?:0.0 ,
+                    speed = hourlyForecast?.hourly[hour]?.wind?.speed ?: 0.0,
+                    windUnit = windUnit?:"m/s"
                 )
             }
         }

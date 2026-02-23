@@ -1,5 +1,5 @@
-
 package com.example.presentation.component.favourites
+
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -12,12 +12,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
@@ -37,12 +33,12 @@ import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
-import com.example.data.model.entity.FavouriteLocation
+import com.example.data.model.entity.FavouriteLocationCache
 import com.example.weather.R
 
 @Composable
 fun FavouriteCard(
-    location: FavouriteLocation,
+    location: FavouriteLocationCache,
     onClick: () -> Unit,
     onDeleteWithUndo: () -> Unit,
 ) {
@@ -67,7 +63,8 @@ fun FavouriteCard(
                 onClick = { onDeleteWithUndo() },
                 modifier = Modifier
                     .align(Alignment.TopEnd)
-                    .size(32.dp)) {
+                    .size(32.dp)
+            ) {
 
                 val composition by rememberLottieComposition(
                     LottieCompositionSpec.RawRes(R.raw.minuscircle)
@@ -81,18 +78,38 @@ fun FavouriteCard(
             }
             Column(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) { Text(
-                    text = location.city,
-                    fontSize = 24.sp,
+                verticalArrangement = Arrangement.Top,
+                horizontalAlignment = Alignment.Start
+            ) {
+                Text(
+                    text = location.currentWeather?.name + " (${location.city})",
+                    fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.White
                 )
                 Text(
-                    text = location.country,
+                    text = location.currentWeather?.sys?.country ?: "unknow",
                     fontSize = 16.sp,
                     color = Color.White.copy(alpha = 0.7f)
                 )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = location.currentWeather?.weather[0]?.main ?: "unknow",
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = Color.White.copy(alpha = 0.9f)
+                    )
+
+                    Text(
+                        text = "Feels like ${location.currentWeather?.weather[0]?.description ?: "unknow"}",
+                        fontSize = 16.sp,
+                        color = Color.White.copy(alpha = 0.7f)
+                    )
+                }
 
                 Spacer(modifier = Modifier.height(24.dp))
 

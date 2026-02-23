@@ -37,7 +37,7 @@ import java.time.format.DateTimeFormatter
 
 
 @Composable
-fun CurrentWeatherSection(currentWeather: CurrentWeatherDto) {
+fun CurrentWeatherSection(currentWeather: CurrentWeatherDto?) {
 
 
     val scale by rememberInfiniteTransition().animateFloat(
@@ -65,7 +65,7 @@ fun CurrentWeatherSection(currentWeather: CurrentWeatherDto) {
                 modifier = Modifier.size(20.dp)
             )
             Text(
-                text =currentWeather.name + " " + currentWeather.sys.country,
+                text = currentWeather?.name + " " + currentWeather?.sys?.country,
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Medium,
                 color = Color.White.copy(alpha = 0.9f)
@@ -94,7 +94,7 @@ fun CurrentWeatherSection(currentWeather: CurrentWeatherDto) {
                contentAlignment = Alignment.Center
         ) {
              AsyncImage(
-                 model = "https://openweathermap.org/img/wn/${currentWeather.weather[0].icon}@2x.png",
+                 model = "https://openweathermap.org/img/wn/${currentWeather?.weather[0]?.icon}@2x.png",
                  contentDescription = "Weather Icon",
                  modifier = Modifier.size(100.dp)
              )
@@ -104,7 +104,7 @@ fun CurrentWeatherSection(currentWeather: CurrentWeatherDto) {
              Spacer(modifier = Modifier.height(32.dp))
 
          Text(
-             text = "${currentWeather.main.temp.toInt()}°",
+             text = "${currentWeather?.main?.temp?.toInt()}°",
             fontSize = 96.sp,
             fontWeight = FontWeight.Bold,
             color = Color.White,
@@ -113,15 +113,17 @@ fun CurrentWeatherSection(currentWeather: CurrentWeatherDto) {
 
         Spacer(modifier = Modifier.height(8.dp))
 
-         Text(
-            text = currentWeather.weather[0].main,
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Medium,
-            color = Color.White.copy(alpha = 0.9f)
-        )
+        currentWeather?.weather[0]?.main?.let {
+            Text(
+                text = it,
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Medium,
+                color = Color.White.copy(alpha = 0.9f)
+            )
+        }
 
         Text(
-            text = "Feels like ${currentWeather.weather[0].description}",
+            text = "Feels like ${currentWeather?.weather[0]?.description}",
             fontSize = 16.sp,
             color = Color.White.copy(alpha = 0.7f)
         )

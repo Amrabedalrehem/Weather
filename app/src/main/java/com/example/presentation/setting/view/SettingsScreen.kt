@@ -38,14 +38,18 @@ fun SettingsScreen(
     val locationType by viewModel.locationType.collectAsState(initial = "Gps")
     val theme by viewModel.theme.collectAsState(initial = "System")
     var showMapDialog by remember { mutableStateOf(false) }
-
+    val isConnected by viewModel.isConnected.collectAsState()
     val scope = rememberCoroutineScope()
+
 
     val showSnackbar: (String) -> Unit = { selectedOption ->
         scope.launch {
             snackbarHostState.currentSnackbarData?.dismiss()
-            snackbarHostState.showSnackbar("✔ \"$selectedOption\" selected")
-        }
+            if (!isConnected) {
+                snackbarHostState.showSnackbar("No Internet Connection check your connection")
+            } else {
+                snackbarHostState.showSnackbar("✔ \"$selectedOption\" selected")
+            }        }
     }
     if (showMapDialog) {
         AlertDialog(
