@@ -19,8 +19,7 @@ import com.example.presentation.component.home.WeatherDetailsGrid
 import com.example.presentation.detailsfavourites.viewmodel.DetailsFavoritesViewModel
 
 @Composable
-fun DetailsFavoritesScreen(modifier: Modifier, locationId: Int,   viewModel: DetailsFavoritesViewModel
-                           )
+fun DetailsFavoritesScreen(modifier: Modifier, locationId: Int,   viewModel: DetailsFavoritesViewModel)
 {
 
     val item by viewModel.itemFavourite.collectAsStateWithLifecycle()
@@ -35,7 +34,7 @@ fun DetailsFavoritesScreen(modifier: Modifier, locationId: Int,   viewModel: Det
         item { CurrentWeatherSection(item?.currentWeather) }
         item { Spacer(Modifier.height(16.dp)) }
         item { WeatherDetailsGrid(item?.currentWeather, windUnit =item?.currentWeather?.wind?.speed?.toString () ?: "m/s") }
-         item { Spacer(Modifier.height(16.dp)) }
+       item { Spacer(Modifier.height(16.dp)) }
         item { HourlyForecastSection(item?.hourlyForecast, windUnit =item?.currentWeather?.wind?.speed?.toString () ?: "m/s") }
         item { Spacer(Modifier.height(16.dp)) }
         item { FiveDayForecastSection(item?.fiveDayForecast, windUnit = item?.currentWeather?.wind?.speed?.toString () ?: "m/s") }

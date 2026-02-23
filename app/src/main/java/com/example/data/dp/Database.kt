@@ -12,7 +12,7 @@ import com.example.data.model.mapper.WeatherTypeConverters
 
 @Database(
     entities = [FavouriteLocation::class],
-    version = 2,
+    version = 3,
     exportSchema = false
 )@TypeConverters(WeatherTypeConverters::class)
 abstract class AppDatabase : RoomDatabase() {
