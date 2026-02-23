@@ -69,6 +69,7 @@ class MainActivity : ComponentActivity() {
     private val dataSourceLocal by lazy { DataSourceLocal(database.favouriteDao()) }
     private val dataStoreSettings by lazy { DataStoreSettings(this) }
     private val dataStorePermission by lazy { DataStorePermission(this) }
+    private val networkObserver by lazy { com.example.data.network.CheckNetwork(this) }
     private val repository by lazy {
         Repository(dataSourceLocal, dataSourceRemote, dataStoreSettings, dataStorePermission)
     }
@@ -256,7 +257,9 @@ class MainActivity : ComponentActivity() {
                                         val detailsViewModel: DetailsFavoritesViewModel = viewModel(
                                             factory = DetailsViewModelFactory(
                                                 repository,
-                                                locationId
+                                                locationId,
+                                                networkObserver
+
                                             )
                                         )
                                         DetailsFavoritesScreen(

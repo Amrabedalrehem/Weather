@@ -5,11 +5,19 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.data.Repository
 import com.example.data.model.entity.FavouriteLocation
+import com.example.data.network.CheckNetwork
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
- import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 
-class DetailsFavoritesViewModel(val repository: Repository, private val locationId: Int) : ViewModel() {
+class DetailsFavoritesViewModel(
+    val repository: Repository,
+    private val locationId: Int,
+    private val networkObserver: CheckNetwork
+) : ViewModel() {
 
     val itemFavourite: StateFlow<FavouriteLocation?> = repository.getFavouriteById(locationId)
         .stateIn(
@@ -17,10 +25,46 @@ class DetailsFavoritesViewModel(val repository: Repository, private val location
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = null
         )
-}
 
-class DetailsViewModelFactory(private val repository: Repository, private val locationId: Int) : ViewModelProvider.Factory {
+    init {
+        fetchAndUpdate()
+    }
+
+    private fun fetchAndUpdate() {
+        viewModelScope.launch {
+            val isConnected = networkObserver.isConnected.first()
+            if (!isConnected) return@launch
+
+            val current = itemFavourite.filterNotNull().first()
+            val lat = current.lat
+            val lon = current.lon
+            val city = current.city
+
+            try {
+                val currentWeather = repository.getCurrentWeather(lat, lon)
+                val hourly = repository.getHourlyForecast(city)
+                val fiveDay = repository.getFiveDayForecast(city)
+
+                if (currentWeather.isSuccessful && hourly.isSuccessful && fiveDay.isSuccessful) {
+                    repository.insert(
+                        current.copy(
+                            currentWeather = currentWeather.body(),
+                            hourlyForecast = hourly.body(),
+                            fiveDayForecast = fiveDay.body()
+                        )
+                    )
+                }
+            } catch (e: Exception) {
+            }
+        }
+    }
+}
+class DetailsViewModelFactory(
+    private val repository: Repository,
+    private val locationId: Int,
+    private val networkObserver: CheckNetwork
+) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return DetailsFavoritesViewModel(repository, locationId) as T
+        return DetailsFavoritesViewModel(repository, locationId, networkObserver) as T
     }
 }
