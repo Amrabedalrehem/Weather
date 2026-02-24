@@ -7,6 +7,7 @@ import com.example.data.datasource.sharedPreference.DataStoreSettings
 import com.example.data.model.dto.CurrentWeatherDto
 import com.example.data.model.dto.FiveDayForecastResponse
 import com.example.data.model.dto.HourlyForecastResponse
+import com.example.data.model.entity.AlarmEntity
 import com.example.data.model.entity.FavouriteLocationCache
 import com.example.data.model.entity.HomeWeatherCache
 import kotlinx.coroutines.flow.Flow
@@ -91,4 +92,11 @@ class Repository(
     suspend fun delete(location: FavouriteLocationCache) = local.delete(location)
     fun getHomeWeather() = local.getHomeWeather()
     suspend fun insertHomeWeather(cache: HomeWeatherCache) = local.insertHomeWeather(cache)
+    fun getAllAlarms() = local.getAllAlarms()
+    suspend fun insertAlarm(alarm: AlarmEntity): Long = local.insertAlarm(alarm)
+    suspend fun deleteAlarm(alarm: AlarmEntity) = local.deleteAlarm(alarm)
+    suspend fun updateAlarm(alarm: AlarmEntity) = local.updateAlarm(alarm)
+    suspend fun toggleAlarm(id: Int, isActive: Boolean) = local.toggleAlarm(id, isActive)
+    suspend fun getAlarmById(id: Int) = local.getAlarmById(id)
+
 }

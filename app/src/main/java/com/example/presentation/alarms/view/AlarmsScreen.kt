@@ -1,19 +1,15 @@
 package com.example.presentation.alarms.view
-
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import com.example.presentation.component.helper.ToastType
+import com.example.presentation.component.alert.AlarmCard
+  import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -21,58 +17,385 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.airbnb.lottie.compose.LottieAnimation
-import com.airbnb.lottie.compose.LottieCompositionSpec
-import com.airbnb.lottie.compose.LottieConstants
-import com.airbnb.lottie.compose.rememberLottieComposition
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
+import com.airbnb.lottie.compose.*
+import com.example.data.model.entity.AlarmEntity
+import com.example.presentation.alarms.viewmodel.AlarmUiEvent
+import com.example.presentation.alarms.viewmodel.AlarmViewModel
+import com.example.presentation.component.helper.CustomToast
+import com.example.presentation.component.helper.rememberToastState
 import com.example.weather.R
+import java.util.Calendar
 
-
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AlarmsScreen(modifier: Modifier = Modifier) {
+fun AlarmsScreen(
+    modifier: Modifier = Modifier,
+    viewModel: AlarmViewModel,
+    onRequestAddAlarm: (() -> Unit) -> Unit
+) {
+    val alarms          by viewModel.alarms.collectAsState()
+    val currentLocation by viewModel.currentLocation.collectAsState()
+    val toastState      = rememberToastState()
 
+    var showAddSheet      by remember { mutableStateOf(false) }
+    var selectedType      by remember { mutableStateOf("Alert") }
+    val addSheetState     = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val datePickerState   = rememberDatePickerState(initialSelectedDateMillis = System.currentTimeMillis())
+    val timePickerState   = rememberTimePickerState()
+    var showAddTimePicker by remember { mutableStateOf(false) }
+
+    var showEditSheet      by remember { mutableStateOf(false) }
+    var alarmToEdit        by remember { mutableStateOf<AlarmEntity?>(null) }
+    var editSelectedType   by remember { mutableStateOf("Alert") }
+    val editSheetState     = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val editDateState      = rememberDatePickerState(initialSelectedDateMillis = System.currentTimeMillis())
+    val editTimeState      = rememberTimePickerState()
+    var showEditTimePicker by remember { mutableStateOf(false) }
+
+    var showResetDialog by remember { mutableStateOf(false) }
+    var alarmToReset    by remember { mutableStateOf<AlarmEntity?>(null) }
+
+    LaunchedEffect(Unit) {
+        viewModel.uiEvent.collect { event ->
+            when (event) {
+                is AlarmUiEvent.ShowCard -> toastState.show(
+                    message = event.message,
+                    type    = when (event.type.name) {
+                        "SUCCESS" -> ToastType.SUCCESS
+                        "ERROR"   -> ToastType.ERROR
+                        else      -> ToastType.INFO
+                    }
+                )
+            }
+        }
+    }
+
+    onRequestAddAlarm { showAddSheet = true }
+
+    Box(modifier = modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    Brush.verticalGradient(
+                        colors = listOf(Color(0xFF6B8CB5), Color(0xFF8BA5C9), Color(0xFF9FB5D1))
+                    )
+                )
+        ) {
+            if (alarms.isEmpty()) {
+                Column(
+                    modifier            = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.notification))
+                    LottieAnimation(
+                        composition = composition,
+                        iterations  = LottieConstants.IterateForever,
+                        modifier    = Modifier.size(220.dp)
+                    )
+                    Spacer(Modifier.height(5.dp))
+                    Text("The journey's quiet!", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                    Spacer(Modifier.height(4.dp))
+                    Text("No weather alarms on your path", fontSize = 16.sp, color = Color.White.copy(alpha = 0.7f))
+                }
+            } else {
+                LazyColumn(
+                    modifier            = Modifier.fillMaxSize().padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    items(alarms, key = { it.id }) { alarm ->
+                        AlarmCard(
+                            alarm    = alarm,
+                            onDelete = { alarmToReset = alarm; showResetDialog = true },
+                            onEdit   = {
+                                alarmToEdit      = alarm
+                                editSelectedType = alarm.type
+                                showEditSheet    = true
+                            }
+                        )
+                    }
+                }
+            }
+        }
+
+        CustomToast(state = toastState)
+    }
+
+    if (showAddSheet) {
+        ModalBottomSheet(
+            onDismissRequest = { showAddSheet = false },
+            sheetState       = addSheetState,
+            containerColor   = Color(0xFF1B2A4A)
+        ) {
+            AlarmSheetContent(
+                title            = "Choose Date And Time",
+                datePickerState  = datePickerState,
+                timePickerState  = timePickerState,
+                selectedType     = selectedType,
+                onTypeChange     = { selectedType = it },
+                onShowTimePicker = { showAddTimePicker = true },
+                onDone           = {
+                    val calendar = buildCalendar(datePickerState, timePickerState)
+                    viewModel.addAlarm(
+                        AlarmEntity(
+                            city         = "Current Location",
+                            latitude     = currentLocation.first,
+                            longitude    = currentLocation.second,
+                            timeInMillis = calendar.timeInMillis,
+                            type         = selectedType
+                        )
+                    )
+                    showAddSheet = false
+                }
+            )
+        }
+    }
+
+    if (showAddTimePicker) {
+        ClockPickerDialog(
+            state     = timePickerState,
+            onDismiss = { showAddTimePicker = false },
+            onConfirm = { showAddTimePicker = false }
+        )
+    }
+
+    if (showEditSheet && alarmToEdit != null) {
+        ModalBottomSheet(
+            onDismissRequest = { showEditSheet = false },
+            sheetState       = editSheetState,
+            containerColor   = Color(0xFF1B2A4A)
+        ) {
+            AlarmSheetContent(
+                title            = "Edit Alarm",
+                datePickerState  = editDateState,
+                timePickerState  = editTimeState,
+                selectedType     = editSelectedType,
+                onTypeChange     = { editSelectedType = it },
+                onShowTimePicker = { showEditTimePicker = true },
+                onDone           = {
+                    val calendar = buildCalendar(editDateState, editTimeState)
+                    alarmToEdit?.let { old ->
+                        viewModel.editAlarm(
+                            old = old,
+                            new = old.copy(timeInMillis = calendar.timeInMillis, type = editSelectedType)
+                        )
+                    }
+                    showEditSheet = false
+                }
+            )
+        }
+    }
+
+    if (showEditTimePicker) {
+        ClockPickerDialog(
+            state     = editTimeState,
+            onDismiss = { showEditTimePicker = false },
+            onConfirm = { showEditTimePicker = false }
+        )
+    }
+
+    if (showResetDialog && alarmToReset != null) {
+        AlertDialog(
+            onDismissRequest = { showResetDialog = false },
+            containerColor   = Color(0xFF1B2A4A),
+            title = { Text("Delete Alarm?", color = Color.White, fontWeight = FontWeight.Bold) },
+            text  = {
+                Text(
+                    "Are you sure you want to delete the alarm for ${alarmToReset?.city}?",
+                    color = Color.White.copy(alpha = 0.8f)
+                )
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        alarmToReset?.let { viewModel.deleteAlarm(it) }
+                        showResetDialog = false
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.Red.copy(alpha = 0.8f)),
+                    shape  = RoundedCornerShape(8.dp)
+                ) {
+                    Text("Delete", color = Color.White)
+                }
+            },
+            dismissButton = {
+                OutlinedButton(
+                    onClick = { showResetDialog = false },
+                    shape   = RoundedCornerShape(8.dp),
+                    colors  = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFF3B82F6))
+                ) {
+                    Text("Cancel")
+                }
+            }
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun AlarmSheetContent(
+    title: String,
+    datePickerState: DatePickerState,
+    timePickerState: TimePickerState,
+    selectedType: String,
+    onTypeChange: (String) -> Unit,
+    onShowTimePicker: () -> Unit,
+    onDone: () -> Unit
+) {
+    val formattedTime by remember(timePickerState.hour, timePickerState.minute) {
+        derivedStateOf {
+            val h    = timePickerState.hour
+            val m    = timePickerState.minute
+            val amPm = if (h < 12) "AM" else "PM"
+            val hour = if (h % 12 == 0) 12 else h % 12
+            "%02d:%02d %s".format(hour, m, amPm)
+        }
+    }
 
     Column(
         modifier = Modifier
-            .background(
-                brush = Brush.verticalGradient(
-                    colors = listOf(
-                        Color(0xFF6B8CB5),
-                        Color(0xFF8BA5C9),
-                        Color(0xFF9FB5D1)
+            .fillMaxWidth()
+            .verticalScroll(rememberScrollState())
+            .padding(horizontal = 16.dp)
+            .padding(bottom = 32.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Spacer(Modifier.height(8.dp))
+        Text(title, fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.White)
+        Spacer(Modifier.height(16.dp))
+        DatePicker(
+            state  = datePickerState,
+            colors = DatePickerDefaults.colors(
+                containerColor            = Color(0xFF1B2A4A),
+                titleContentColor         = Color.White,
+                headlineContentColor      = Color.White,
+                weekdayContentColor       = Color.White.copy(alpha = 0.6f),
+                dayContentColor           = Color.White,
+                selectedDayContainerColor = Color(0xFF3B82F6),
+                todayContentColor         = Color(0xFF3B82F6),
+                todayDateBorderColor      = Color(0xFF3B82F6)
+            )
+        )
+        Spacer(Modifier.height(12.dp))
+        HorizontalDivider(color = Color.White.copy(alpha = 0.1f))
+        Spacer(Modifier.height(16.dp))
+        Text("Choose Time", fontSize = 16.sp, fontWeight = FontWeight.SemiBold, color = Color.White)
+        Spacer(Modifier.height(8.dp))
+        OutlinedButton(
+            onClick  = onShowTimePicker,
+            shape    = RoundedCornerShape(12.dp),
+            colors   = ButtonDefaults.outlinedButtonColors(contentColor = Color.White),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("🕐  $formattedTime", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.White)
+        }
+        Spacer(Modifier.height(20.dp))
+        HorizontalDivider(color = Color.White.copy(alpha = 0.1f))
+        Spacer(Modifier.height(16.dp))
+        Text(
+            text     = "Would you like to receive weather updates via alerts or notifications?",
+            color    = Color.White.copy(alpha = 0.8f),
+            fontSize = 14.sp
+        )
+        Text(
+            text       = "Choose your preferred option to stay informed!",
+            color      = Color(0xFF3B82F6),
+            fontSize   = 13.sp,
+            fontWeight = FontWeight.Bold,
+            modifier   = Modifier.padding(vertical = 4.dp)
+        )
+        Row(
+            modifier              = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            listOf("Alert", "Notification").forEach { type ->
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    RadioButton(selected = selectedType == type, onClick = { onTypeChange(type) })
+                    Text(type, color = Color.White, fontSize = 16.sp)
+                }
+            }
+        }
+        Spacer(Modifier.height(24.dp))
+        Button(
+            onClick  = onDone,
+            modifier = Modifier.fillMaxWidth().height(52.dp),
+            colors   = ButtonDefaults.buttonColors(containerColor = Color(0xFF3B82F6)),
+            shape    = RoundedCornerShape(12.dp)
+        ) {
+            Text("Done", fontSize = 18.sp, color = Color.White, fontWeight = FontWeight.Bold)
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+private fun buildCalendar(
+    datePickerState: DatePickerState,
+    timePickerState: TimePickerState
+): Calendar = Calendar.getInstance().apply {
+    timeInMillis = datePickerState.selectedDateMillis ?: System.currentTimeMillis()
+    set(Calendar.HOUR_OF_DAY, timePickerState.hour)
+    set(Calendar.MINUTE,      timePickerState.minute)
+    set(Calendar.SECOND,      0)
+    set(Calendar.MILLISECOND, 0)
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun ClockPickerDialog(
+    state: TimePickerState,
+    onDismiss: () -> Unit,
+    onConfirm: () -> Unit
+) {
+    Dialog(
+        onDismissRequest = onDismiss,
+        properties       = DialogProperties(usePlatformDefaultWidth = false)
+    ) {
+        Card(
+            shape    = RoundedCornerShape(16.dp),
+            colors   = CardDefaults.cardColors(containerColor = Color(0xFF1B2A4A)),
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp)
+        ) {
+            Column(
+                modifier            = Modifier.padding(24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text("Select Time", fontSize = 18.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                Spacer(modifier = Modifier.height(20.dp))
+                TimePicker(
+                    state  = state,
+                    colors = TimePickerDefaults.colors(
+                        clockDialColor                       = Color(0xFF2E4A6B),
+                        clockDialSelectedContentColor        = Color.White,
+                        clockDialUnselectedContentColor      = Color.White.copy(alpha = 0.7f),
+                        selectorColor                        = Color(0xFF3B82F6),
+                        containerColor                       = Color(0xFF1B2A4A),
+                        periodSelectorBorderColor            = Color(0xFF3B82F6),
+                        timeSelectorSelectedContainerColor   = Color(0xFF3B82F6),
+                        timeSelectorUnselectedContainerColor = Color(0xFF2E4A6B),
+                        timeSelectorSelectedContentColor     = Color.White,
+                        timeSelectorUnselectedContentColor   = Color.White.copy(alpha = 0.7f)
                     )
                 )
-            )
-            .fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-
-        val composition by rememberLottieComposition(
-            LottieCompositionSpec.RawRes(R.raw.notification)
-        )
-
-        LottieAnimation(
-            composition = composition,
-            iterations = LottieConstants.IterateForever,
-            modifier = Modifier.size(220.dp)
-        )
-
-        Spacer(modifier = Modifier.height(5.dp))
-
-        Text(
-            text = "The journey's quit!",
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color.White
-        )
-
-        Spacer(modifier = Modifier.height(4.dp))
-
-        Text(
-            text = "No weather alarms on your path",
-            fontSize = 16.sp,
-            color = Color.White.copy(alpha = 0.7f)
-        )
+                Spacer(modifier = Modifier.height(20.dp))
+                Row(
+                    modifier              = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    TextButton(onClick = onDismiss) {
+                        Text("Cancel", color = Color.White.copy(alpha = 0.7f))
+                    }
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Button(
+                        onClick = onConfirm,
+                        colors  = ButtonDefaults.buttonColors(containerColor = Color(0xFF3B82F6)),
+                        shape   = RoundedCornerShape(8.dp)
+                    ) {
+                        Text("OK", color = Color.White)
+                    }
+                }
+            }
+        }
     }
 }

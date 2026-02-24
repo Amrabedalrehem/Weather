@@ -1,0 +1,31 @@
+package com.example.data.datasource.local
+import androidx.room.Dao
+import androidx.room.Delete
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
+import androidx.room.Update
+import com.example.data.model.entity.AlarmEntity
+import kotlinx.coroutines.flow.Flow
+
+@Dao
+interface AlarmDao {
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAlarm(alarm: AlarmEntity): Long
+
+    @Delete
+    suspend fun deleteAlarm(alarm: AlarmEntity)
+
+    @Update
+    suspend fun updateAlarm(alarm: AlarmEntity)
+
+    @Query("SELECT * FROM alarms ORDER BY timeInMillis ASC")
+    fun getAllAlarms(): Flow<List<AlarmEntity>>
+
+    @Query("SELECT * FROM alarms WHERE id = :id")
+    suspend fun getAlarmById(id: Int): AlarmEntity?
+
+    @Query("UPDATE alarms SET isActive = :isActive WHERE id = :id")
+    suspend fun toggleAlarm(id: Int, isActive: Boolean)
+}
