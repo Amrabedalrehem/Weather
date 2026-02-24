@@ -40,11 +40,13 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
+import androidx.work.WorkManager
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.example.data.Repository
+import com.example.data.alarm.WeatherWorkerFactory
 import com.example.data.datasource.local.DataSourceLocal
 import com.example.data.datasource.remote.DataSourceRemote
 import com.example.data.datasource.sharedPreference.DataStorePermission
@@ -52,6 +54,8 @@ import com.example.data.datasource.sharedPreference.DataStoreSettings
 import com.example.data.dp.AppDatabase
 import com.example.data.network.CheckNetwork
 import com.example.presentation.alarms.view.AlarmsScreen
+import com.example.presentation.alarms.viewmodel.AlarmViewModel
+import com.example.presentation.alarms.viewmodel.AlarmViewModelFactory
 import com.example.presentation.component.location.MapPickerScreen
 import com.example.presentation.component.location.MapPickerViewModel
 import com.example.presentation.component.location.MapPickerViewModelFactory
@@ -95,11 +99,18 @@ class MainActivity : ComponentActivity() {
     private val repository by lazy {
         Repository(dataSourceLocal, dataSourceRemote, dataStoreSettings, dataStorePermission)
     }
+    private val workerFactory by lazy { WeatherWorkerFactory(repository) }
     private val factory by lazy { HomeViewModelFactory(repository, networkObserver) }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Places.initialize(applicationContext, BuildConfig.PLACES_API_KEY)
         enableEdgeToEdge()
+        WorkManager.initialize(
+            this,
+            androidx.work.Configuration.Builder()
+                .setWorkerFactory(workerFactory)
+                .build()
+        )
         setContent {
             val appScope = rememberCoroutineScope()
             val navController: NavHostController = rememberNavController()
@@ -117,6 +128,8 @@ class MainActivity : ComponentActivity() {
                 val showFavoriteAB = currentRoute == RouteScreen.Favorite::class.qualifiedName
                 val showAlarmsAB = currentRoute == RouteScreen.Alarms::class.qualifiedName
                 val snackbarHostState = remember { SnackbarHostState() }
+                var openAlarmSheet: (() -> Unit)? by remember { mutableStateOf(null) }
+
                 Scaffold(
                     snackbarHost = {
                         SnackbarHost(hostState = snackbarHostState) { data ->
@@ -152,7 +165,7 @@ class MainActivity : ComponentActivity() {
                         }
                         if (showAlarmsAB) {
                             FloatingActionButton(
-                                onClick = { },
+                                onClick = { openAlarmSheet?.invoke() },
                                 shape = CircleShape,
                                 containerColor = Color.White.copy(0.8f)
                             ) {
@@ -169,8 +182,7 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                 ) { innerPadding ->
-                    val isConnected by networkObserver.isConnected.collectAsState(initial = true)
-                    Box(modifier = Modifier.fillMaxSize()) {
+                     Box(modifier = Modifier.fillMaxSize()) {
                         NavHost(
                             navController = navController,
                             startDestination = RouteScreen.Splash
@@ -253,7 +265,7 @@ class MainActivity : ComponentActivity() {
                             }
                             composable<RouteScreen.Favorite> {
                                 val favoriteViewModel: FavoritesViewModel = viewModel(
-                                    factory = FavoritesViewModelFactory(repository)
+                                    factory = FavoritesViewModelFactory(repository, applicationContext)
                                 )
                                 FavoriteScreen(
                                     snackbarHostState = snackbarHostState,
@@ -264,12 +276,17 @@ class MainActivity : ComponentActivity() {
                                     }
                                 )
                             }
-
                             composable<RouteScreen.Alarms> {
+                                val alarmViewModel: AlarmViewModel = viewModel(
+                                    factory = AlarmViewModelFactory(repository, applicationContext)
+                                )
                                 AlarmsScreen(
                                     modifier = Modifier.padding(innerPadding),
-
-                                    )
+                                    viewModel = alarmViewModel,
+                                    onRequestAddAlarm = { callback ->
+                                        openAlarmSheet = callback
+                                    }
+                                )
                             }
 
                             composable<RouteScreen.DetailsFavorites> { backStackEntry ->
