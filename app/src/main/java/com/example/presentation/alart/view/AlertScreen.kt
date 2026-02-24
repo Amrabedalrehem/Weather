@@ -1,4 +1,4 @@
-package com.example.presentation.alarms.view
+package com.example.presentation.alart.view
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -31,6 +31,7 @@ import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
+import com.example.presentation.alart.viewmodel.AlertViewModel
 import com.example.presentation.component.helper.WeatherAlertState
 import com.example.weather.R
 

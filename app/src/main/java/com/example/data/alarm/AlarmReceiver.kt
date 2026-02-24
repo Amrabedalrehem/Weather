@@ -11,7 +11,7 @@ import androidx.work.WorkManager
 import com.example.data.datasource.local.DataSourceLocal
 import com.example.data.dp.AppDatabase
 import com.example.data.model.entity.AlarmEntity
-import com.example.presentation.alarms.view.AlertActivity
+import com.example.presentation.alart.view.AlertActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

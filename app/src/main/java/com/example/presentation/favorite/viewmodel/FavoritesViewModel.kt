@@ -8,6 +8,7 @@ import com.example.data.Repository
 import com.example.data.alarm.AlarmScheduler
 import com.example.data.model.entity.AlarmEntity
 import com.example.data.model.entity.FavouriteLocationCache
+import com.example.presentation.component.helper.ToastType
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -18,7 +19,10 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 sealed class FavUiEvent {
-    data class ShowToast(val message: String) : FavUiEvent()
+    data class ShowCard(
+        val message: String,
+        val type: ToastType = ToastType.INFO
+    ) : FavUiEvent()
 }
 
 class FavoritesViewModel(
@@ -31,7 +35,7 @@ class FavoritesViewModel(
     private val _uiEvent = MutableSharedFlow<FavUiEvent>()
     val uiEvent: SharedFlow<FavUiEvent> = _uiEvent
 
-     private val pendingDeletion = MutableStateFlow<Set<Int>>(emptySet())
+    private val pendingDeletion = MutableStateFlow<Set<Int>>(emptySet())
 
     val favourites: StateFlow<List<FavouriteLocationCache>> =
         repository.getAllFavourites()
@@ -59,7 +63,7 @@ class FavoritesViewModel(
         pendingDeletion.value -= location.id
     }
 
-     val alarms: StateFlow<List<AlarmEntity>> = repository.getAllAlarms()
+    val alarms: StateFlow<List<AlarmEntity>> = repository.getAllAlarms()
         .stateIn(
             scope        = viewModelScope,
             started      = SharingStarted.Lazily,
@@ -68,13 +72,13 @@ class FavoritesViewModel(
 
     fun addAlarm(alarm: AlarmEntity) {
         viewModelScope.launch {
-             if (alarm.timeInMillis <= System.currentTimeMillis()) {
-                _uiEvent.emit(FavUiEvent.ShowToast("Please choose a future time ⏰"))
+            if (alarm.timeInMillis <= System.currentTimeMillis()) {
+                _uiEvent.emit(FavUiEvent.ShowCard("Please choose a future time", ToastType.ERROR))
                 return@launch
             }
             val id = repository.insertAlarm(alarm)
             alarmScheduler.schedule(alarm.copy(id = id.toInt()))
-            _uiEvent.emit(FavUiEvent.ShowToast("Alarm set for ${alarm.city} ✅"))
+            _uiEvent.emit(FavUiEvent.ShowCard("Alarm set for ${alarm.city}", ToastType.SUCCESS))
         }
     }
 

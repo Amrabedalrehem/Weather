@@ -1,22 +1,13 @@
-package com.example.presentation.alarms.view
+package com.example.presentation.alart.viewmodel
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.data.Repository
+import com.example.presentation.component.helper.WeatherAlertState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-
-sealed class WeatherAlertState {
-    object Loading : WeatherAlertState()
-    data class Success(
-        val temp: Int,
-        val description: String,
-        val feelsLike: Int
-    ) : WeatherAlertState()
-    object Error : WeatherAlertState()
-}
 
 class AlertViewModel(
     application: Application,
