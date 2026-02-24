@@ -1,7 +1,7 @@
 package com.example.presentation.alarms.view
 import com.example.presentation.component.helper.ToastType
 import com.example.presentation.component.alert.AlarmCard
-  import androidx.compose.foundation.background
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -21,8 +21,8 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.airbnb.lottie.compose.*
 import com.example.data.model.entity.AlarmEntity
-import com.example.presentation.alarms.viewmodel.AlarmUiEvent
-import com.example.presentation.alarms.viewmodel.AlarmViewModel
+ import com.example.presentation.alarms.viewmodel.AlarmViewModel
+import com.example.presentation.component.helper.AlarmUiEvent
 import com.example.presentation.component.helper.CustomToast
 import com.example.presentation.component.helper.rememberToastState
 import com.example.weather.R
@@ -109,7 +109,8 @@ fun AlarmsScreen(
                     items(alarms, key = { it.id }) { alarm ->
                         AlarmCard(
                             alarm    = alarm,
-                            onDelete = { alarmToReset = alarm; showResetDialog = true },
+                            onDelete = { alarmToReset = alarm;
+                                showResetDialog = true },
                             onEdit   = {
                                 alarmToEdit      = alarm
                                 editSelectedType = alarm.type

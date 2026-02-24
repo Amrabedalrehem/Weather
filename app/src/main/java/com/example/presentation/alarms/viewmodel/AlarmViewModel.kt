@@ -1,5 +1,5 @@
 package com.example.presentation.alarms.viewmodel
-
+import  com.example.presentation.component.helper.AlarmUiEvent
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -16,12 +16,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-sealed class AlarmUiEvent {
-    data class ShowCard(
-        val message: String,
-        val type: ToastType = ToastType.INFO
-    ) : AlarmUiEvent()
-}
 
 class AlarmViewModel(
     private val repository: Repository,

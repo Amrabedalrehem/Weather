@@ -1,5 +1,4 @@
 package com.example.presentation.component.favourites
-import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -10,8 +9,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
+ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -32,7 +30,6 @@ fun FavouriteCard(
     onAddAlarm: (AlarmEntity) -> Unit,
     onDisableAlarm: (AlarmEntity) -> Unit
 ) {
-    val context = LocalContext.current
 
     val activeAlarm    = activeAlarms.firstOrNull { it.city == location.city && it.isActive }
     val isAlarmEnabled = activeAlarm != null
@@ -337,10 +334,6 @@ fun FavouriteCard(
                             set(Calendar.MINUTE,      timePickerState.minute)
                             set(Calendar.SECOND,      0)
                             set(Calendar.MILLISECOND, 0)
-                        }
-                        if (calendar.timeInMillis <= System.currentTimeMillis()) {
-                            Toast.makeText(context, "Please choose a future time ⏰", Toast.LENGTH_SHORT).show()
-                            return@Button
                         }
                         onAddAlarm(
                             AlarmEntity(
