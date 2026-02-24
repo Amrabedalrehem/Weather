@@ -65,6 +65,9 @@ import com.example.presentation.detailsfavourites.viewmodel.DetailsViewModelFact
 import com.example.presentation.favorite.view.FavoriteScreen
 import com.example.presentation.favorite.viewmodel.FavoritesViewModel
 import com.example.presentation.favorite.viewmodel.FavoritesViewModelFactory
+import com.example.presentation.futureinfo.view.FutureInfoScreen
+import com.example.presentation.futureinfo.viewmodel.FutureInfoViewModel
+import com.example.presentation.futureinfo.viewmodel.FutureInfoViewModelFactory
 import com.example.presentation.home.view.HomeScreen
 import com.example.presentation.home.viewmodel.HomeViewModel
 import com.example.presentation.home.viewmodel.HomeViewModelFactory
@@ -165,7 +168,7 @@ class MainActivity : ComponentActivity() {
                         }
                         if (showAlarmsAB) {
                             FloatingActionButton(
-                                onClick = { openAlarmSheet?.invoke() },
+                                onClick = {navController.navigate(RouteScreen.FutureInfo) },
                                 shape = CircleShape,
                                 containerColor = Color.White.copy(0.8f)
                             ) {
@@ -305,6 +308,16 @@ class MainActivity : ComponentActivity() {
                                     locationId = locationId,
                                     viewModel = detailsViewModel,
                                     modifier = Modifier.padding(innerPadding)
+                                )
+                            }
+
+                            composable<RouteScreen.FutureInfo> {
+                                val futureInfoViewModel: FutureInfoViewModel = viewModel(
+                                    factory = FutureInfoViewModelFactory(application, repository)
+                                )
+                                FutureInfoScreen(
+                                    viewModel = futureInfoViewModel,
+                                    onBack    = { navController.popBackStack() }
                                 )
                             }
                         }
