@@ -113,7 +113,7 @@ class HomeViewModel(
         viewModelScope.launch {
             getInfoWeather()
 
-            combine(
+             combine(
                 repository.language,
                 repository.temperatureUnit,
                 repository.latitude,
@@ -121,8 +121,14 @@ class HomeViewModel(
             ) { lang, units, lat, lon ->
                 Triple(lang, units, Pair(lat, lon))
             }.drop(1)
-                .collectLatest {
-                    getInfoWeather()
+                .collectLatest { getInfoWeather() }
+        }
+
+         viewModelScope.launch {
+            networkObserver.isConnected
+                .drop(1)
+                .collectLatest { isConnected ->
+                    if (isConnected) getInfoWeather()
                 }
         }
     }

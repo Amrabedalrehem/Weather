@@ -8,6 +8,9 @@ import com.example.data.model.entity.FavouriteLocationCache
 import com.example.data.network.CheckNetwork
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
@@ -27,7 +30,26 @@ class DetailsFavoritesViewModel(
         )
 
     init {
-        fetchAndUpdate()
+        viewModelScope.launch {
+            fetchAndUpdate()
+        }
+
+        viewModelScope.launch {
+            combine(
+                repository.language,
+                repository.temperatureUnit
+            ) { lang, units -> }
+                .drop(1)
+                .collectLatest { fetchAndUpdate() }
+        }
+
+        viewModelScope.launch {
+            networkObserver.isConnected
+                .drop(1)
+                .collectLatest { isConnected ->
+                    if (isConnected) fetchAndUpdate()
+                }
+        }
     }
 
     private fun fetchAndUpdate() {
