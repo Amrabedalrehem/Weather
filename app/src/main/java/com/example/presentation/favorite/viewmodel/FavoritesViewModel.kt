@@ -5,10 +5,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.data.Repository
-import com.example.data.alarm.AlarmScheduler
+import com.example.presentation.component.alert.alarm.AlarmScheduler
 import com.example.data.model.entity.AlarmEntity
 import com.example.data.model.entity.FavouriteLocationCache
 import com.example.presentation.component.helper.ToastType
+import com.example.weather.R
+import android.content.res.Configuration
+import java.util.Locale
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -27,10 +30,15 @@ sealed class FavUiEvent {
 
 class FavoritesViewModel(
     val repository: Repository,
-    context: Context
+    private val context: Context
 ) : ViewModel() {
 
     private val alarmScheduler = AlarmScheduler(context)
+
+    private fun localizedString(resId: Int, vararg args: Any): String {
+        val config = Configuration(context.resources.configuration).apply { setLocale(Locale.getDefault()) }
+        return context.createConfigurationContext(config).getString(resId, *args)
+    }
 
     private val _uiEvent = MutableSharedFlow<FavUiEvent>()
     val uiEvent: SharedFlow<FavUiEvent> = _uiEvent
@@ -73,12 +81,12 @@ class FavoritesViewModel(
     fun addAlarm(alarm: AlarmEntity) {
         viewModelScope.launch {
             if (alarm.timeInMillis <= System.currentTimeMillis()) {
-                _uiEvent.emit(FavUiEvent.ShowCard("Please choose a future time", ToastType.ERROR))
+                _uiEvent.emit(FavUiEvent.ShowCard(localizedString(R.string.choose_future_time), ToastType.ERROR))
                 return@launch
             }
             val id = repository.insertAlarm(alarm)
             alarmScheduler.schedule(alarm.copy(id = id.toInt()))
-            _uiEvent.emit(FavUiEvent.ShowCard("Alarm set for ${alarm.city}", ToastType.SUCCESS))
+            _uiEvent.emit(FavUiEvent.ShowCard(localizedString(R.string.alarm_set_for, alarm.city), ToastType.SUCCESS))
         }
     }
 

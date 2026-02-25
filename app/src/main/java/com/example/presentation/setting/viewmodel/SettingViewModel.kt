@@ -29,7 +29,7 @@ class SettingsViewModel(private val repository: Repository,private val  networkO
     fun saveWindSpeed(value: String) = viewModelScope.launch {
         repository.saveWindSpeedUnit(value)
     }
-    fun saveLanguage(value: String) = viewModelScope.launch {
+    suspend fun saveLanguageAndWait(value: String) {
         repository.saveLanguage(value)
     }
     fun saveLocationType(value: String) = viewModelScope.launch {

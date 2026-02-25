@@ -25,6 +25,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.weather.R
+import androidx.compose.ui.res.stringResource
 @Composable
 fun ErrorState(
     errorMessage: String = "Unable to load weather data",
@@ -37,9 +38,9 @@ fun ErrorState(
             .background(
                 brush = Brush.verticalGradient(
                     colors = listOf(
-                        Color(0xFF1E3A8A),
-                        Color(0xFF3B82F6),
-                        Color(0xFF60A5FA)
+                        Color(0xFF2196F3),
+                        Color(0xFF03A9F4),
+                        Color(0xFF00BCD4)
                     )
                 )
             ),
@@ -72,7 +73,7 @@ fun ErrorState(
                 onClick = onRetry,
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color.White,
-                    contentColor = Color(0xFF1E3A8A)
+                    contentColor = Color(0xFF2196F3)
                 ),
                 shape = RoundedCornerShape(25.dp)
             ) {
@@ -83,7 +84,7 @@ fun ErrorState(
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = "Retry",
+                    text = stringResource(R.string.retry),
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold
                 )

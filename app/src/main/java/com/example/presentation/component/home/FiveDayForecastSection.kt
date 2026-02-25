@@ -48,6 +48,8 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import com.example.weather.R
+import androidx.compose.ui.res.stringResource
+import com.example.presentation.component.helper.toArabicDigits
 
 
 @Composable
@@ -60,7 +62,7 @@ fun FiveDayForecastSection(fiveDayData: FiveDayForecastResponse?,
             .padding(horizontal = 24.dp)
     ) {
         Text(
-            text = "5-Day Forecast",
+            text = stringResource(R.string.five_day_forecast),
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
             color = Color.White,
@@ -70,18 +72,18 @@ fun FiveDayForecastSection(fiveDayData: FiveDayForecastResponse?,
 
         fiveDayData?.fiveDay?.forEachIndexed { index, day ->
             FiveDayForecastCard(
-                day = "${dateFormat(fiveDayData.fiveDay[index].dt )}",
-                highTemp = "${fiveDayData.fiveDay[index].temp.max}°",
-                lowTemp = "${fiveDayData.fiveDay[index].temp.min}°",
+                day = "${dateFormat(fiveDayData.fiveDay[index].dt)}".toArabicDigits(),
+                highTemp = "${fiveDayData.fiveDay[index].temp.max}°".toArabicDigits(),
+                lowTemp = "${fiveDayData.fiveDay[index].temp.min}°".toArabicDigits(),
                 icon =fiveDayData.fiveDay[index].weather[0].icon,
-                humidity = "${fiveDayData.fiveDay[index].humidity}%",
+                humidity = "${fiveDayData.fiveDay[index].humidity}%".toArabicDigits(),
                 windSpeed =  if (windUnit == "mph") {
-                    "${"%.1f".format(fiveDayData.fiveDay[index].speed * 2.23694)} mph"
+                    "${"%.1f".format(fiveDayData.fiveDay[index].speed * 2.23694)} mph".toArabicDigits()
                 } else {
-                    "${fiveDayData.fiveDay[index].speed} m/s"
+                    "${fiveDayData.fiveDay[index].speed} m/s".toArabicDigits()
                 },
-                pressure = "${fiveDayData.fiveDay[index].pressure} hPa",
-                clouds = "${fiveDayData.fiveDay[index].clouds}%",
+                pressure = "${fiveDayData.fiveDay[index].pressure} hPa".toArabicDigits(),
+                clouds = "${fiveDayData.fiveDay[index].clouds}%".toArabicDigits(),
                 description = fiveDayData.fiveDay[index].weather[0].description
             )
             if (index < fiveDayData.fiveDay.size - 1) {
@@ -226,13 +228,13 @@ fun FiveDayForecastCard(
                     ) {
                         DayDetailItem(
                             R.raw.waterdrop,
-                            label = "Humidity",
+                            label = stringResource(R.string.humidity),
                             value = humidity,
                             modifier = Modifier.weight(1f)
                         )
                         DayDetailItem(
                             icon = R.raw.cloud,
-                            label = "Wind",
+                            label = stringResource(R.string.wind),
                             value = windSpeed,
                             modifier = Modifier.weight(1f)
                         )
@@ -246,13 +248,13 @@ fun FiveDayForecastCard(
                     ) {
                         DayDetailItem(
                             icon = R.raw.speed,
-                            label = "Pressure",
+                            label = stringResource(R.string.pressure),
                             value = pressure,
                             modifier = Modifier.weight(1f)
                         )
                         DayDetailItem(
                             icon = R.raw.cloud_and_sun_animation,
-                            label = "Clouds",
+                            label = stringResource(R.string.clouds),
                             value = clouds,
                             modifier = Modifier.weight(1f)
                         )
@@ -308,7 +310,7 @@ fun FiveDayForecastCard(
  }
 fun dateFormat(dt: Long): String {
     val date = Date(dt * 1000)
-    val format = SimpleDateFormat("EEE, dd MMM", Locale.ENGLISH)
+    val format = SimpleDateFormat("EEE, dd MMM", Locale.getDefault())
     return format.format(date)
 }
 

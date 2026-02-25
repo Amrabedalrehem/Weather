@@ -2,6 +2,7 @@
 package com.example.presentation.navigation
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -11,11 +12,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
+
 @Composable
 fun BottomNavigationBar(navController: NavHostController) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -24,15 +27,15 @@ fun BottomNavigationBar(navController: NavHostController) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(100.dp)
+            .height(90.dp)
     ) {
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(72.dp)
+                .height(64.dp)
                 .align(Alignment.BottomCenter),
             shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
-            colors = CardDefaults.cardColors(containerColor = Color.White),
+            colors = CardDefaults.cardColors(containerColor = Color(0xFF1976D2)),
             elevation = CardDefaults.cardElevation(8.dp)
         ) {
             Row(
@@ -54,9 +57,9 @@ fun BottomNavigationBar(navController: NavHostController) {
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
-                            text = item.title,
+                            text = stringResource(item.titleResId),
                             style = MaterialTheme.typography.labelSmall,
-                            color = if (isSelected) MaterialTheme.colorScheme.primary else Color.Gray
+                            color = if (isSelected) Color.White else Color.White.copy(alpha = 0.5f)
                         )
                         if (isSelected) {
                             Spacer(modifier = Modifier.height(3.dp))
@@ -65,8 +68,8 @@ fun BottomNavigationBar(navController: NavHostController) {
                                     .width(20.dp)
                                     .height(2.dp)
                                     .background(
-                                        MaterialTheme.colorScheme.primary,
-                                        RoundedCornerShape(1.dp)
+                                        color = Color.White,
+                                         RoundedCornerShape(1.dp)
                                     )
                             )
                         }
@@ -89,10 +92,12 @@ fun BottomNavigationBar(navController: NavHostController) {
 
                 Box(
                     modifier = Modifier
-                        .size(56.dp)
-                        .clip(RoundedCornerShape(16.dp))
-                        .background(if (isSelected) Color.White else Color.Transparent)
-                        .clickable {
+                        .size(48.dp)
+                        .clip(RoundedCornerShape(14.dp))
+                        .clickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = null
+                        ) {
                              if (!isSelected) {
                                 navController.navigate(item.route) {
                                     popUpTo(navController.graph.findStartDestination().id) {
@@ -107,8 +112,8 @@ fun BottomNavigationBar(navController: NavHostController) {
                 ) {
                     Icon(
                         painter = painterResource(id = item.icon),
-                        contentDescription = item.title,
-                        modifier = Modifier.size(32.dp),
+                        contentDescription = stringResource(item.titleResId),
+                        modifier = Modifier.size(28.dp),
                         tint = Color.Unspecified
                     )
                 }

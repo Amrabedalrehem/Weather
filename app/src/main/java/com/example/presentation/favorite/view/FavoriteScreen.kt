@@ -1,5 +1,4 @@
 package com.example.presentation.favorite.view
-
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -25,11 +24,12 @@ import com.example.presentation.component.helper.rememberToastState
 import com.example.presentation.favorite.viewmodel.FavUiEvent
 import com.example.presentation.favorite.viewmodel.FavoritesViewModel
 import com.example.weather.R
+import androidx.compose.ui.res.stringResource
 import kotlinx.coroutines.launch
 
 @Composable
 fun FavoriteScreen(
-    modifier: Modifier = Modifier,
+    modifier: Modifier,
     viewModel: FavoritesViewModel,
     onFavouriteClick: (FavouriteLocationCache) -> Unit,
     snackbarHostState: SnackbarHostState
@@ -55,16 +55,24 @@ fun FavoriteScreen(
         it.city.contains(searchQuery, ignoreCase = true)
     }
 
-    Box(modifier = modifier.fillMaxSize()) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(
+                Brush.verticalGradient(
+                    colors = listOf(Color(0xFF2196F3), Color(0xFF03A9F4), Color(0xFF00BCD4))
+                )
+            )
+    ) {
         Column(
-            modifier = Modifier
+            modifier = modifier
                 .fillMaxSize()
                 .background(
                     brush = Brush.verticalGradient(
                         colors = listOf(
-                            Color(0xFF6B8CB5),
-                            Color(0xFF8BA5C9),
-                            Color(0xFF9FB5D1)
+                            Color(0xFF2196F3),
+                            Color(0xFF03A9F4),
+                            Color(0xFF00BCD4)
                         )
                     )
                 )
@@ -74,7 +82,7 @@ fun FavoriteScreen(
                     value         = searchQuery,
                     onValueChange = { searchQuery = it },
                     modifier      = Modifier.fillMaxWidth().padding(16.dp),
-                    placeholder   = { Text("Search city...", color = Color.White.copy(alpha = 0.7f)) },
+                    placeholder   = { Text(stringResource(R.string.search_city), color = Color.White.copy(alpha = 0.7f)) },
                     leadingIcon   = {
                         Icon(Icons.Default.Search, contentDescription = "Search", tint = Color.White)
                     },
@@ -106,9 +114,9 @@ fun FavoriteScreen(
                             modifier    = Modifier.size(220.dp)
                         )
                         Spacer(modifier = Modifier.height(5.dp))
-                        Text("No favorites yet", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                        Text(stringResource(R.string.no_favorites_yet), fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.White)
                         Spacer(modifier = Modifier.height(4.dp))
-                        Text("Tap the button to add a city", fontSize = 16.sp, color = Color.White.copy(alpha = 0.7f))
+                        Text(stringResource(R.string.tap_button_add_city), fontSize = 16.sp, color = Color.White.copy(alpha = 0.7f))
                     }
                 }
 
@@ -118,7 +126,7 @@ fun FavoriteScreen(
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Text("No cities match your search", fontSize = 18.sp, fontWeight = FontWeight.Medium, color = Color.White)
+                        Text(stringResource(R.string.no_cities_match), fontSize = 18.sp, fontWeight = FontWeight.Medium, color = Color.White)
                     }
                 }
 
@@ -127,7 +135,10 @@ fun FavoriteScreen(
                         modifier            = Modifier.fillMaxSize().padding(horizontal = 16.dp),
                         verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
+
                         items(filteredFavourites) { location ->
+                            val message = stringResource(R.string.city_removed, location.city)
+                            val activelabel =stringResource(R.string.undo)
                             FavouriteCard(
                                 location         = location,
                                 activeAlarms     = activeAlarms,
@@ -136,8 +147,8 @@ fun FavoriteScreen(
                                     viewModel.markForDeletion(location)
                                     scope.launch {
                                         val result = snackbarHostState.showSnackbar(
-                                            message     = "${location.city} removed ⭐",
-                                            actionLabel = "Undo",
+                                            message     = message,
+                                            actionLabel =activelabel ,
                                             duration    = SnackbarDuration.Short
                                         )
                                         when (result) {

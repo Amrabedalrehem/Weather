@@ -10,6 +10,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -27,14 +28,21 @@ fun DetailsFavoritesScreen(modifier: Modifier, locationId: Int,   viewModel: Det
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(Color(0xFF1B2A4A))
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(
+                        Color(0xFF2196F3),
+                        Color(0xFF03A9F4),
+                        Color(0xFF00BCD4)
+                    )
+                )
+            )
     ) {
     LazyColumn {
-
         item { CurrentWeatherSection(item?.currentWeather) }
         item { Spacer(Modifier.height(16.dp)) }
         item { WeatherDetailsGrid(item?.currentWeather, windUnit =item?.currentWeather?.wind?.speed?.toString () ?: "m/s") }
-       item { Spacer(Modifier.height(16.dp)) }
+        item { Spacer(Modifier.height(16.dp)) }
         item { HourlyForecastSection(item?.hourlyForecast, windUnit =item?.currentWeather?.wind?.speed?.toString () ?: "m/s") }
         item { Spacer(Modifier.height(16.dp)) }
         item { FiveDayForecastSection(item?.fiveDayForecast, windUnit = item?.currentWeather?.wind?.speed?.toString () ?: "m/s") }

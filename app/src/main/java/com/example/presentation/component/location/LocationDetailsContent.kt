@@ -37,6 +37,8 @@ import com.example.presentation.component.home.WeatherDetailsGrid
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import com.example.weather.R
+import androidx.compose.ui.res.stringResource
 
 @Composable
 fun LocationDetailsContent(
@@ -123,7 +125,7 @@ fun LocationDetailsContent(
                                     border = BorderStroke(1.dp, Color.White),
                                     colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.White)
                                 ) {
-                                    Text("Cancel")
+                                    Text(stringResource(R.string.cancel))
                                 }
                                 Button(
                                     onClick = {
@@ -142,10 +144,11 @@ fun LocationDetailsContent(
                                         )
                                     )
                                 ) {
-                                    Text("Change Location")
+                                    Text(stringResource(R.string.change_location_btn))
                                 }
                             }
-
+                           val  massage =stringResource(R.string.city_added_fav, city)
+                            val actionLabel = stringResource(R.string.undo)
 
                             Button(
                                 onClick = {
@@ -158,8 +161,8 @@ fun LocationDetailsContent(
                                         ) { savedItem ->
                                             appScope.launch {
                                                 val result = snackbarHostState.showSnackbar(
-                                                    message = "$city added to favourites ⭐",
-                                                    actionLabel = "Undo",
+                                                    message =massage ,
+                                                    actionLabel =actionLabel,
                                                     duration = SnackbarDuration.Short
                                                 )
 
@@ -174,7 +177,7 @@ fun LocationDetailsContent(
                                 modifier = Modifier.fillMaxWidth(),
                                 colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
                             ) {
-                                Text("Add Favourite")
+                                Text(stringResource(R.string.add_favourite))
                             }
                         }
                     }

@@ -15,6 +15,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.weather.R
+import androidx.compose.ui.res.stringResource
 
 @Composable
 fun LoadingState(modifier: Modifier = Modifier) {
@@ -24,10 +25,9 @@ fun LoadingState(modifier: Modifier = Modifier) {
             .background(
                 brush = Brush.verticalGradient(
                     colors = listOf(
-                        Color(0xFF1E3A8A),
-                        Color(0xFF3B82F6),
-                        Color(0xFF60A5FA),
-                        Color(0xFF93C5FD)
+                        Color(0xFF2196F3),
+                        Color(0xFF03A9F4),
+                        Color(0xFF00BCD4)
                     )
                 )
             ),
@@ -60,7 +60,7 @@ fun LoadingState(modifier: Modifier = Modifier) {
             Spacer(modifier = Modifier.height(24.dp))
 
              Text(
-                text = "Loading Weather...",
+                text = stringResource(R.string.loading_weather),
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Medium,
                 color = Color.White

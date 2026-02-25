@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Weather</string>
+
+    <!-- Bottom Navigation -->
+    <string name="nav_weather">Weather</string>
+    <string name="nav_favorite">Favorite</string>
+    <string name="nav_alarms">Alarms</string>
+    <string name="nav_setting">Setting</string>
+
+    <!-- Settings Screen -->
+    <string name="language">Language</string>
+    <string name="temperature_unit">Temperature Unit</string>
+    <string name="location">Location</string>
+    <string name="wind_speed_unit">Wind Speed Unit</string>
+    <string name="theme">Theme</string>
+
+    <!-- Language Options -->
+    <string name="lang_default">Default</string>
+    <string name="lang_english">English</string>
+    <string name="lang_arabic">العربية</string>
+
+    <!-- Temperature Options -->
+    <string name="temp_celsius">Celsius</string>
+    <string name="temp_kelvin">kelvin</string>
+    <string name="temp_fahrenheit">Fahrenheit</string>
+
+    <!-- Location Options -->
+    <string name="loc_gps">Gps</string>
+    <string name="loc_map">Map</string>
+
+    <!-- Wind Speed Options -->
+    <string name="wind_ms">m/s</string>
+    <string name="wind_mph">mph</string>
+
+    <!-- Theme Options -->
+    <string name="theme_system">System</string>
+    <string name="theme_dark">Dark</string>
+    <string name="theme_light">Light</string>
+
+    <!-- Map Dialog -->
+    <string name="change_location_title">Change Location?</string>
+    <string name="change_location_message">Do you want to change your location using the map?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+
+    <!-- Snackbar / Toast Messages -->
+    <string name="no_internet">No Internet Connection check your connection</string>
+    <string name="option_selected">✔ \"%1$s\" selected</string>
+    <string name="no_internet_banner">No Internet Connection</string>
+    <string name="city_removed">%1$s removed ⭐</string>
+    <string name="undo">Undo</string>
+    <string name="city_added_fav">%1$s added to favourites ⭐</string>
+
+    <!-- Home Screen -->
+    <string name="weather_details">Weather Details</string>
+    <string name="humidity">Humidity</string>
+    <string name="wind">Wind</string>
+    <string name="pressure">Pressure</string>
+    <string name="clouds">Clouds</string>
+    <string name="hourly_forecast">Hourly Forecast</string>
+    <string name="feels_like">Feels like %1$s</string>
+    <string name="unknown_error">Unknown Error</string>
+
+    <!-- Loading / Error States -->
+    <string name="loading_weather">Loading Weather…</string>
+    <string name="retry">Retry</string>
+    <string name="unable_to_load">Unable to load weather data</string>
+
+    <!-- Favorite Screen -->
+    <string name="search_city">Search city…</string>
+    <string name="no_favorites_yet">No favorites yet</string>
+    <string name="tap_button_add_city">Tap the button to add a city</string>
+    <string name="no_cities_match">No cities match your search</string>
+    <string name="alarm_set">Alarm set</string>
+    <string name="no_alarm_set">No alarm set</string>
+    <string name="tap_switch_disable">Tap switch to disable</string>
+    <string name="stay_ready">Stay ready!</string>
+    <string name="unknown">unknown</string>
+
+    <!-- Alarms Screen -->
+    <string name="journey_quiet">The journey\'s quiet!</string>
+    <string name="no_weather_alarms">No weather alarms on your path</string>
+    <string name="choose_date_time">Choose Date And Time</string>
+    <string name="current_location">Current Location</string>
+    <string name="edit_alarm">Edit Alarm</string>
+    <string name="delete_alarm_title">Delete Alarm?</string>
+    <string name="delete_alarm_msg">Are you sure you want to delete the alarm for %1$s?</string>
+    <string name="delete">Delete</string>
+    <string name="cancel">Cancel</string>
+    <string name="choose_time">Choose Time</string>
+    <string name="weather_updates_question">Would you like to receive weather updates via alerts or notifications?</string>
+    <string name="choose_preferred_option">Choose your preferred option to stay informed!</string>
+    <string name="alert">Alert</string>
+    <string name="notification">Notification</string>
+    <string name="done">Done</string>
+    <string name="select_time">Select Time</string>
+    <string name="ok">OK</string>
+
+    <!-- Alert Screen -->
+    <string name="weather_alert">Weather Alert</string>
+    <string name="fetching_weather">Fetching weather…</string>
+    <string name="could_not_load_weather">Could not load weather data</string>
+    <string name="snooze_10_min">Snooze 10 min</string>
+    <string name="dismiss">Dismiss</string>
+
+    <!-- Permission Screen -->
+    <string name="weather_title">Weather</string>
+    <string name="track_weather">Track the weather anywhere.</string>
+    <string name="get_started">Get Started →</string>
+    <string name="why_need_location">Why We Need Location</string>
+    <string name="allow_location">Allow Location</string>
+    <string name="location_needed">Location Needed</string>
+    <string name="location_rationale">We need your location to show accurate weather for your area. Please allow it.</string>
+    <string name="allow">Allow</string>
+    <string name="gps_disabled">GPS Disabled</string>
+    <string name="gps_message">Please turn on your GPS to get accurate weather data.</string>
+    <string name="enable_gps">Enable GPS</string>
+    <string name="permission_denied">Permission Denied</string>
+    <string name="permission_denied_msg">You\'ve denied location permission. Please enable it from Settings to use the app.</string>
+    <string name="go_to_settings">Go to Settings</string>
+
+    <!-- Future Info Screen -->
+    <string name="upcoming_bad_weather">Upcoming Bad Weather</string>
+    <string name="checking_days">Checking upcoming days…</string>
+    <string name="could_not_load_forecast">Could not load forecast</string>
+    <string name="check_connection">Check your connection</string>
+    <string name="all_clear">All Clear! ✅</string>
+    <string name="no_bad_weather_5days">No bad weather expected\nin the next 5 days</string>
+    <string name="detailed_forecast">Detailed Forecast</string>
+    <string name="plan_week">Plan your week accordingly</string>
+    <string name="extreme_days_ahead">%1$d extreme weather day(s) ahead</string>
+    <string name="bad_days_ahead">%1$d bad weather day(s) ahead</string>
+    <string name="rough_days">%1$d day(s) with rough weather</string>
+
+    <!-- Map Screen -->
+    <string name="search_for_city">Search for a city…</string>
+    <string name="change_location_btn">Change Location</string>
+    <string name="add_favourite">Add Favourite</string>
+
+    <!-- Favourite Card -->
+    <string name="disable_alarm_title">Disable Alarm?</string>
+    <string name="disable_alarm_msg">Are you sure you want to disable the alarm for %1$s?</string>
+    <string name="disable">Disable</string>
+    <string name="set_alarm_for">Set Alarm for %1$s</string>
+    <string name="weather_updates_city">Would you like to receive weather updates for %1$s via alerts or notifications?</string>
+
+    <!-- 5-Day Forecast Section -->
+    <string name="five_day_forecast">5-Day Forecast</string>
+
+    <!-- Severity Labels -->
+    <string name="severity_extreme">EXTREME</string>
+    <string name="severity_high">HIGH</string>
+    <string name="severity_moderate">MODERATE</string>
+
+    <string name="clear">Clear</string>
+    <string name="am_label">AM</string>
+    <string name="pm_label">PM</string>
+
+    <!-- Alarm Toast Messages -->
+    <string name="choose_future_time">Please choose a future time</string>
+    <string name="alarm_set_success">Alarm set successfully</string>
+    <string name="alarm_updated">Alarm updated</string>
+    <string name="alarm_set_for">Alarm set for %1$s</string>
+
+    <!-- Weather Conditions (API main field) -->
+    <string name="weather_clear">Clear</string>
+    <string name="weather_clouds">Clouds</string>
+    <string name="weather_rain">Rain</string>
+    <string name="weather_drizzle">Drizzle</string>
+    <string name="weather_thunderstorm">Thunderstorm</string>
+    <string name="weather_snow">Snow</string>
+    <string name="weather_mist">Mist</string>
+    <string name="weather_haze">Haze</string>
+    <string name="weather_fog">Fog</string>
+    <string name="weather_dust">Dust</string>
+    <string name="weather_sand">Sand</string>
+    <string name="weather_smoke">Smoke</string>
+    <string name="weather_tornado">Tornado</string>
+    <string name="weather_squall">Squall</string>
+    <string name="weather_icon">Weather Icon</string>
+
+    <!-- Measurement Units -->
+    <string name="unit_ms">m/s</string>
+    <string name="unit_mph">mph</string>
+    <string name="unit_hpa">hPa</string>
+    <string name="wind_speed_ms">%1$s m/s</string>
+    <string name="wind_speed_mph">%1$s mph</string>
+    <string name="pressure_hpa">%1$s hPa</string>
+</resources>

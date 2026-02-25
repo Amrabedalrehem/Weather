@@ -34,6 +34,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.Locale
+import com.example.weather.R
+import androidx.compose.ui.res.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -114,7 +116,7 @@ fun MapPickerScreen(
                     Box(
                         modifier = Modifier
                             .background(
-                                color = Color(0xFF2C3E6B).copy(alpha = 0.92f),
+                                color = Color(0xFF1976D2).copy(alpha = 0.92f),
                                 shape = RoundedCornerShape(14.dp)
                             )
                             .padding(horizontal = 20.dp, vertical = 14.dp)
@@ -176,7 +178,7 @@ fun MapPickerScreen(
                                 showResults = false
                             }
                         },
-                        placeholder = { Text("Search for a city...") },
+                        placeholder = { Text(stringResource(R.string.search_for_city)) },
                         colors = TextFieldDefaults.colors(
                             focusedContainerColor = Color.Transparent,
                             unfocusedContainerColor = Color.Transparent,
@@ -188,7 +190,7 @@ fun MapPickerScreen(
                     )
                     if (searchQuery.isNotEmpty()) {
                         IconButton(onClick = { searchQuery = ""; showResults = false }) {
-                            Icon(Icons.Default.Close, contentDescription = "Clear")
+                            Icon(Icons.Default.Close, contentDescription = stringResource(R.string.clear))
                         }
                     }
                 }
@@ -199,7 +201,7 @@ fun MapPickerScreen(
                                 val displayName = address.locality
                                     ?: address.adminArea
                                     ?: address.countryName
-                                    ?: "Unknown"
+                                    ?: stringResource(R.string.unknown)
                                 Text(
                                     text = displayName,
                                     modifier = Modifier
@@ -239,7 +241,7 @@ fun MapPickerScreen(
             modifier = Modifier
                 .align(Alignment.TopEnd)
                 .padding(top = 48.dp, end = 16.dp),
-            containerColor = Color(0xFF1B2A4A),
+            containerColor = Color(0xFF1976D2),
             contentColor = Color.White,
             shape = CircleShape
         ) {
@@ -253,7 +255,7 @@ fun MapPickerScreen(
             modifier = Modifier
                 .align(Alignment.TopStart)
                 .padding(top = 48.dp, start = 16.dp),
-            containerColor = Color(0xFF1B2A4A),
+            containerColor = Color(0xFF1976D2),
             contentColor = Color.White,
             shape = CircleShape
         ) {
@@ -274,7 +276,7 @@ fun MapPickerScreen(
                     .padding(12.dp),
                 contentAlignment = Alignment.Center
             ) {
-                Text(text = "No Internet Connection", color = Color.White, fontSize = 14.sp)
+                Text(text = stringResource(R.string.no_internet_banner), color = Color.White, fontSize = 14.sp)
             }
 
             FloatingActionButton(
@@ -282,7 +284,7 @@ fun MapPickerScreen(
                 modifier = Modifier
                     .align(Alignment.TopStart)
                     .padding(top = 48.dp, start = 16.dp),
-                containerColor = Color(0xFF1B2A4A),
+                containerColor = Color(0xFF1976D2),
                 contentColor = Color.White,
                 shape = CircleShape
             ) {
@@ -295,7 +297,7 @@ fun MapPickerScreen(
         ModalBottomSheet(
             onDismissRequest = { showBottomSheet = false },
             sheetState = sheetState,
-            containerColor = Color(0xFF1B2A4A),
+            containerColor = Color(0xFF1976D2),
             shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
         ) {
             LocationDetailsContent(

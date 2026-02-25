@@ -1,4 +1,4 @@
-package com.example.data.alarm
+package com.example.presentation.component.alert.alarm
 
 import android.app.NotificationChannel
 import android.app.NotificationManager

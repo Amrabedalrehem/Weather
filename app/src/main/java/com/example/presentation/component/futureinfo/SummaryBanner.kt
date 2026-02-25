@@ -21,6 +21,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.presentation.futureinfo.viewmodel.BadWeatherDay
 import com.example.presentation.futureinfo.viewmodel.Severity
+import com.example.weather.R
+import androidx.compose.ui.res.stringResource
 
 
 @Composable
@@ -32,7 +34,7 @@ fun SummaryBanner(days: List<BadWeatherDay>) {
     val bannerColor = when {
         extremeCount > 0 -> Brush.horizontalGradient(listOf(Color(0xFF7F1D1D), Color(0xFFB91C1C)))
         highCount    > 0 -> Brush.horizontalGradient(listOf(Color(0xFF92400E), Color(0xFFD97706)))
-        else             -> Brush.horizontalGradient(listOf(Color(0xFF1E3A5F), Color(0xFF2563EB)))
+        else             -> Brush.horizontalGradient(listOf(Color(0xFF1976D2), Color(0xFF2196F3)))
     }
 
     val emoji = when {
@@ -42,9 +44,9 @@ fun SummaryBanner(days: List<BadWeatherDay>) {
     }
 
     val message = when {
-        extremeCount > 0 -> "$extremeCount extreme weather day${if (extremeCount > 1) "s" else ""} ahead"
-        highCount    > 0 -> "$highCount bad weather day${if (highCount > 1) "s" else ""} ahead"
-        else             -> "${days.size} day${if (days.size > 1) "s" else ""} with rough weather"
+        extremeCount > 0 -> stringResource(R.string.extreme_days_ahead, extremeCount)
+        highCount    > 0 -> stringResource(R.string.bad_days_ahead, highCount)
+        else             -> stringResource(R.string.rough_days, days.size)
     }
 
     Box(
@@ -60,7 +62,7 @@ fun SummaryBanner(days: List<BadWeatherDay>) {
             Column {
                 Text(message, color = Color.White, fontWeight = FontWeight.Bold, fontSize = 15.sp)
                 Text(
-                    "Plan your week accordingly",
+                    stringResource(R.string.plan_week),
                     color    = Color.White.copy(alpha = 0.7f),
                     fontSize = 12.sp
                 )

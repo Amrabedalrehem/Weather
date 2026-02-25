@@ -5,9 +5,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.data.Repository
-import com.example.data.alarm.AlarmScheduler
+import com.example.presentation.component.alert.alarm.AlarmScheduler
 import com.example.data.model.entity.AlarmEntity
 import com.example.presentation.component.helper.ToastType
+import com.example.weather.R
+import android.content.res.Configuration
+import java.util.Locale
  import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -23,6 +26,11 @@ class AlarmViewModel(
 ) : ViewModel() {
 
     private val alarmScheduler = AlarmScheduler(context)
+
+    private fun localizedString(resId: Int, vararg args: Any): String {
+        val config = Configuration(context.resources.configuration).apply { setLocale(Locale.getDefault()) }
+        return context.createConfigurationContext(config).getString(resId, *args)
+    }
 
     private val _uiEvent = MutableSharedFlow<AlarmUiEvent>()
     val uiEvent: SharedFlow<AlarmUiEvent> = _uiEvent
@@ -54,12 +62,12 @@ class AlarmViewModel(
     fun addAlarm(alarm: AlarmEntity) {
         viewModelScope.launch {
             if (alarm.timeInMillis <= System.currentTimeMillis()) {
-                _uiEvent.emit(AlarmUiEvent.ShowCard("Please choose a future time", ToastType.ERROR))
+                _uiEvent.emit(AlarmUiEvent.ShowCard(localizedString(R.string.choose_future_time), ToastType.ERROR))
                 return@launch
             }
             val id = repository.insertAlarm(alarm)
             alarmScheduler.schedule(alarm.copy(id = id.toInt()))
-            _uiEvent.emit(AlarmUiEvent.ShowCard("Alarm set successfully", ToastType.SUCCESS))
+            _uiEvent.emit(AlarmUiEvent.ShowCard(localizedString(R.string.alarm_set_success), ToastType.SUCCESS))
         }
     }
 
@@ -84,14 +92,14 @@ class AlarmViewModel(
     fun editAlarm(old: AlarmEntity, new: AlarmEntity) {
         viewModelScope.launch {
             if (new.timeInMillis <= System.currentTimeMillis()) {
-                _uiEvent.emit(AlarmUiEvent.ShowCard("Please choose a future time", ToastType.ERROR))
+                _uiEvent.emit(AlarmUiEvent.ShowCard(localizedString(R.string.choose_future_time), ToastType.ERROR))
                 return@launch
             }
             alarmScheduler.cancel(old)
             repository.deleteAlarm(old)
             val id = repository.insertAlarm(new)
             alarmScheduler.schedule(new.copy(id = id.toInt()))
-            _uiEvent.emit(AlarmUiEvent.ShowCard("Alarm updated", ToastType.SUCCESS))
+            _uiEvent.emit(AlarmUiEvent.ShowCard(localizedString(R.string.alarm_updated), ToastType.SUCCESS))
         }
     }
 }
