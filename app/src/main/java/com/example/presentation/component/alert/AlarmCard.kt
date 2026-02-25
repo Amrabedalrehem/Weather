@@ -29,6 +29,7 @@ import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.example.data.model.entity.AlarmEntity
 import com.example.weather.R
+import com.example.presentation.component.helper.toArabicDigits
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -45,7 +46,7 @@ fun AlarmCard(
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape    = RoundedCornerShape(16.dp),
-        colors   = CardDefaults.cardColors(containerColor = Color(0xFF2E4A6B))
+        colors   = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.15f))
     ) {
         Row(
             modifier              = Modifier.fillMaxWidth().padding(16.dp),
@@ -54,8 +55,13 @@ fun AlarmCard(
         ) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(alarm.city, fontSize = 18.sp, fontWeight = FontWeight.Bold, color = Color.White)
-                Text(formattedTime, fontSize = 14.sp, color = Color.White.copy(alpha = 0.7f))
-                Text(alarm.type, fontSize = 12.sp, color = Color(0xFF3B82F6))
+                Text(formattedTime.toArabicDigits(), fontSize = 14.sp, color = Color.White.copy(alpha = 0.7f))
+                val typeLabel = when (alarm.type) {
+                    "Alert" -> androidx.compose.ui.res.stringResource(R.string.alert)
+                    "Notification" -> androidx.compose.ui.res.stringResource(R.string.notification)
+                    else -> alarm.type
+                }
+                Text(typeLabel, fontSize = 12.sp, color = Color(0xFF3B82F6))
             }
             Row(verticalAlignment = Alignment.CenterVertically) {
                 IconButton(onClick = onEdit) {

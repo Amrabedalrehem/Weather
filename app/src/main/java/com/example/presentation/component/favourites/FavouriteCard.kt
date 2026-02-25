@@ -18,6 +18,9 @@ import com.airbnb.lottie.compose.*
 import com.example.data.model.entity.AlarmEntity
 import com.example.data.model.entity.FavouriteLocationCache
 import com.example.weather.R
+import androidx.compose.ui.res.stringResource
+import com.example.presentation.component.helper.toArabicDigits
+import com.example.presentation.component.helper.localizeWeatherMain
 import java.util.Calendar
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -44,17 +47,17 @@ fun FavouriteCard(
 
      val formattedTime by remember(timePickerState.hour, timePickerState.minute) {
         derivedStateOf {
-            val h    = timePickerState.hour
-            val m    = timePickerState.minute
-            val amPm = if (h < 12) "AM" else "PM"
-            val hour = if (h % 12 == 0) 12 else h % 12
-            "%02d:%02d %s".format(hour, m, amPm)
+            val cal = java.util.Calendar.getInstance().apply {
+                set(java.util.Calendar.HOUR_OF_DAY, timePickerState.hour)
+                set(java.util.Calendar.MINUTE, timePickerState.minute)
+            }
+            java.text.SimpleDateFormat("hh:mm a", java.util.Locale.getDefault()).format(cal.time)
         }
     }
 
      Card(
         shape    = RoundedCornerShape(28.dp),
-        colors   = CardDefaults.cardColors(containerColor = Color(0xFF1B2A4A)),
+        colors   = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.15f)),
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp)
@@ -78,7 +81,7 @@ fun FavouriteCard(
                     color      = Color.White
                 )
                 Text(
-                    text     = location.currentWeather?.sys?.country ?: "unknown",
+                    text     = location.currentWeather?.sys?.country ?: stringResource(R.string.unknown),
                     fontSize = 16.sp,
                     color    = Color.White.copy(alpha = 0.7f)
                 )
@@ -89,13 +92,13 @@ fun FavouriteCard(
                     verticalAlignment     = Alignment.CenterVertically
                 ) {
                     Text(
-                        text       = location.currentWeather?.weather?.get(0)?.main ?: "unknown",
+                        text       = localizeWeatherMain(location.currentWeather?.weather?.get(0)?.main ?: stringResource(R.string.unknown)),
                         fontSize   = 24.sp,
                         fontWeight = FontWeight.Medium,
                         color      = Color.White.copy(alpha = 0.9f)
                     )
                     Text(
-                        text     = "Feels like ${location.currentWeather?.main?.feelsLike?.toInt() ?: "--"}°",
+                        text     = stringResource(R.string.feels_like, (location.currentWeather?.main?.feelsLike?.toInt() ?: "--").toString()).toArabicDigits(),
                         fontSize = 16.sp,
                         color    = Color.White.copy(alpha = 0.7f)
                     )
@@ -114,13 +117,13 @@ fun FavouriteCard(
                         Spacer(modifier = Modifier.width(8.dp))
                         Column {
                             Text(
-                                text       = if (isAlarmEnabled) "Alarm set" else "No alarm set",
+                                text       = if (isAlarmEnabled) stringResource(R.string.alarm_set) else stringResource(R.string.no_alarm_set),
                                 color      = if (isAlarmEnabled) Color(0xFF3B82F6) else Color.White,
                                 fontSize   = 16.sp,
                                 fontWeight = FontWeight.Medium
                             )
                             Text(
-                                text     = if (isAlarmEnabled) "Tap switch to disable" else "Stay ready!",
+                                text     = if (isAlarmEnabled) stringResource(R.string.tap_switch_disable) else stringResource(R.string.stay_ready),
                                 color    = Color.White.copy(alpha = 0.6f),
                                 fontSize = 14.sp
                             )
@@ -134,9 +137,9 @@ fun FavouriteCard(
                             else showDisableDialog = true
                         },
                         colors = SwitchDefaults.colors(
-                            checkedThumbColor   = Color(0xFF2E4A6B),
+                            checkedThumbColor   = Color(0xFF1976D2),
                             checkedTrackColor   = Color.White,
-                            uncheckedThumbColor = Color(0xFF2E4A6B),
+                            uncheckedThumbColor = Color(0xFF1976D2),
                             uncheckedTrackColor = Color.White.copy(alpha = 0.5f)
                         )
                     )
@@ -148,13 +151,13 @@ fun FavouriteCard(
      if (showDisableDialog) {
         AlertDialog(
             onDismissRequest = { showDisableDialog = false },
-            containerColor   = Color(0xFF1B2A4A),
+            containerColor   = Color(0xFF1976D2),
             title = {
-                Text("Disable Alarm?", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 18.sp)
+                Text(stringResource(R.string.disable_alarm_title), color = Color.White, fontWeight = FontWeight.Bold, fontSize = 18.sp)
             },
             text = {
                 Text(
-                    "Are you sure you want to disable the alarm for ${location.city}?",
+                    stringResource(R.string.disable_alarm_msg, location.city),
                     color = Color.White.copy(alpha = 0.8f),
                     fontSize = 15.sp
                 )
@@ -168,7 +171,7 @@ fun FavouriteCard(
                     colors = ButtonDefaults.buttonColors(containerColor = Color.Red.copy(alpha = 0.8f)),
                     shape  = RoundedCornerShape(8.dp)
                 ) {
-                    Text("Disable", color = Color.White)
+                    Text(stringResource(R.string.disable), color = Color.White)
                 }
             },
             dismissButton = {
@@ -177,7 +180,7 @@ fun FavouriteCard(
                     shape   = RoundedCornerShape(8.dp),
                     colors  = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFF3B82F6))
                 ) {
-                    Text("Cancel")
+                    Text(stringResource(R.string.cancel))
                 }
             }
         )
@@ -190,27 +193,27 @@ fun FavouriteCard(
         ) {
             Card(
                 shape    = RoundedCornerShape(16.dp),
-                colors   = CardDefaults.cardColors(containerColor = Color(0xFF1B2A4A)),
+                colors   = CardDefaults.cardColors(containerColor = Color(0xFF1976D2)),
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp)
             ) {
                 Column(
                     modifier            = Modifier.padding(24.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text("Select Time", fontSize = 18.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                    Text(stringResource(R.string.select_time), fontSize = 18.sp, fontWeight = FontWeight.Bold, color = Color.White)
                     Spacer(modifier = Modifier.height(20.dp))
 
                      TimePicker(
                         state  = timePickerState,
                         colors = TimePickerDefaults.colors(
-                            clockDialColor                       = Color(0xFF2E4A6B),
+                            clockDialColor                       = Color(0xFF1976D2),
                             clockDialSelectedContentColor        = Color.White,
                             clockDialUnselectedContentColor      = Color.White.copy(alpha = 0.7f),
                             selectorColor                        = Color(0xFF3B82F6),
-                            containerColor                       = Color(0xFF1B2A4A),
+                            containerColor                       = Color(0xFF1976D2),
                             periodSelectorBorderColor            = Color(0xFF3B82F6),
                             timeSelectorSelectedContainerColor   = Color(0xFF3B82F6),
-                            timeSelectorUnselectedContainerColor = Color(0xFF2E4A6B),
+                            timeSelectorUnselectedContainerColor = Color(0xFF1976D2),
                             timeSelectorSelectedContentColor     = Color.White,
                             timeSelectorUnselectedContentColor   = Color.White.copy(alpha = 0.7f)
                         )
@@ -223,7 +226,7 @@ fun FavouriteCard(
                         horizontalArrangement = Arrangement.End
                     ) {
                         TextButton(onClick = { showTimePicker = false }) {
-                            Text("Cancel", color = Color.White.copy(alpha = 0.7f))
+                            Text(stringResource(R.string.cancel), color = Color.White.copy(alpha = 0.7f))
                         }
                         Spacer(modifier = Modifier.width(8.dp))
                         Button(
@@ -231,7 +234,7 @@ fun FavouriteCard(
                             colors  = ButtonDefaults.buttonColors(containerColor = Color(0xFF3B82F6)),
                             shape   = RoundedCornerShape(8.dp)
                         ) {
-                            Text("OK", color = Color.White)
+                            Text(stringResource(R.string.ok), color = Color.White)
                         }
                     }
                 }
@@ -243,7 +246,7 @@ fun FavouriteCard(
         ModalBottomSheet(
             onDismissRequest = { showAlarmSheet = false },
             sheetState       = sheetState,
-            containerColor   = Color(0xFF1B2A4A)
+            containerColor   = Color(0xFF1976D2)
         ) {
             Column(
                 modifier = Modifier
@@ -256,7 +259,7 @@ fun FavouriteCard(
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Text(
-                    text       = "Set Alarm for ${location.city}",
+                    text       = stringResource(R.string.set_alarm_for, location.city),
                     fontSize   = 20.sp,
                     fontWeight = FontWeight.Bold,
                     color      = Color.White
@@ -267,7 +270,7 @@ fun FavouriteCard(
                 DatePicker(
                     state  = datePickerState,
                     colors = DatePickerDefaults.colors(
-                        containerColor            = Color(0xFF1B2A4A),
+                        containerColor            = Color(0xFF1976D2),
                         titleContentColor         = Color.White,
                         headlineContentColor      = Color.White,
                         weekdayContentColor       = Color.White.copy(alpha = 0.6f),
@@ -282,7 +285,7 @@ fun FavouriteCard(
                 HorizontalDivider(color = Color.White.copy(alpha = 0.1f))
                 Spacer(modifier = Modifier.height(16.dp))
 
-                Text("Choose Time", fontSize = 16.sp, fontWeight = FontWeight.SemiBold, color = Color.White)
+                Text(stringResource(R.string.choose_time), fontSize = 16.sp, fontWeight = FontWeight.SemiBold, color = Color.White)
                 Spacer(modifier = Modifier.height(8.dp))
 
                  OutlinedButton(
@@ -291,7 +294,7 @@ fun FavouriteCard(
                     colors   = ButtonDefaults.outlinedButtonColors(contentColor = Color.White),
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text("🕐  $formattedTime", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                    Text("🕐  $formattedTime".toArabicDigits(), fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.White)
                 }
 
                 Spacer(modifier = Modifier.height(20.dp))
@@ -299,12 +302,12 @@ fun FavouriteCard(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Text(
-                    text     = "Would you like to receive weather updates for ${location.city} via alerts or notifications?",
+                    text     = stringResource(R.string.weather_updates_city, location.city),
                     color    = Color.White.copy(alpha = 0.8f),
                     fontSize = 14.sp
                 )
                 Text(
-                    text       = "Choose your preferred option to stay informed!",
+                    text       = stringResource(R.string.choose_preferred_option),
                     color      = Color(0xFF3B82F6),
                     fontSize   = 13.sp,
                     fontWeight = FontWeight.Bold,
@@ -315,10 +318,14 @@ fun FavouriteCard(
                     modifier              = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
-                    listOf("Alert", "Notification").forEach { type ->
+                    val typeLabels = mapOf(
+                        "Alert" to stringResource(R.string.alert),
+                        "Notification" to stringResource(R.string.notification)
+                    )
+                    typeLabels.forEach { (key, label) ->
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            RadioButton(selected = selectedType == type, onClick = { selectedType = type })
-                            Text(text = type, color = Color.White, fontSize = 16.sp)
+                            RadioButton(selected = selectedType == key, onClick = { selectedType = key })
+                            Text(text = label, color = Color.White, fontSize = 16.sp)
                         }
                     }
                 }
@@ -350,7 +357,7 @@ fun FavouriteCard(
                     colors   = ButtonDefaults.buttonColors(containerColor = Color(0xFF3B82F6)),
                     shape    = RoundedCornerShape(12.dp)
                 ) {
-                    Text("Done", fontSize = 18.sp, color = Color.White, fontWeight = FontWeight.Bold)
+                    Text(stringResource(R.string.done), fontSize = 18.sp, color = Color.White, fontWeight = FontWeight.Bold)
                 }
             }
         }

@@ -1,4 +1,4 @@
-package com.example.presentation.setting.view
+package com.example.presentation.component.setting
 import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -47,16 +47,16 @@ fun SettingsCard(
             .padding(horizontal = 16.dp, vertical = 8.dp),
         shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color.White.copy(alpha = 0.95f)
+            containerColor = Color.Transparent
         ),
-        elevation = CardDefaults.cardElevation(8.dp)
+        elevation = CardDefaults.cardElevation(0.dp)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(
                     Brush.verticalGradient(
-                        listOf(Color(0xFF6B8CB5), Color(0xFF9FB5D1))
+                        listOf(Color(0xFF2196F3), Color(0xFF03A9F4))
                     )
                 )
                 .padding(16.dp)

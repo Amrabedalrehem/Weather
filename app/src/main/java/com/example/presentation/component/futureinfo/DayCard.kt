@@ -28,20 +28,23 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.presentation.futureinfo.viewmodel.BadWeatherDay
 import com.example.presentation.futureinfo.viewmodel.Severity
+import com.example.weather.R
+import androidx.compose.ui.res.stringResource
+import com.example.presentation.component.helper.toArabicDigits
 
 
 @Composable
 fun DayCard(day: BadWeatherDay) {
     val (severityColor, severityLabel, severityEmoji) = when (day.severity) {
-        Severity.EXTREME  -> Triple(Color(0xFFEF4444), "EXTREME",  "🔴")
-        Severity.HIGH     -> Triple(Color(0xFFF59E0B), "HIGH",     "🟠")
-        Severity.MODERATE -> Triple(Color(0xFF3B82F6), "MODERATE", "🔵")
+        Severity.EXTREME  -> Triple(Color(0xFFEF4444), stringResource(R.string.severity_extreme),  "🔴")
+        Severity.HIGH     -> Triple(Color(0xFFF59E0B), stringResource(R.string.severity_high),     "🟠")
+        Severity.MODERATE -> Triple(Color(0xFF3B82F6), stringResource(R.string.severity_moderate), "🔵")
     }
 
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape    = RoundedCornerShape(14.dp),
-        colors   = CardDefaults.cardColors(containerColor = Color(0xFF1E3357))
+        colors   = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.15f))
     ) {
         Row(
             modifier            = Modifier.fillMaxWidth().padding(14.dp),
@@ -87,7 +90,7 @@ fun DayCard(day: BadWeatherDay) {
 
             Column(horizontalAlignment = Alignment.End) {
                 Text(
-                    text       = "${day.temp}°",
+                    text       = "${day.temp}°".toArabicDigits(),
                     color      = Color.White,
                     fontSize   = 22.sp,
                     fontWeight = FontWeight.Bold

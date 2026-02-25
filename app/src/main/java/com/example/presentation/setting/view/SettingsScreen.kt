@@ -1,5 +1,9 @@
 package com.example.presentation.setting.view
-
+import android.app.LocaleManager
+import android.content.Context
+import android.content.res.Configuration
+import android.os.Build
+import android.os.LocaleList
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,10 +24,34 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.example.presentation.component.setting.SettingsCard
 import com.example.presentation.setting.viewmodel.SettingsViewModel
 import com.example.weather.R
 import kotlinx.coroutines.launch
+import java.util.Locale
+
+private fun applyLocale(context: Context, languageTag: String) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        val localeManager = context.getSystemService(LocaleManager::class.java)
+        if (languageTag.isEmpty()) {
+            localeManager.applicationLocales = LocaleList.getEmptyLocaleList()
+        } else {
+            localeManager.applicationLocales = LocaleList.forLanguageTags(languageTag)
+        }
+    } else {
+        val locale = if (languageTag.isEmpty()) Locale.getDefault() else Locale(languageTag)
+        Locale.setDefault(locale)
+        val config = Configuration(context.resources.configuration)
+        config.setLocale(locale)
+        config.setLayoutDirection(locale)
+        context.resources.updateConfiguration(config, context.resources.displayMetrics)
+         val activity = context as? android.app.Activity
+        activity?.recreate()
+    }
+}
 
 @Composable
 fun SettingsScreen(
@@ -40,25 +68,33 @@ fun SettingsScreen(
     var showMapDialog by remember { mutableStateOf(false) }
     val isConnected by viewModel.isConnected.collectAsState()
     val scope = rememberCoroutineScope()
+    val context = LocalContext.current
 
+    val noInternetMsg = stringResource(R.string.no_internet)
+    val optionSelectedPattern = stringResource(R.string.option_selected)
+
+    val langEnglishLabel = stringResource(R.string.lang_english)
+    val langArabicLabel = stringResource(R.string.lang_arabic)
+    val locMapLabel = stringResource(R.string.loc_map)
 
     val showSnackbar: (String) -> Unit = { selectedOption ->
         scope.launch {
             snackbarHostState.currentSnackbarData?.dismiss()
             if (!isConnected) {
-                snackbarHostState.showSnackbar("No Internet Connection check your connection")
+                snackbarHostState.showSnackbar(noInternetMsg)
             } else {
-                snackbarHostState.showSnackbar("✔ \"$selectedOption\" selected")
-            }        }
+                snackbarHostState.showSnackbar(optionSelectedPattern.replace("%1\$s", selectedOption))
+            }
+        }
     }
     if (showMapDialog) {
         AlertDialog(
             onDismissRequest = { showMapDialog = false },
             title = {
-                Text(text = "Change Location?")
+                Text(text = stringResource(R.string.change_location_title))
             },
             text = {
-                Text(text = "Do you want to change your location using the map?")
+                Text(text = stringResource(R.string.change_location_message))
             },
             confirmButton = {
                 TextButton(onClick = {
@@ -67,14 +103,14 @@ fun SettingsScreen(
                     showSnackbar("Map")
                     onNavigateToMap()
                 }) {
-                    Text("Yes", color = Color(0xFF3B82F6))
+                    Text(stringResource(R.string.yes), color = Color(0xFF3B82F6))
                 }
             },
             dismissButton = {
                 TextButton(onClick = {
                     showMapDialog = false
                 }) {
-                    Text("No", color = Color.Gray)
+                    Text(stringResource(R.string.no), color = Color.Gray)
                 }
             }
         )
@@ -82,36 +118,55 @@ fun SettingsScreen(
      LazyColumn(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top,
-        modifier = modifier
-            .fillMaxSize()
+         modifier = Modifier
+             .fillMaxSize()
             .background(
                 brush = Brush.verticalGradient(
                     colors = listOf(
-                        Color(0xFF6B8CB5),
-                        Color(0xFF8BA5C9),
-                        Color(0xFF9FB5D1)
+                        Color(0xFF2196F3),
+                        Color(0xFF03A9F4),
+                        Color(0xFF00BCD4)
                     )
                 )
-            )
-            .padding(vertical = 12.dp)
+            ).padding(vertical = 12.dp),
+         contentPadding = androidx.compose.foundation.layout.PaddingValues(
+             top = 0.dp,
+             bottom = 80.dp
+         )
     ) {
         item {
             SettingsCard(
-                title = "Language",
+                title = stringResource(R.string.language),
                 icon = R.drawable.languages,
-                options = listOf("Default", "English", "العربية"),
+                options = listOf(
+                    stringResource(R.string.lang_default),
+                    langEnglishLabel,
+                    langArabicLabel
+                ),
                 selectedOption = language,
                 onOptionSelected = {
-                    viewModel.saveLanguage(it)
-                    showSnackbar(it)
+                    val selectedLang = it
+                    val localeTag = when (selectedLang) {
+                        "English", langEnglishLabel -> "en"
+                        "العربية", langArabicLabel -> "ar"
+                        else -> ""
+                    }
+                    scope.launch {
+                        viewModel.saveLanguageAndWait(selectedLang)
+                        applyLocale(context, localeTag)
+                    }
                 }
             )
         }
         item {
             SettingsCard(
-                title = "Temperature Unit",
+                title = stringResource(R.string.temperature_unit),
                 icon = R.drawable.temperature,
-                options = listOf("Celsius (°C)", "kelvin (°K)", "Fahrenheit (°F)"),
+                options = listOf(
+                    stringResource(R.string.temp_celsius),
+                    stringResource(R.string.temp_kelvin),
+                    stringResource(R.string.temp_fahrenheit)
+                ),
                 selectedOption = temperature,
                 onOptionSelected = {
                     viewModel.saveTemperature(it)
@@ -121,12 +176,15 @@ fun SettingsScreen(
         }
         item {
             SettingsCard(
-                title = "Location",
+                title = stringResource(R.string.location),
                 icon = R.drawable.map,
-                options = listOf("Gps", "Map"),
+                options = listOf(
+                    stringResource(R.string.loc_gps),
+                    locMapLabel
+                ),
                 selectedOption = locationType,
                 onOptionSelected = {
-                    if (it == "Map") {
+                    if (it == "Map" || it == locMapLabel) {
                         showMapDialog = true
                     } else {
                         viewModel.saveLocationType(it)
@@ -137,9 +195,12 @@ fun SettingsScreen(
         }
         item {
             SettingsCard(
-                title = "Wind Speed Unit",
+                title = stringResource(R.string.wind_speed_unit),
                 icon = R.drawable.wind,
-                options = listOf("m/s", "mph"),
+                options = listOf(
+                    stringResource(R.string.wind_ms),
+                    stringResource(R.string.wind_mph)
+                ),
                 selectedOption = windSpeed,
                 onOptionSelected = {
                     viewModel.saveWindSpeed(it)
@@ -149,9 +210,13 @@ fun SettingsScreen(
         }
         item {
             SettingsCard(
-                title = "Theme",
+                title = stringResource(R.string.theme),
                 icon = R.drawable.color,
-                options = listOf("System", "Dark", "Light"),
+                options = listOf(
+                    stringResource(R.string.theme_system),
+                    stringResource(R.string.theme_dark),
+                    stringResource(R.string.theme_light)
+                ),
                 selectedOption = theme,
                 onOptionSelected = {
                     viewModel.saveTheme(it)

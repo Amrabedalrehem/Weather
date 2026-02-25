@@ -24,16 +24,18 @@ package com.example.presentation.component.home
  import com.airbnb.lottie.compose.LottieConstants
  import com.airbnb.lottie.compose.rememberLottieComposition
  import com.example.data.model.dto.CurrentWeatherDto
- import com.example.weather.R
+import com.example.weather.R
+import androidx.compose.ui.res.stringResource
+import com.example.presentation.component.helper.toArabicDigits
 
 @Composable
 fun WeatherDetailsGrid(weatherData: CurrentWeatherDto?
 ,   windUnit: String = "m/s"
 ) {
     val windSpeed = if (windUnit == "mph") {
-        "%.1f mph".format(weatherData?.wind?.speed?.times(2.23694))
+        stringResource(R.string.wind_speed_mph, "%.1f".format(weatherData?.wind?.speed?.times(2.23694))).toArabicDigits()
     } else {
-        "${weatherData?.wind?.speed} m/s"
+        stringResource(R.string.wind_speed_ms, weatherData?.wind?.speed.toString()).toArabicDigits()
     }
     Column(
         modifier = Modifier
@@ -42,7 +44,7 @@ fun WeatherDetailsGrid(weatherData: CurrentWeatherDto?
     )
     {
         Text(
-            text = "Weather Details",
+            text = stringResource(R.string.weather_details),
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
             color = Color.White,
@@ -55,13 +57,13 @@ fun WeatherDetailsGrid(weatherData: CurrentWeatherDto?
         ) {
             WeatherDetailCard(
                 icon = R.raw.humidity,
-                label = "Humidity",
-                 value = "${weatherData?.main?.humidity}%",
+                label = stringResource(R.string.humidity),
+                 value = "${weatherData?.main?.humidity}%".toArabicDigits(),
                 modifier = Modifier.weight(1f)
             )
             WeatherDetailCard(
                 icon =  R.raw.windgust,
-                label = "Wind",
+                label = stringResource(R.string.wind),
                 value = windSpeed,
                 modifier = Modifier.weight(1f)
             )
@@ -75,14 +77,14 @@ fun WeatherDetailsGrid(weatherData: CurrentWeatherDto?
         ) {
             WeatherDetailCard(
                 icon =R.raw.thermometercolder,
-                label = "Pressure",
-                value = "${weatherData?.main?.pressure} hPa",
+                label = stringResource(R.string.pressure),
+                value = stringResource(R.string.pressure_hpa, weatherData?.main?.pressure.toString()).toArabicDigits(),
                 modifier = Modifier.weight(1f)
             )
             WeatherDetailCard(
                 icon = R.raw.cloud_and_sun_animation,
-                label = "Clouds",
-                value = "${weatherData?.main?.feelsLike?.toInt()}°",
+                label = stringResource(R.string.clouds),
+                value = "${weatherData?.main?.feelsLike?.toInt()}°".toArabicDigits(),
                 modifier = Modifier.weight(1f)
             )
         }

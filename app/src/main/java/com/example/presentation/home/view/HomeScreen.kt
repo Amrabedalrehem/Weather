@@ -33,6 +33,8 @@ import com.example.presentation.component.home.CurrentWeatherSection
 import com.example.presentation.component.home.HourlyForecastSection
 import com.example.presentation.component.home.WeatherDetailsGrid
 import com.example.presentation.home.viewmodel.HomeViewModel
+import com.example.weather.R
+import androidx.compose.ui.res.stringResource
 import kotlinx.coroutines.delay
 
 @Composable
@@ -52,7 +54,7 @@ fun HomeScreen(modifier: Modifier = Modifier, viewModel: HomeViewModel) {
          val isConnected by viewModel.isConnected.collectAsState()
          val errorMessage = (currentUiState as? UiState.Error)?.message
             ?: (hourlyUiState as? UiState.Error)?.message?: (fiveDayUiState as? UiState.Error)?.message
-            ?: "Unknown Error"
+            ?: stringResource(R.string.unknown_error)
         ErrorState(
             errorMessage = errorMessage,
                  onRetry = {
@@ -94,11 +96,11 @@ fun HomeScreenContent(weatherData: CurrentWeatherDto, hourlyForecast : HourlyFor
             .background(
                 brush = Brush.verticalGradient(
                     colors = listOf(
-                        Color(0xFF1E3A8A),
-                         Color(0xFF3B82F6),
-                        Color(0xFF60A5FA),
-                        Color(0xFF93C5FD)
+                        Color(0xFF2196F3),
+                        Color(0xFF03A9F4),
+                        Color(0xFF00BCD4)
                     )
+
                 )
             )
     ) {

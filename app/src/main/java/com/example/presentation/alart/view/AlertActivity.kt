@@ -7,8 +7,10 @@ import android.os.Bundle
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.padding
+import androidx.compose.ui.Modifier
 import com.example.data.Repository
-import com.example.data.alarm.AlarmReceiver
+import com.example.presentation.component.alert.alarm.AlarmReceiver
 import com.example.data.datasource.local.DataSourceLocal
 import com.example.data.datasource.remote.DataSourceRemote
 import com.example.data.datasource.sharedPreference.DataStorePermission
@@ -49,7 +51,7 @@ class AlertActivity : ComponentActivity() {
             AlertScreen(
                 city = city,
                 viewModel = viewModel,
-                onDismiss = {
+                 onDismiss = {
                     AlarmReceiver.Companion.ringtone?.stop()
                     deleteAlarm(alarmId)
                     finish()

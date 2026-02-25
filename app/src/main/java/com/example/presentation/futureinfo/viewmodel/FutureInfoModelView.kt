@@ -104,13 +104,13 @@ class FutureInfoViewModel(
     }
 
     private fun getDayName(cal: java.util.Calendar): String =
-        java.text.SimpleDateFormat("EEEE", java.util.Locale.ENGLISH).format(cal.time)
+        java.text.SimpleDateFormat("EEEE", java.util.Locale.getDefault()).format(cal.time)
 
     private fun getTodayName(): String =
-        java.text.SimpleDateFormat("EEEE", java.util.Locale.ENGLISH).format(java.util.Date())
+        java.text.SimpleDateFormat("EEEE", java.util.Locale.getDefault()).format(java.util.Date())
 
     private fun getFormattedDate(cal: java.util.Calendar): String =
-        java.text.SimpleDateFormat("MMM d", java.util.Locale.ENGLISH).format(cal.time)
+        java.text.SimpleDateFormat("MMM d", java.util.Locale.getDefault()).format(cal.time)
 }
 
 class FutureInfoViewModelFactory(

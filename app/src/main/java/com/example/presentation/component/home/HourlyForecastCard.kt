@@ -24,6 +24,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.data.model.dto.HourlyForecastResponse
+import com.example.weather.R
+import androidx.compose.ui.res.stringResource
+import com.example.presentation.component.helper.toArabicDigits
+import com.example.presentation.component.helper.localizeWeatherMain
 
 
 @Composable
@@ -38,9 +42,9 @@ fun HourlyForecastCard(
     windUnit: String = "m/s"
 ) {
     val displaySpeed = if (windUnit == "mph") {
-        "${"%.1f".format(speed * 2.23694)} mph"
+        stringResource(R.string.wind_speed_mph, "%.1f".format(speed * 2.23694)).toArabicDigits()
     } else {
-        "$speed m/s"
+        stringResource(R.string.wind_speed_ms, speed.toString()).toArabicDigits()
     }
     Card(
         shape = RoundedCornerShape(30.dp),
@@ -57,7 +61,7 @@ fun HourlyForecastCard(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Text(
-                text = time,
+                text = time.toArabicDigits(),
                 fontSize = 12.sp,
                 color = Color.White.copy(alpha = 0.7f)
             )
@@ -68,7 +72,7 @@ fun HourlyForecastCard(
                 modifier = Modifier.size(40.dp)
             )
             Text(
-                text = "$temperature °",
+                text = "$temperature °".toArabicDigits(),
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.White
@@ -78,13 +82,13 @@ fun HourlyForecastCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "↑${"%.0f".format(temp_max)}°",
+                    text = "↑${"%.0f".format(temp_max)}°".toArabicDigits(),
                     fontSize = 10.sp,
                     color = Color(0xFFFCD34D),
                     maxLines = 1
                 )
                 Text(
-                    text = "↓${"%.0f".format(temp_min)}°",
+                    text = "↓${"%.0f".format(temp_min)}°".toArabicDigits(),
                     fontSize = 10.sp,
                     color = Color.White.copy(alpha = 0.7f),
                     maxLines = 1
@@ -102,7 +106,7 @@ fun HourlyForecastCard(
                 )
             }
             Text(
-                text = main,
+                text = localizeWeatherMain(main),
                 fontSize = 11.sp,
                 color = Color.White.copy(alpha = 0.7f),
                 textAlign = TextAlign.Center,
@@ -121,7 +125,7 @@ fun HourlyForecastSection(hourlyForecast: HourlyForecastResponse?,
         modifier = Modifier.fillMaxWidth()
     ) {
         Text(
-            text = "Hourly Forecast",
+            text = stringResource(R.string.hourly_forecast),
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
             color = Color.White,

@@ -38,7 +38,7 @@
         </activity>
 
         <receiver
-            android:name="com.example.data.alarm.AlarmReceiver"
+            android:name="com.example.presentation.component.alert.alarm.AlarmReceiver"
             android:exported="false" />
 
         <activity
@@ -50,8 +50,7 @@
             android:launchMode="singleInstance"
             android:theme="@style/Theme.Weather"/>
 
-        <!-- ← جوه الـ application -->
-        <provider
+         <provider
             android:name="androidx.startup.InitializationProvider"
             android:authorities="${applicationId}.androidx-startup"
             android:exported="false"

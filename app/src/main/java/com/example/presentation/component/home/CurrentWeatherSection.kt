@@ -32,8 +32,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.data.model.dto.CurrentWeatherDto
+import com.example.weather.R
+import androidx.compose.ui.res.stringResource
+import com.example.presentation.component.helper.toArabicDigits
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 
 @Composable
@@ -75,13 +79,13 @@ fun CurrentWeatherSection(currentWeather: CurrentWeatherDto?) {
         Spacer(modifier = Modifier.height(16.dp))
 
          Text(
-            text = getCurrentDate(),
+            text = getCurrentDate().toArabicDigits(),
             fontSize = 14.sp,
             color = Color.White.copy(alpha = 0.7f)
         )
 
         Text(
-            text =getCurrentTime(),
+            text = getCurrentTime().toArabicDigits(),
             fontSize = 14.sp,
             color = Color.White.copy(alpha = 0.7f)
         )
@@ -95,7 +99,7 @@ fun CurrentWeatherSection(currentWeather: CurrentWeatherDto?) {
         ) {
              AsyncImage(
                  model = "https://openweathermap.org/img/wn/${currentWeather?.weather[0]?.icon}@2x.png",
-                 contentDescription = "Weather Icon",
+                 contentDescription = stringResource(R.string.weather_icon),
                  modifier = Modifier.size(100.dp)
              )
          }
@@ -104,7 +108,7 @@ fun CurrentWeatherSection(currentWeather: CurrentWeatherDto?) {
              Spacer(modifier = Modifier.height(32.dp))
 
          Text(
-             text = "${currentWeather?.main?.temp?.toInt()}°",
+             text = "${currentWeather?.main?.temp?.toInt()}°".toArabicDigits(),
             fontSize = 96.sp,
             fontWeight = FontWeight.Bold,
             color = Color.White,
@@ -113,9 +117,26 @@ fun CurrentWeatherSection(currentWeather: CurrentWeatherDto?) {
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        currentWeather?.weather[0]?.main?.let {
+        currentWeather?.weather?.get(0)?.main?.let {
+            val localizedMain = when (it) {
+                "Clear" -> stringResource(R.string.weather_clear)
+                "Clouds" -> stringResource(R.string.weather_clouds)
+                "Rain" -> stringResource(R.string.weather_rain)
+                "Drizzle" -> stringResource(R.string.weather_drizzle)
+                "Thunderstorm" -> stringResource(R.string.weather_thunderstorm)
+                "Snow" -> stringResource(R.string.weather_snow)
+                "Mist" -> stringResource(R.string.weather_mist)
+                "Haze" -> stringResource(R.string.weather_haze)
+                "Fog" -> stringResource(R.string.weather_fog)
+                "Dust" -> stringResource(R.string.weather_dust)
+                "Sand" -> stringResource(R.string.weather_sand)
+                "Smoke" -> stringResource(R.string.weather_smoke)
+                "Tornado" -> stringResource(R.string.weather_tornado)
+                "Squall" -> stringResource(R.string.weather_squall)
+                else -> it
+            }
             Text(
-                text = it,
+                text = localizedMain,
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Medium,
                 color = Color.White.copy(alpha = 0.9f)
@@ -123,7 +144,7 @@ fun CurrentWeatherSection(currentWeather: CurrentWeatherDto?) {
         }
 
         Text(
-            text = "Feels like ${currentWeather?.weather[0]?.description}",
+            text = stringResource(R.string.feels_like, currentWeather?.weather?.get(0)?.description ?: "").toArabicDigits(),
             fontSize = 16.sp,
             color = Color.White.copy(alpha = 0.7f)
         )
@@ -132,14 +153,14 @@ fun CurrentWeatherSection(currentWeather: CurrentWeatherDto?) {
 @Composable
 fun getCurrentDate(): String {
     val current = LocalDateTime.now()
-    val formatter = DateTimeFormatter.ofPattern("EEEE, MMMM dd, yyyy")
+    val formatter = DateTimeFormatter.ofPattern("EEEE, MMMM dd, yyyy", Locale.getDefault())
     return current.format(formatter)
 }
 
 @Composable
 fun getCurrentTime(): String {
     val current = LocalDateTime.now()
-    val formatter = DateTimeFormatter.ofPattern("hh:mm a")
+    val formatter = DateTimeFormatter.ofPattern("hh:mm a", Locale.getDefault())
     return current.format(formatter)
 }
 

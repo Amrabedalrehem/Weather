@@ -3,29 +3,29 @@ package com.example.presentation.navigation
  import com.example.weather.R
 
 data class NavigationItem(
-    val title: String,
+    val titleResId: Int,
     val icon: Int,
     val route: RouteScreen
 )
 
 val navigationItems = listOf(
     NavigationItem(
-        title = "Weather",
-        icon = R.drawable.home_could,
+        titleResId = R.string.nav_weather,
+        icon = R.drawable.cloudynav,
         route = RouteScreen.Home
     ),
     NavigationItem(
-        title = "Favorite",
+        titleResId = R.string.nav_favorite,
         icon = R.drawable.nav_heart,
         route = RouteScreen.Favorite
     ),
     NavigationItem(
-        title = "Alarms",
+        titleResId = R.string.nav_alarms,
         icon = R.drawable.nav_alert,
         route = RouteScreen.Alarms
     ),
     NavigationItem(
-        title = "Setting",
+        titleResId = R.string.nav_setting,
         icon = R.drawable.nav_settings,
         route = RouteScreen.Settings
     )

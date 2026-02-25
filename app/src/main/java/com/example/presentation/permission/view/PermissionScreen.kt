@@ -30,6 +30,8 @@ import com.example.presentation.permission.viewmodel.PermissionViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.MultiplePermissionsState
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
+import com.example.weather.R
+import androidx.compose.ui.res.stringResource
 import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalPermissionsApi::class)
@@ -81,19 +83,19 @@ fun PermissionScreen(
 if (uiState is PermissionUiState.ShowRationale) {
         AlertDialog(
             onDismissRequest = { viewModel.resetState() },
-            title = { Text("Location Needed", fontWeight = FontWeight.Bold) },
-            text = { Text("We need your location to show accurate weather for your area. Please allow it.") },
+            title = { Text(stringResource(R.string.location_needed), fontWeight = FontWeight.Bold) },
+            text = { Text(stringResource(R.string.location_rationale)) },
             confirmButton = {
                 TextButton(onClick = {
                     viewModel.resetState()
                     locationPermissionState.launchMultiplePermissionRequest()
                 }) {
-                    Text("Allow", color = Color(0xFF4A6A8F), fontWeight = FontWeight.Bold)
+                    Text(stringResource(R.string.allow), color = Color(0xFF3B82F6), fontWeight = FontWeight.Bold)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { viewModel.resetState() }) {
-                    Text("Cancel", color = Color.Gray)
+                    Text(stringResource(R.string.cancel), color = Color.Gray)
                 }
             }
         )
@@ -102,20 +104,20 @@ if (uiState is PermissionUiState.ShowRationale) {
     if (uiState is PermissionUiState.ShowLocationError) {
         AlertDialog(
             onDismissRequest = { viewModel.resetState() },
-            title = { Text("GPS Disabled", fontWeight = FontWeight.Bold) },
-            text = { Text("Please turn on your GPS to get accurate weather data.") },
+            title = { Text(stringResource(R.string.gps_disabled), fontWeight = FontWeight.Bold) },
+            text = { Text(stringResource(R.string.gps_message)) },
             confirmButton = {
                 TextButton(onClick = {
                     viewModel.resetState()
                     val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
                     context.startActivity(intent)
                 }) {
-                    Text("Enable GPS", color = Color(0xFF4A6A8F), fontWeight = FontWeight.Bold)
+                    Text(stringResource(R.string.enable_gps), color = Color(0xFF3B82F6), fontWeight = FontWeight.Bold)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { viewModel.resetState() }) {
-                    Text("Cancel", color = Color.Gray)
+                    Text(stringResource(R.string.cancel), color = Color.Gray)
                 }
             }
         )
@@ -124,8 +126,8 @@ if (uiState is PermissionUiState.ShowRationale) {
     if (uiState is PermissionUiState.GoToSettings) {
         AlertDialog(
             onDismissRequest = { viewModel.resetState() },
-            title = { Text("Permission Denied", fontWeight = FontWeight.Bold) },
-            text = { Text("You've denied location permission. Please enable it from Settings to use the app.") },
+            title = { Text(stringResource(R.string.permission_denied), fontWeight = FontWeight.Bold) },
+            text = { Text(stringResource(R.string.permission_denied_msg)) },
             confirmButton = {
                 TextButton(onClick = {
                     viewModel.resetState()
@@ -135,12 +137,12 @@ if (uiState is PermissionUiState.ShowRationale) {
                     )
                     context.startActivity(intent)
                 }) {
-                    Text("Go to Settings", color = Color(0xFF4A6A8F), fontWeight = FontWeight.Bold)
+                    Text(stringResource(R.string.go_to_settings), color = Color(0xFF3B82F6), fontWeight = FontWeight.Bold)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { viewModel.resetState() }) {
-                    Text("Cancel", color = Color.Gray)
+                    Text(stringResource(R.string.cancel), color = Color.Gray)
                 }
             }
         )
@@ -157,7 +159,7 @@ if (uiState is PermissionUiState.ShowRationale) {
             .fillMaxSize()
             .background(
                 brush = Brush.verticalGradient(
-                    colors = listOf(Color(0xFF6B8CB5), Color(0xFF8BA5C9), Color(0xFF9FB5D1))
+                    colors = listOf(Color(0xFF2196F3), Color(0xFF03A9F4), Color(0xFF00BCD4))
                 )
             )
             .padding(horizontal = 32.dp),
@@ -181,9 +183,9 @@ if (uiState is PermissionUiState.ShowRationale) {
             )
         ) {
             Text(
-                text = "Weather",
+                text = stringResource(R.string.weather_title),
                 fontSize = 40.sp,
-                color = Color(0xFF4A6A8F),
+                color = Color.White,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center
             )
@@ -193,9 +195,9 @@ if (uiState is PermissionUiState.ShowRationale) {
 
         AnimatedVisibility(visible = isVisible, enter = fadeIn(tween(1000, 700))) {
             Text(
-                text = "Track the weather anywhere.",
+                text = stringResource(R.string.track_weather),
                 fontSize = 16.sp,
-                color = Color(0xFF5A7A9F),
+                color = Color.White.copy(alpha = 0.8f),
                 textAlign = TextAlign.Center,
                 fontWeight = FontWeight.Bold
             )
@@ -220,15 +222,15 @@ if (uiState is PermissionUiState.ShowRationale) {
                     .shadow(8.dp, RoundedCornerShape(21.dp)),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color.White,
-                    contentColor = Color(0xFF4A6A8F)
+                    contentColor = Color(0xFF3B82F6)
                 ),
                 shape = RoundedCornerShape(20.dp)
             ) {
                 Text(
                     text = when {
-                        locationPermissionState.allPermissionsGranted -> "Get Started →"
-                        locationPermissionState.shouldShowRationale -> "Why We Need Location"
-                        else -> "Allow Location"
+                        locationPermissionState.allPermissionsGranted -> stringResource(R.string.get_started)
+                        locationPermissionState.shouldShowRationale -> stringResource(R.string.why_need_location)
+                        else -> stringResource(R.string.allow_location)
                     },
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold

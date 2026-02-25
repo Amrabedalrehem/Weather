@@ -34,6 +34,8 @@ import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import com.example.presentation.component.helper.MyLottieAnimation
 import com.example.presentation.splash.viewmodel.SplashViewModel
+import com.example.weather.R
+import androidx.compose.ui.res.stringResource
 import kotlinx.coroutines.delay
 
 @Composable
@@ -66,14 +68,14 @@ fun SplashScreen(
     }
 
     Column(
-        modifier = modifier
+        modifier = Modifier
             .fillMaxSize()
             .background(
                 brush = Brush.verticalGradient(
                     colors = listOf(
-                        Color(0xFF6B8CB5),
-                        Color(0xFF8BA5C9),
-                        Color(0xFF9FB5D1)
+                        Color(0xFF2196F3),
+                        Color(0xFF03A9F4),
+                        Color(0xFF00BCD4)
                     )
                 )
             ),
@@ -100,9 +102,9 @@ fun SplashScreen(
             )
         ) {
             Text(
-                text = "Weather",
+                text = stringResource(R.string.weather_title),
                 fontSize = 42.sp,
-                color = Color(0xFF4A6A8F),
+                color = Color.White,
                 fontWeight = FontWeight.Bold,
                 letterSpacing = 0.5.sp
             )

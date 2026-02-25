@@ -26,8 +26,9 @@ import com.example.presentation.component.helper.AlarmUiEvent
 import com.example.presentation.component.helper.CustomToast
 import com.example.presentation.component.helper.rememberToastState
 import com.example.weather.R
+import androidx.compose.ui.res.stringResource
+import com.example.presentation.component.helper.toArabicDigits
 import java.util.Calendar
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AlarmsScreen(
@@ -74,13 +75,21 @@ fun AlarmsScreen(
 
     onRequestAddAlarm { showAddSheet = true }
 
-    Box(modifier = modifier.fillMaxSize()) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(
+                Brush.verticalGradient(
+                    colors = listOf(Color(0xFF2196F3), Color(0xFF03A9F4), Color(0xFF00BCD4))
+                )
+            )
+    ) {
         Column(
-            modifier = Modifier
+            modifier = modifier
                 .fillMaxSize()
                 .background(
                     Brush.verticalGradient(
-                        colors = listOf(Color(0xFF6B8CB5), Color(0xFF8BA5C9), Color(0xFF9FB5D1))
+                        colors = listOf(Color(0xFF2196F3), Color(0xFF03A9F4), Color(0xFF00BCD4))
                     )
                 )
         ) {
@@ -97,9 +106,9 @@ fun AlarmsScreen(
                         modifier    = Modifier.size(220.dp)
                     )
                     Spacer(Modifier.height(5.dp))
-                    Text("The journey's quiet!", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                    Text(stringResource(R.string.journey_quiet), fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.White)
                     Spacer(Modifier.height(4.dp))
-                    Text("No weather alarms on your path", fontSize = 16.sp, color = Color.White.copy(alpha = 0.7f))
+                    Text(stringResource(R.string.no_weather_alarms), fontSize = 16.sp, color = Color.White.copy(alpha = 0.7f))
                 }
             } else {
                 LazyColumn(
@@ -129,10 +138,12 @@ fun AlarmsScreen(
         ModalBottomSheet(
             onDismissRequest = { showAddSheet = false },
             sheetState       = addSheetState,
-            containerColor   = Color(0xFF1B2A4A)
+            containerColor   = Color(0xFF1976D2)
         ) {
+            val currentLocationText = stringResource(R.string.current_location)
+
             AlarmSheetContent(
-                title            = "Choose Date And Time",
+                title            = stringResource(R.string.choose_date_time),
                 datePickerState  = datePickerState,
                 timePickerState  = timePickerState,
                 selectedType     = selectedType,
@@ -142,7 +153,7 @@ fun AlarmsScreen(
                     val calendar = buildCalendar(datePickerState, timePickerState)
                     viewModel.addAlarm(
                         AlarmEntity(
-                            city         = "Current Location",
+                            city         =currentLocationText,
                             latitude     = currentLocation.first,
                             longitude    = currentLocation.second,
                             timeInMillis = calendar.timeInMillis,
@@ -167,10 +178,10 @@ fun AlarmsScreen(
         ModalBottomSheet(
             onDismissRequest = { showEditSheet = false },
             sheetState       = editSheetState,
-            containerColor   = Color(0xFF1B2A4A)
+            containerColor   = Color(0xFF1976D2)
         ) {
             AlarmSheetContent(
-                title            = "Edit Alarm",
+                title            = stringResource(R.string.edit_alarm),
                 datePickerState  = editDateState,
                 timePickerState  = editTimeState,
                 selectedType     = editSelectedType,
@@ -201,11 +212,11 @@ fun AlarmsScreen(
     if (showResetDialog && alarmToReset != null) {
         AlertDialog(
             onDismissRequest = { showResetDialog = false },
-            containerColor   = Color(0xFF1B2A4A),
-            title = { Text("Delete Alarm?", color = Color.White, fontWeight = FontWeight.Bold) },
+            containerColor   = Color(0xFF1976D2),
+            title = { Text(stringResource(R.string.delete_alarm_title), color = Color.White, fontWeight = FontWeight.Bold) },
             text  = {
                 Text(
-                    "Are you sure you want to delete the alarm for ${alarmToReset?.city}?",
+                    stringResource(R.string.delete_alarm_msg, alarmToReset?.city ?: ""),
                     color = Color.White.copy(alpha = 0.8f)
                 )
             },
@@ -218,7 +229,7 @@ fun AlarmsScreen(
                     colors = ButtonDefaults.buttonColors(containerColor = Color.Red.copy(alpha = 0.8f)),
                     shape  = RoundedCornerShape(8.dp)
                 ) {
-                    Text("Delete", color = Color.White)
+                    Text(stringResource(R.string.delete), color = Color.White)
                 }
             },
             dismissButton = {
@@ -227,7 +238,7 @@ fun AlarmsScreen(
                     shape   = RoundedCornerShape(8.dp),
                     colors  = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFF3B82F6))
                 ) {
-                    Text("Cancel")
+                    Text(stringResource(R.string.cancel))
                 }
             }
         )
@@ -247,11 +258,11 @@ private fun AlarmSheetContent(
 ) {
     val formattedTime by remember(timePickerState.hour, timePickerState.minute) {
         derivedStateOf {
-            val h    = timePickerState.hour
-            val m    = timePickerState.minute
-            val amPm = if (h < 12) "AM" else "PM"
-            val hour = if (h % 12 == 0) 12 else h % 12
-            "%02d:%02d %s".format(hour, m, amPm)
+            val cal = java.util.Calendar.getInstance().apply {
+                set(java.util.Calendar.HOUR_OF_DAY, timePickerState.hour)
+                set(java.util.Calendar.MINUTE, timePickerState.minute)
+            }
+            java.text.SimpleDateFormat("hh:mm a", java.util.Locale.getDefault()).format(cal.time)
         }
     }
 
@@ -269,7 +280,7 @@ private fun AlarmSheetContent(
         DatePicker(
             state  = datePickerState,
             colors = DatePickerDefaults.colors(
-                containerColor            = Color(0xFF1B2A4A),
+                containerColor            = Color(0xFF1976D2),
                 titleContentColor         = Color.White,
                 headlineContentColor      = Color.White,
                 weekdayContentColor       = Color.White.copy(alpha = 0.6f),
@@ -282,7 +293,7 @@ private fun AlarmSheetContent(
         Spacer(Modifier.height(12.dp))
         HorizontalDivider(color = Color.White.copy(alpha = 0.1f))
         Spacer(Modifier.height(16.dp))
-        Text("Choose Time", fontSize = 16.sp, fontWeight = FontWeight.SemiBold, color = Color.White)
+        Text(stringResource(R.string.choose_time), fontSize = 16.sp, fontWeight = FontWeight.SemiBold, color = Color.White)
         Spacer(Modifier.height(8.dp))
         OutlinedButton(
             onClick  = onShowTimePicker,
@@ -290,34 +301,38 @@ private fun AlarmSheetContent(
             colors   = ButtonDefaults.outlinedButtonColors(contentColor = Color.White),
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("🕐  $formattedTime", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.White)
+            Text("🕐  $formattedTime".toArabicDigits(), fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.White)
         }
         Spacer(Modifier.height(20.dp))
         HorizontalDivider(color = Color.White.copy(alpha = 0.1f))
         Spacer(Modifier.height(16.dp))
         Text(
-            text     = "Would you like to receive weather updates via alerts or notifications?",
+            text     = stringResource(R.string.weather_updates_question),
             color    = Color.White.copy(alpha = 0.8f),
             fontSize = 14.sp
         )
         Text(
-            text       = "Choose your preferred option to stay informed!",
+            text       = stringResource(R.string.choose_preferred_option),
             color      = Color(0xFF3B82F6),
             fontSize   = 13.sp,
             fontWeight = FontWeight.Bold,
             modifier   = Modifier.padding(vertical = 4.dp)
         )
-        Row(
-            modifier              = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceEvenly
-        ) {
-            listOf("Alert", "Notification").forEach { type ->
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    RadioButton(selected = selectedType == type, onClick = { onTypeChange(type) })
-                    Text(type, color = Color.White, fontSize = 16.sp)
+                Row(
+                    modifier              = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    val typeLabels = mapOf(
+                        "Alert" to stringResource(R.string.alert),
+                        "Notification" to stringResource(R.string.notification)
+                    )
+                    typeLabels.forEach { (key, label) ->
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            RadioButton(selected = selectedType == key, onClick = { onTypeChange(key) })
+                            Text(label, color = Color.White, fontSize = 16.sp)
+                        }
+                    }
                 }
-            }
-        }
         Spacer(Modifier.height(24.dp))
         Button(
             onClick  = onDone,
@@ -325,7 +340,7 @@ private fun AlarmSheetContent(
             colors   = ButtonDefaults.buttonColors(containerColor = Color(0xFF3B82F6)),
             shape    = RoundedCornerShape(12.dp)
         ) {
-            Text("Done", fontSize = 18.sp, color = Color.White, fontWeight = FontWeight.Bold)
+            Text(stringResource(R.string.done), fontSize = 18.sp, color = Color.White, fontWeight = FontWeight.Bold)
         }
     }
 }
@@ -355,26 +370,26 @@ private fun ClockPickerDialog(
     ) {
         Card(
             shape    = RoundedCornerShape(16.dp),
-            colors   = CardDefaults.cardColors(containerColor = Color(0xFF1B2A4A)),
+            colors   = CardDefaults.cardColors(containerColor = Color(0xFF1976D2)),
             modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp)
         ) {
             Column(
                 modifier            = Modifier.padding(24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text("Select Time", fontSize = 18.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                Text(stringResource(R.string.select_time), fontSize = 18.sp, fontWeight = FontWeight.Bold, color = Color.White)
                 Spacer(modifier = Modifier.height(20.dp))
                 TimePicker(
                     state  = state,
                     colors = TimePickerDefaults.colors(
-                        clockDialColor                       = Color(0xFF2E4A6B),
+                        clockDialColor                       = Color(0xFF1976D2),
                         clockDialSelectedContentColor        = Color.White,
                         clockDialUnselectedContentColor      = Color.White.copy(alpha = 0.7f),
                         selectorColor                        = Color(0xFF3B82F6),
-                        containerColor                       = Color(0xFF1B2A4A),
+                        containerColor                       = Color(0xFF1976D2),
                         periodSelectorBorderColor            = Color(0xFF3B82F6),
                         timeSelectorSelectedContainerColor   = Color(0xFF3B82F6),
-                        timeSelectorUnselectedContainerColor = Color(0xFF2E4A6B),
+                        timeSelectorUnselectedContainerColor = Color(0xFF1976D2),
                         timeSelectorSelectedContentColor     = Color.White,
                         timeSelectorUnselectedContentColor   = Color.White.copy(alpha = 0.7f)
                     )
@@ -385,7 +400,7 @@ private fun ClockPickerDialog(
                     horizontalArrangement = Arrangement.End
                 ) {
                     TextButton(onClick = onDismiss) {
-                        Text("Cancel", color = Color.White.copy(alpha = 0.7f))
+                        Text(stringResource(R.string.cancel), color = Color.White.copy(alpha = 0.7f))
                     }
                     Spacer(modifier = Modifier.width(8.dp))
                     Button(
@@ -393,7 +408,7 @@ private fun ClockPickerDialog(
                         colors  = ButtonDefaults.buttonColors(containerColor = Color(0xFF3B82F6)),
                         shape   = RoundedCornerShape(8.dp)
                     ) {
-                        Text("OK", color = Color.White)
+                        Text(stringResource(R.string.ok), color = Color.White)
                     }
                 }
             }
