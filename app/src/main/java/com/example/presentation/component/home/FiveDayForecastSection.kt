@@ -38,7 +38,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.AsyncImage
+import androidx.compose.foundation.Image
+import androidx.compose.ui.res.painterResource
+import com.example.presentation.utils.getWeatherIcon
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
@@ -136,8 +138,8 @@ fun FiveDayForecastCard(
                     modifier = Modifier.weight(1.3f)
                 )
 
-                 AsyncImage(
-                    model = "https://openweathermap.org/img/wn/${icon}@2x.png",
+                 Image(
+                    painter = painterResource(id = getWeatherIcon(icon)),
                     contentDescription = null,
                     modifier = Modifier.size(32.dp)
                 )

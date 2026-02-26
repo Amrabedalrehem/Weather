@@ -22,7 +22,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.AsyncImage
+import androidx.compose.foundation.Image
+import androidx.compose.ui.res.painterResource
+import com.example.presentation.utils.getWeatherIcon
 import com.example.data.model.dto.HourlyForecastResponse
 import com.example.weather.R
 import androidx.compose.ui.res.stringResource
@@ -66,8 +68,8 @@ fun HourlyForecastCard(
                 color = Color.White.copy(alpha = 0.7f)
             )
 
-            AsyncImage(
-                model = "https://openweathermap.org/img/wn/${icon}@2x.png",
+            Image(
+                painter = painterResource(id = getWeatherIcon(icon)),
                 contentDescription = null,
                 modifier = Modifier.size(40.dp)
             )
