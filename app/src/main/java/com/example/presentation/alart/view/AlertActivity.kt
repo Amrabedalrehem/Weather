@@ -9,26 +9,36 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.padding
 import androidx.compose.ui.Modifier
+import com.example.data.IRepository
 import com.example.data.Repository
 import com.example.presentation.component.alert.alarm.AlarmReceiver
 import com.example.data.datasource.local.DataSourceLocal
 import com.example.data.datasource.remote.DataSourceRemote
+import com.example.data.datasource.remote.IDataSourceRemote
 import com.example.data.datasource.sharedPreference.DataStorePermission
 import com.example.data.datasource.sharedPreference.DataStoreSettings
 import com.example.data.dp.AppDatabase
 import com.example.presentation.alart.viewmodel.AlertViewModel
+import com.example.presentation.utils.CheckNetwork
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class AlertActivity : ComponentActivity() {
-    val dataSourceRemote = DataSourceRemote()
-    val database by lazy { AppDatabase.Companion.getInstance(this) }
-    val dataSourceLocal by lazy {
-        DataSourceLocal(database.favouriteDao(), database.homeWeatherDao(), database.alarmDao()) }
-    val dataStoreSettings by lazy { DataStoreSettings(this) }
-    val dataStorePermission by lazy { DataStorePermission(this) }
-    val repository = Repository(dataSourceLocal, dataSourceRemote, dataStoreSettings, dataStorePermission)
+    private val dataSourceRemote: IDataSourceRemote = DataSourceRemote()
+    private val database by lazy { AppDatabase.getInstance(this) }
+    private val dataSourceLocal by lazy {
+        DataSourceLocal(
+            database.favouriteDao(),
+            database.homeWeatherDao(),
+            database.alarmDao()
+        )
+    }
+    private val dataStoreSettings by lazy { DataStoreSettings(this) }
+    private val dataStorePermission by lazy { DataStorePermission(this) }
+     private val repository: IRepository by lazy {
+        Repository(dataSourceLocal, dataSourceRemote, dataStoreSettings, dataStorePermission)
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 

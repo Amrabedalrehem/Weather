@@ -7,6 +7,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.example.data.IRepository
 import com.example.data.Repository
 import com.example.data.model.dto.CurrentWeatherDto
 import com.example.data.model.dto.FiveDayForecastResponse
@@ -24,7 +25,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.util.Locale
 
-class MapPickerViewModel(val repository: Repository,    private val networkObserver: CheckNetwork
+class MapPickerViewModel(val repository: IRepository, private val networkObserver: CheckNetwork
 ) : ViewModel() {
     var defaultLocation by mutableStateOf(LatLng(30.0444, 31.2357))
         private set
@@ -172,7 +173,7 @@ class MapPickerViewModel(val repository: Repository,    private val networkObser
 
 }
 
-class MapPickerViewModelFactory(private val repository: Repository,
+class MapPickerViewModelFactory(private val repository: IRepository,
                                 private val networkObserver: CheckNetwork
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {

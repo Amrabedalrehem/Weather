@@ -3,13 +3,14 @@ package com.example.presentation.splash.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.example.data.IRepository
 import com.example.data.Repository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
-class SplashViewModel(private val repository: Repository) : ViewModel() {
+class SplashViewModel(private val repository: IRepository) : ViewModel() {
 
     private val _navigateTo = MutableStateFlow("")
     val navigateTo: StateFlow<String> = _navigateTo
@@ -28,7 +29,7 @@ class SplashViewModel(private val repository: Repository) : ViewModel() {
     }
 }
 
-class SplashViewModelFactory(private val repository: Repository) : ViewModelProvider.Factory {
+class SplashViewModelFactory(private val repository: IRepository) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return SplashViewModel(repository) as T
     }

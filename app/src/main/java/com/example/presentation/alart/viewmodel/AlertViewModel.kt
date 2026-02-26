@@ -3,7 +3,7 @@ package com.example.presentation.alart.viewmodel
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.data.Repository
+import com.example.data.IRepository
 import com.example.presentation.utils.WeatherAlertState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -13,7 +13,7 @@ class AlertViewModel(
     application: Application,
     private val lat: Double,
     private val lon: Double,
-    private val repository: Repository
+    private val repository: IRepository
 ) : AndroidViewModel(application) {
 
     private val _weatherState = MutableStateFlow<WeatherAlertState>(WeatherAlertState.Loading)

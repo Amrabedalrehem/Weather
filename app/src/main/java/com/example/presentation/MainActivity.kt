@@ -54,9 +54,11 @@ import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
+import com.example.data.IRepository
 import com.example.data.Repository
 import com.example.data.datasource.local.DataSourceLocal
 import com.example.data.datasource.remote.DataSourceRemote
+import com.example.data.datasource.remote.IDataSourceRemote
 import com.example.data.datasource.sharedPreference.DataStorePermission
 import com.example.data.datasource.sharedPreference.DataStoreSettings
 import com.example.data.dp.AppDatabase
@@ -101,7 +103,7 @@ import kotlinx.coroutines.runBlocking
 import java.util.Locale
 
 class MainActivity : ComponentActivity() {
-    private val dataSourceRemote = DataSourceRemote()
+    private val dataSourceRemote: IDataSourceRemote = DataSourceRemote()
     private val database by lazy { AppDatabase.getInstance(this) }
     private val dataSourceLocal by lazy {
         DataSourceLocal(
@@ -113,7 +115,7 @@ class MainActivity : ComponentActivity() {
     private val dataStoreSettings by lazy { DataStoreSettings(this) }
     private val dataStorePermission by lazy { DataStorePermission(this) }
     private val networkObserver by lazy { CheckNetwork(this) }
-    private val repository by lazy {
+    private val repository: IRepository by lazy {
         Repository(dataSourceLocal, dataSourceRemote, dataStoreSettings, dataStorePermission)
     }
     private val workerFactory by lazy { WeatherWorkerFactory(repository) }

@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.example.data.IRepository
 import com.example.data.Repository
 import com.example.presentation.utils.CheckNetwork
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -15,8 +16,8 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
-class SettingsViewModel(private val repository: Repository,private val  networkObserver: CheckNetwork
-, private val fusedLocationClient: FusedLocationProviderClient
+class SettingsViewModel(private val repository: IRepository, private val  networkObserver: CheckNetwork
+                        , private val fusedLocationClient: FusedLocationProviderClient
 ) : ViewModel() {
 
     val temperature = repository.temperatureUnit
@@ -69,7 +70,7 @@ class SettingsViewModel(private val repository: Repository,private val  networkO
     }
 }
 
-class SettingsViewModelFactory(private val repository: Repository, private val networkObserver: CheckNetwork, private val fusedLocationClient: FusedLocationProviderClient
+class SettingsViewModelFactory(private val repository: IRepository, private val networkObserver: CheckNetwork, private val fusedLocationClient: FusedLocationProviderClient
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return SettingsViewModel(repository, networkObserver, fusedLocationClient) as T

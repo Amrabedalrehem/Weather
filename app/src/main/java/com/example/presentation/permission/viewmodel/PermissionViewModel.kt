@@ -5,6 +5,7 @@ import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.example.data.IRepository
 import com.example.data.Repository
 import com.example.presentation.component.permission.LocationState
 import com.example.presentation.component.permission.PermissionUiState
@@ -19,7 +20,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
 class PermissionViewModel(application: Application,
-                          private val repository: Repository
+                          private val repository: IRepository
 ) : AndroidViewModel(application) {
 
     private val _uiState = MutableStateFlow<PermissionUiState>(PermissionUiState.Idle)
@@ -111,7 +112,7 @@ class PermissionViewModel(application: Application,
 }
 class PermissionViewModelFactory(
     private val application: Application,
-    private val repository: Repository
+    private val repository: IRepository
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return PermissionViewModel(application, repository) as T
