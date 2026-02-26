@@ -45,7 +45,7 @@ fun SettingsCard(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp),
-        shape = RoundedCornerShape(20.dp),
+        shape = RoundedCornerShape(28.dp),
         colors = CardDefaults.cardColors(
             containerColor = Color.Transparent
         ),
@@ -55,9 +55,8 @@ fun SettingsCard(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(
-                    Brush.verticalGradient(
-                        listOf(Color(0xFF2196F3), Color(0xFF03A9F4))
-                    )
+                    Color.White.copy(alpha = 0.15f),
+                    RoundedCornerShape(28.dp)
                 )
                 .padding(16.dp)
         ) {

@@ -339,7 +339,7 @@ class MainActivity : ComponentActivity() {
                                     DetailsFavoritesScreen(
                                         locationId = locationId,
                                         viewModel = detailsViewModel,
-                                        modifier = Modifier.padding(innerPadding)
+                                        modifier = Modifier
                                     )
                                 }
                                 composable<RouteScreen.FutureInfo> {

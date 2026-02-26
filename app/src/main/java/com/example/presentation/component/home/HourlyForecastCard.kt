@@ -49,7 +49,7 @@ fun HourlyForecastCard(
         stringResource(R.string.wind_speed_ms, speed.toString()).toArabicDigits()
     }
     Card(
-        shape = RoundedCornerShape(30.dp),
+        shape = RoundedCornerShape(40.dp),
         colors = CardDefaults.cardColors(
             containerColor = Color.White.copy(alpha = 0.2f)
         ),
