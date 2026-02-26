@@ -56,7 +56,7 @@ import com.example.presentation.utils.toArabicDigits
 
 @Composable
 fun FiveDayForecastSection(fiveDayData: FiveDayForecastResponse?,
-                           windUnit: String? = "m/s"
+                           windUnit: String? = "ms"
 ) {
     Column(
         modifier = Modifier

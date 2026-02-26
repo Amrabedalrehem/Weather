@@ -39,15 +39,15 @@ class Repository(
     suspend fun saveTheme(value: String) = settings.saveTheme(value)
 
     private fun mapUnits(unit: String): String = when (unit) {
-        "Celsius (°C)"    -> "metric"
-        "Fahrenheit (°F)" -> "imperial"
-        else              -> "standard"
+        "celsius"    -> "metric"
+        "fahrenheit" -> "imperial"
+        else         -> "standard"
     }
 
     private fun mapLanguage(lang: String): String = when (lang) {
-        "English"  -> "en"
-        "العربية"  -> "ar"
-        else       -> "en"
+        "en"  -> "en"
+        "ar"  -> "ar"
+        else  -> "en"
     }
 
     suspend fun getCurrentWeather(): Response<CurrentWeatherDto> {

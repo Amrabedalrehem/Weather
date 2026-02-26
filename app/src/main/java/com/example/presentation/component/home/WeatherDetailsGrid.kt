@@ -30,7 +30,7 @@ import com.example.presentation.utils.toArabicDigits
 
 @Composable
 fun WeatherDetailsGrid(weatherData: CurrentWeatherDto?
-,   windUnit: String = "m/s"
+,   windUnit: String = "ms"
 ) {
     val windSpeed = if (windUnit == "mph") {
         stringResource(R.string.wind_speed_mph, "%.1f".format(weatherData?.wind?.speed?.times(2.23694))).toArabicDigits()

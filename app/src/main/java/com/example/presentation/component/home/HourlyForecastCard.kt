@@ -41,7 +41,7 @@ fun HourlyForecastCard(
     temp_max: Double,
     temp_min: Double,
     speed: Double,
-    windUnit: String = "m/s"
+    windUnit: String = "ms"
 ) {
     val displaySpeed = if (windUnit == "mph") {
         stringResource(R.string.wind_speed_mph, "%.1f".format(speed * 2.23694)).toArabicDigits()
@@ -121,7 +121,7 @@ fun HourlyForecastCard(
 
 @Composable
 fun HourlyForecastSection(hourlyForecast: HourlyForecastResponse?,
-                          windUnit: String? = "m/s"
+                          windUnit: String? = "ms"
 ) {
     Column(
         modifier = Modifier.fillMaxWidth()
@@ -147,7 +147,7 @@ fun HourlyForecastSection(hourlyForecast: HourlyForecastResponse?,
                     temp_max = hourlyForecast?.hourly[hour]?.main?.tempMax ?:0.0,
                     temp_min = hourlyForecast?.hourly[hour]?.main?.tempMin?:0.0 ,
                     speed = hourlyForecast?.hourly[hour]?.wind?.speed ?: 0.0,
-                    windUnit = windUnit?:"m/s"
+                    windUnit = windUnit?:"ms"
                 )
             }
         }

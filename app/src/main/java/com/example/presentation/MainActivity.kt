@@ -125,8 +125,8 @@ class MainActivity : ComponentActivity() {
         // Restore saved locale on app startup
         val savedLang = runBlocking { repository.language.first() }
         val localeTag = when (savedLang) {
-            "العربية" -> "ar"
-            "English" -> "en"
+            "ar" -> "ar"
+            "en" -> "en"
             else -> ""
         }
         if (localeTag.isNotEmpty()) {
@@ -151,8 +151,8 @@ class MainActivity : ComponentActivity() {
             )
         }
         setContent {
-            val savedLanguage by repository.language.collectAsState(initial = "English")
-            val layoutDirection = if (savedLanguage == "العربية") LayoutDirection.Rtl else LayoutDirection.Ltr
+            val savedLanguage by repository.language.collectAsState(initial = "default")
+            val layoutDirection = if (savedLanguage == "ar") LayoutDirection.Rtl else LayoutDirection.Ltr
 
             val appScope = rememberCoroutineScope()
             val navController: NavHostController = rememberNavController()
