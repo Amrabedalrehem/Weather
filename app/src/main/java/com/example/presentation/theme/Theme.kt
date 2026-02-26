@@ -8,41 +8,49 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
     primary = WeatherBlueLight,
     secondary = WeatherBlueMid,
-    tertiary = WeatherCyan
+    tertiary = WeatherCyan,
+    background = Color(0xFF0D1B2A),
+    surface = Color(0xFF1B2838)
 )
 
 private val LightColorScheme = lightColorScheme(
     primary = WeatherBlueMid,
     secondary = WeatherBlueDark,
-    tertiary = WeatherCyan
+    tertiary = WeatherCyan,
+    background = Color(0xFF2196F3),
+    surface = Color(0xFF03A9F4)
 )
+
+ val LocalWeatherGradient = staticCompositionLocalOf { LightGradient }
 
 @Composable
 fun WeatherTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
+    themeMode: String = "system",
     content: @Composable () -> Unit
 ) {
-    val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-        }
-
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
+    val darkTheme = when (themeMode) {
+        "dark" -> true
+        "light" -> false
+        else -> isSystemInDarkTheme()
     }
 
-    MaterialTheme(
-        colorScheme = colorScheme,
-        typography = Typography,
-        content = content
-    )
+    val colorScheme = if (darkTheme) DarkColorScheme else LightColorScheme
+    val gradient = if (darkTheme) DarkGradient else LightGradient
+
+    CompositionLocalProvider(LocalWeatherGradient provides gradient) {
+        MaterialTheme(
+            colorScheme = colorScheme,
+            typography = Typography,
+            content = content
+        )
+    }
 }

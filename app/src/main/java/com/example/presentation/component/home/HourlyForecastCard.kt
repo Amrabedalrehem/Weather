@@ -22,7 +22,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.AsyncImage
+import androidx.compose.foundation.Image
+import androidx.compose.ui.res.painterResource
+import com.example.presentation.utils.getWeatherIcon
 import com.example.data.model.dto.HourlyForecastResponse
 import com.example.weather.R
 import androidx.compose.ui.res.stringResource
@@ -39,7 +41,7 @@ fun HourlyForecastCard(
     temp_max: Double,
     temp_min: Double,
     speed: Double,
-    windUnit: String = "m/s"
+    windUnit: String = "ms"
 ) {
     val displaySpeed = if (windUnit == "mph") {
         stringResource(R.string.wind_speed_mph, "%.1f".format(speed * 2.23694)).toArabicDigits()
@@ -47,7 +49,7 @@ fun HourlyForecastCard(
         stringResource(R.string.wind_speed_ms, speed.toString()).toArabicDigits()
     }
     Card(
-        shape = RoundedCornerShape(30.dp),
+        shape = RoundedCornerShape(40.dp),
         colors = CardDefaults.cardColors(
             containerColor = Color.White.copy(alpha = 0.2f)
         ),
@@ -66,8 +68,8 @@ fun HourlyForecastCard(
                 color = Color.White.copy(alpha = 0.7f)
             )
 
-            AsyncImage(
-                model = "https://openweathermap.org/img/wn/${icon}@2x.png",
+            Image(
+                painter = painterResource(id = getWeatherIcon(icon)),
                 contentDescription = null,
                 modifier = Modifier.size(40.dp)
             )
@@ -119,7 +121,7 @@ fun HourlyForecastCard(
 
 @Composable
 fun HourlyForecastSection(hourlyForecast: HourlyForecastResponse?,
-                          windUnit: String? = "m/s"
+                          windUnit: String? = "ms"
 ) {
     Column(
         modifier = Modifier.fillMaxWidth()
@@ -145,7 +147,7 @@ fun HourlyForecastSection(hourlyForecast: HourlyForecastResponse?,
                     temp_max = hourlyForecast?.hourly[hour]?.main?.tempMax ?:0.0,
                     temp_min = hourlyForecast?.hourly[hour]?.main?.tempMin?:0.0 ,
                     speed = hourlyForecast?.hourly[hour]?.wind?.speed ?: 0.0,
-                    windUnit = windUnit?:"m/s"
+                    windUnit = windUnit?:"ms"
                 )
             }
         }

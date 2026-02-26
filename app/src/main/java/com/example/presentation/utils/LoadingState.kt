@@ -24,11 +24,7 @@ fun LoadingState(modifier: Modifier = Modifier) {
             .fillMaxSize()
             .background(
                 brush = Brush.verticalGradient(
-                    colors = listOf(
-                        Color(0xFF2196F3),
-                        Color(0xFF03A9F4),
-                        Color(0xFF00BCD4)
-                    )
+                    colors = com.example.presentation.theme.LocalWeatherGradient.current
                 )
             ),
         contentAlignment = Alignment.Center
@@ -49,7 +45,7 @@ fun LoadingState(modifier: Modifier = Modifier) {
             )
 
             Icon(
-                 painter = painterResource(id = R.drawable.wind),
+                 painter = painterResource(id = R.drawable.sunny),
                 contentDescription = null,
                 modifier = Modifier
                     .size(80.dp)

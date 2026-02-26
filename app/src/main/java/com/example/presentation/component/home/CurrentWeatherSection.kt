@@ -5,6 +5,7 @@ import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -27,6 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -34,6 +36,7 @@ import coil.compose.AsyncImage
 import com.example.data.model.dto.CurrentWeatherDto
 import com.example.weather.R
 import androidx.compose.ui.res.stringResource
+import com.example.presentation.utils.getWeatherIcon
 import com.example.presentation.utils.toArabicDigits
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -97,8 +100,8 @@ fun CurrentWeatherSection(currentWeather: CurrentWeatherDto?) {
                 .size(180.dp).scale(scale).clip(CircleShape).background(Color.White.copy(alpha = 0.2f)),
                contentAlignment = Alignment.Center
         ) {
-             AsyncImage(
-                 model = "https://openweathermap.org/img/wn/${currentWeather?.weather[0]?.icon}@2x.png",
+             Image(
+                 painter = painterResource(id = getWeatherIcon(currentWeather?.weather?.firstOrNull()?.icon)),
                  contentDescription = stringResource(R.string.weather_icon),
                  modifier = Modifier.size(100.dp)
              )
@@ -163,7 +166,4 @@ fun getCurrentTime(): String {
     val formatter = DateTimeFormatter.ofPattern("hh:mm a", Locale.getDefault())
     return current.format(formatter)
 }
-
-
-
 

@@ -26,19 +26,19 @@ class DataStoreSettings(private val context: Context) {
 
 
     val temperatureUnit: Flow<String> = context.settingsDataStore.data
-        .map { it[TEMPERATURE_UNIT] ?: "Celsius (°C)" }
+        .map { it[TEMPERATURE_UNIT] ?: "celsius" }
 
     val locationType: Flow<String> = context.settingsDataStore.data
-        .map { it[LOCATION_TYPE] ?: "Gps" }
+        .map { it[LOCATION_TYPE] ?: "gps" }
 
     val language: Flow<String> = context.settingsDataStore.data
-        .map { it[LANGUAGE] ?: "English" }
+        .map { it[LANGUAGE] ?: "default" }
 
     val windSpeedUnit: Flow<String> = context.settingsDataStore.data
-        .map { it[WIND_SPEED_UNIT] ?: "m/s" }
+        .map { it[WIND_SPEED_UNIT] ?: "ms" }
 
     val theme: Flow<String> = context.settingsDataStore.data
-        .map { it[THEME] ?: "System" }
+        .map { it[THEME] ?: "system" }
 
     suspend fun saveTemperatureUnit(value: String) {
         context.settingsDataStore.edit { it[TEMPERATURE_UNIT] = value }

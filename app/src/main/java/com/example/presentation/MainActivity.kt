@@ -1,10 +1,13 @@
 package com.example.presentation
-import com.example.weather.R
-import androidx.compose.ui.res.stringResource
+import android.app.LocaleManager
+import android.content.res.Configuration
+import android.os.Build
 import android.os.Bundle
+import android.os.LocaleList
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
@@ -17,6 +20,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarHost
@@ -34,6 +38,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -50,16 +55,15 @@ import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.example.data.Repository
-import com.example.presentation.component.alert.alarm.WeatherWorkerFactory
 import com.example.data.datasource.local.DataSourceLocal
 import com.example.data.datasource.remote.DataSourceRemote
 import com.example.data.datasource.sharedPreference.DataStorePermission
 import com.example.data.datasource.sharedPreference.DataStoreSettings
 import com.example.data.dp.AppDatabase
-import com.example.presentation.utils.CheckNetwork
 import com.example.presentation.alarms.view.AlarmsScreen
 import com.example.presentation.alarms.viewmodel.AlarmViewModel
 import com.example.presentation.alarms.viewmodel.AlarmViewModelFactory
+import com.example.presentation.component.alert.alarm.WeatherWorkerFactory
 import com.example.presentation.component.location.MapPickerScreen
 import com.example.presentation.component.location.MapPickerViewModel
 import com.example.presentation.component.location.MapPickerViewModelFactory
@@ -87,13 +91,11 @@ import com.example.presentation.splash.view.SplashScreen
 import com.example.presentation.splash.viewmodel.SplashViewModel
 import com.example.presentation.splash.viewmodel.SplashViewModelFactory
 import com.example.presentation.theme.WeatherTheme
+import com.example.presentation.utils.CheckNetwork
 import com.example.weather.BuildConfig
+import com.example.weather.R
+import com.google.android.gms.location.LocationServices
 import com.google.android.libraries.places.api.Places
-import android.content.res.Configuration
-import android.os.Build
-import android.app.LocaleManager
-import android.os.LocaleList
-import androidx.compose.material3.MaterialTheme
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import java.util.Locale
@@ -125,8 +127,8 @@ class MainActivity : ComponentActivity() {
         // Restore saved locale on app startup
         val savedLang = runBlocking { repository.language.first() }
         val localeTag = when (savedLang) {
-            "العربية" -> "ar"
-            "English" -> "en"
+            "ar" -> "ar"
+            "en" -> "en"
             else -> ""
         }
         if (localeTag.isNotEmpty()) {
@@ -151,14 +153,15 @@ class MainActivity : ComponentActivity() {
             )
         }
         setContent {
-            val savedLanguage by repository.language.collectAsState(initial = "English")
-            val layoutDirection = if (savedLanguage == "العربية") LayoutDirection.Rtl else LayoutDirection.Ltr
+            val savedLanguage by repository.language.collectAsState(initial = "default")
+            val savedTheme by repository.theme.collectAsState(initial = "system")
+            val layoutDirection = if (savedLanguage == "ar") LayoutDirection.Rtl else LayoutDirection.Ltr
 
             val appScope = rememberCoroutineScope()
             val navController: NavHostController = rememberNavController()
             val homeViewModel: HomeViewModel = viewModel(factory = factory)
 
-            WeatherTheme {
+            WeatherTheme(themeMode = savedTheme) {
                  CompositionLocalProvider(LocalLayoutDirection provides layoutDirection) {
 
                     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -181,7 +184,7 @@ class MainActivity : ComponentActivity() {
                             SnackbarHost(hostState = snackbarHostState) { data ->
                                 Snackbar(
                                     snackbarData = data,
-                                    containerColor = Color(0xFF1976D2),
+                                    containerColor = androidx.compose.material3.MaterialTheme.colorScheme.primary,
                                     contentColor = Color.White,
                                 )
                             }
@@ -289,12 +292,14 @@ class MainActivity : ComponentActivity() {
                                     )
                                 }
                                 composable<RouteScreen.Settings> {
-                                    val settingsViewModel: SettingsViewModel = viewModel(
-                                        factory = SettingsViewModelFactory(repository, networkObserver)
-                                    )
+                                    val fusedLocationClient = LocationServices.getFusedLocationProviderClient(this@MainActivity)
+
+                                    val viewModel: SettingsViewModel by viewModels {
+                                        SettingsViewModelFactory(repository, networkObserver, fusedLocationClient)
+                                    }
                                     SettingsScreen(
                                         modifier = Modifier.padding(innerPadding),
-                                        viewModel = settingsViewModel,
+                                        viewModel = viewModel,
                                         snackbarHostState = snackbarHostState,
                                         onNavigateToMap = {
                                             navController.navigate(RouteScreen.Map)
@@ -339,7 +344,7 @@ class MainActivity : ComponentActivity() {
                                     DetailsFavoritesScreen(
                                         locationId = locationId,
                                         viewModel = detailsViewModel,
-                                        modifier = Modifier.padding(innerPadding)
+                                        modifier = Modifier
                                     )
                                 }
                                 composable<RouteScreen.FutureInfo> {

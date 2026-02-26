@@ -29,6 +29,13 @@ class DetailsFavoritesViewModel(
             initialValue = null
         )
 
+    val windSpeedUnit: StateFlow<String> = repository.windSpeedUnit
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Lazily,
+            initialValue = "ms"
+        )
+
     init {
         viewModelScope.launch {
             fetchAndUpdate()

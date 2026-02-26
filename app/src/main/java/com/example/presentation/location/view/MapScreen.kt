@@ -35,6 +35,7 @@ import kotlinx.coroutines.withContext
 import java.util.Locale
 import com.example.weather.R
 import androidx.compose.ui.res.stringResource
+import com.example.presentation.theme.LocalWeatherGradient
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -113,9 +114,9 @@ fun MapPickerScreen(
                         }
                 ) {
                     Box(
-                        modifier = Modifier
+                            modifier = Modifier
                             .background(
-                                color = Color(0xFF1976D2).copy(alpha = 0.92f),
+                                color = androidx.compose.material3.MaterialTheme.colorScheme.primary.copy(alpha = 0.92f),
                                 shape = RoundedCornerShape(14.dp)
                             )
                             .padding(horizontal = 20.dp, vertical = 14.dp)
@@ -240,7 +241,7 @@ fun MapPickerScreen(
             modifier = Modifier
                 .align(Alignment.TopEnd)
                 .padding(top = 48.dp, end = 16.dp),
-            containerColor = Color(0xFF1976D2),
+            containerColor = androidx.compose.material3.MaterialTheme.colorScheme.primary,
             contentColor = Color.White,
             shape = CircleShape
         ) {
@@ -254,7 +255,7 @@ fun MapPickerScreen(
             modifier = Modifier
                 .align(Alignment.TopStart)
                 .padding(top = 48.dp, start = 16.dp),
-            containerColor = Color(0xFF1976D2),
+            containerColor = androidx.compose.material3.MaterialTheme.colorScheme.primary,
             contentColor = Color.White,
             shape = CircleShape
         ) {
@@ -283,7 +284,7 @@ fun MapPickerScreen(
                 modifier = Modifier
                     .align(Alignment.TopStart)
                     .padding(top = 48.dp, start = 16.dp),
-                containerColor = Color(0xFF1976D2),
+                containerColor = androidx.compose.material3.MaterialTheme.colorScheme.primary,
                 contentColor = Color.White,
                 shape = CircleShape
             ) {
@@ -293,10 +294,11 @@ fun MapPickerScreen(
     }
 
     if (showBottomSheet) {
+        val weatherGradient = LocalWeatherGradient.current
         ModalBottomSheet(
             onDismissRequest = { showBottomSheet = false },
             sheetState = sheetState,
-            containerColor = Color(0xFF1976D2),
+            containerColor = weatherGradient.first(),
             shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
         ) {
             LocationDetailsContent(

@@ -24,28 +24,25 @@ fun DetailsFavoritesScreen(modifier: Modifier, locationId: Int,   viewModel: Det
 {
 
     val item by viewModel.itemFavourite.collectAsStateWithLifecycle()
+    val windUnit by viewModel.windSpeedUnit.collectAsStateWithLifecycle()
 
     Box(
         modifier = modifier
             .fillMaxSize()
             .background(
                 brush = Brush.verticalGradient(
-                    colors = listOf(
-                        Color(0xFF2196F3),
-                        Color(0xFF03A9F4),
-                        Color(0xFF00BCD4)
-                    )
+                    colors = com.example.presentation.theme.LocalWeatherGradient.current
                 )
             )
     ) {
     LazyColumn {
         item { CurrentWeatherSection(item?.currentWeather) }
         item { Spacer(Modifier.height(16.dp)) }
-        item { WeatherDetailsGrid(item?.currentWeather, windUnit =item?.currentWeather?.wind?.speed?.toString () ?: "m/s") }
+        item { WeatherDetailsGrid(item?.currentWeather, windUnit = windUnit) }
         item { Spacer(Modifier.height(16.dp)) }
-        item { HourlyForecastSection(item?.hourlyForecast, windUnit =item?.currentWeather?.wind?.speed?.toString () ?: "m/s") }
+        item { HourlyForecastSection(item?.hourlyForecast, windUnit = windUnit) }
         item { Spacer(Modifier.height(16.dp)) }
-        item { FiveDayForecastSection(item?.fiveDayForecast, windUnit = item?.currentWeather?.wind?.speed?.toString () ?: "m/s") }
+        item { FiveDayForecastSection(item?.fiveDayForecast, windUnit = windUnit) }
         item { Spacer(Modifier.height(16.dp)) }
         }}
 

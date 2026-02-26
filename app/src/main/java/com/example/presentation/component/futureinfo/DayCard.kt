@@ -25,7 +25,9 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.AsyncImage
+import androidx.compose.foundation.Image
+import androidx.compose.ui.res.painterResource
+import com.example.presentation.utils.getWeatherIcon
 import com.example.presentation.futureinfo.viewmodel.BadWeatherDay
 import com.example.presentation.futureinfo.viewmodel.Severity
 import com.example.weather.R
@@ -60,8 +62,8 @@ fun DayCard(day: BadWeatherDay) {
                 )
                 Spacer(Modifier.width(10.dp))
 
-                AsyncImage(
-                    model       = "https://openweathermap.org/img/wn/${day.icon}@2x.png",
+                Image(
+                    painter     = painterResource(id = getWeatherIcon(day.icon)),
                     contentDescription = day.description,
                     modifier    = Modifier.size(44.dp),
                     contentScale = ContentScale.Fit

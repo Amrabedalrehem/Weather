@@ -41,7 +41,7 @@ class MapPickerViewModel(val repository: Repository,    private val networkObser
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.Lazily,
-            initialValue = "m/s"
+            initialValue = "ms"
         )
     init {
         viewModelScope.launch {

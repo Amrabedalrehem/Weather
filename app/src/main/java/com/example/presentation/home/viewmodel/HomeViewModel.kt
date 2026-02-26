@@ -37,7 +37,7 @@ class HomeViewModel(
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.Lazily,
-            initialValue = "m/s"
+            initialValue = "ms"
         )
     val isConnected: StateFlow<Boolean> = networkObserver.isConnected
         .stateIn(
