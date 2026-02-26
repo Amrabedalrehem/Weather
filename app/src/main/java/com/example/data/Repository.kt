@@ -6,6 +6,8 @@ import com.example.data.datasource.remote.DataSourceRemote
 import com.example.data.datasource.remote.IDataSourceRemote
 import com.example.data.datasource.sharedPreference.DataStorePermission
 import com.example.data.datasource.sharedPreference.DataStoreSettings
+import com.example.data.datasource.sharedPreference.IDataStorePermission
+import com.example.data.datasource.sharedPreference.IDataStoreSettings
 import com.example.data.model.dto.CurrentWeatherDto
 import com.example.data.model.dto.FiveDayForecastResponse
 import com.example.data.model.dto.HourlyForecastResponse
@@ -19,8 +21,8 @@ import retrofit2.Response
 class Repository(
     private val local: IDataSourceLocal,
     private val remote: IDataSourceRemote,
-    private val settings: DataStoreSettings,
-    private val permission: DataStorePermission
+    private val settings: IDataStoreSettings,
+    private val permission: IDataStorePermission
 ) {
 
     val wasPermissionRequested: Flow<Boolean> = permission.wasPermissionRequested
