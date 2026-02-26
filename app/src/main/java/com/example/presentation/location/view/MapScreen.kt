@@ -35,6 +35,7 @@ import kotlinx.coroutines.withContext
 import java.util.Locale
 import com.example.weather.R
 import androidx.compose.ui.res.stringResource
+import com.example.presentation.theme.LocalWeatherGradient
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -293,10 +294,11 @@ fun MapPickerScreen(
     }
 
     if (showBottomSheet) {
+        val weatherGradient = LocalWeatherGradient.current
         ModalBottomSheet(
             onDismissRequest = { showBottomSheet = false },
             sheetState = sheetState,
-            containerColor = androidx.compose.material3.MaterialTheme.colorScheme.primary,
+            containerColor = weatherGradient.first(),
             shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
         ) {
             LocationDetailsContent(

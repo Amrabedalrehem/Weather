@@ -32,7 +32,7 @@ class Repository(
     val latitude: Flow<Double> = permission.latitude
     val longitude: Flow<Double> = permission.longitude
     suspend fun saveLocation(lat: Double, lon: Double) = permission.saveLocation(lat, lon)
-    suspend fun saveTemperatureUnit(value: String) = settings.saveTemperatureUnit(value)
+     suspend fun saveTemperatureUnit(value: String) = settings.saveTemperatureUnit(value)
     suspend fun saveWindSpeedUnit(value: String) = settings.saveWindSpeedUnit(value)
     suspend fun saveLanguage(value: String) = settings.saveLanguage(value)
     suspend fun saveLocationType(value: String) = settings.saveLocationType(value)

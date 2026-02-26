@@ -175,8 +175,8 @@ fun SettingsScreen(
                     if (key == "map") {
                         showMapDialog = true
                     } else {
-                        viewModel.saveLocationType(key)
-                        showSnackbar(label)
+                        viewModel.getCurrentLocation()
+                          showSnackbar(label)
                     }
                 }
             )
