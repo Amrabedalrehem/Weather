@@ -1,9 +1,4 @@
 package com.example.presentation.setting.view
-import android.app.LocaleManager
-import android.content.Context
-import android.content.res.Configuration
-import android.os.Build
-import android.os.LocaleList
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize
@@ -29,29 +24,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.presentation.component.setting.SettingsCard
 import com.example.presentation.setting.viewmodel.SettingsViewModel
+import com.example.presentation.utils.LocaleHelper
 import com.example.weather.R
 import kotlinx.coroutines.launch
-import java.util.Locale
-
-private fun applyLocale(context: Context, languageTag: String) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-        val localeManager = context.getSystemService(LocaleManager::class.java)
-        if (languageTag.isEmpty()) {
-            localeManager.applicationLocales = LocaleList.getEmptyLocaleList()
-        } else {
-            localeManager.applicationLocales = LocaleList.forLanguageTags(languageTag)
-        }
-    } else {
-        val locale = if (languageTag.isEmpty()) Locale.getDefault() else Locale(languageTag)
-        Locale.setDefault(locale)
-        val config = Configuration(context.resources.configuration)
-        config.setLocale(locale)
-        config.setLayoutDirection(locale)
-        context.resources.updateConfiguration(config, context.resources.displayMetrics)
-         val activity = context as? android.app.Activity
-        activity?.recreate()
-    }
-}
 
 @Composable
 fun SettingsScreen(
@@ -153,7 +128,7 @@ fun SettingsScreen(
                     }
                     scope.launch {
                         viewModel.saveLanguageAndWait(selectedLang)
-                        applyLocale(context, localeTag)
+                        LocaleHelper.applyLocale(context, localeTag)
                     }
                 }
             )

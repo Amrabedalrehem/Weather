@@ -56,7 +56,7 @@ import com.example.data.datasource.remote.DataSourceRemote
 import com.example.data.datasource.sharedPreference.DataStorePermission
 import com.example.data.datasource.sharedPreference.DataStoreSettings
 import com.example.data.dp.AppDatabase
-import com.example.data.network.CheckNetwork
+import com.example.presentation.utils.CheckNetwork
 import com.example.presentation.alarms.view.AlarmsScreen
 import com.example.presentation.alarms.viewmodel.AlarmViewModel
 import com.example.presentation.alarms.viewmodel.AlarmViewModelFactory

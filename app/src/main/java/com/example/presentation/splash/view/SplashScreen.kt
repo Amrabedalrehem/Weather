@@ -32,7 +32,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
-import com.example.presentation.component.helper.MyLottieAnimation
+import com.example.presentation.utils.MyLottieAnimation
 import com.example.presentation.splash.viewmodel.SplashViewModel
 import com.example.weather.R
 import androidx.compose.ui.res.stringResource

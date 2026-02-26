@@ -32,10 +32,10 @@ import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.example.presentation.alart.viewmodel.AlertViewModel
-import com.example.presentation.component.helper.WeatherAlertState
+import com.example.presentation.utils.WeatherAlertState
 import com.example.weather.R
 import androidx.compose.ui.res.stringResource
-import com.example.presentation.component.helper.toArabicDigits
+import com.example.presentation.utils.toArabicDigits
 
 
 @Composable

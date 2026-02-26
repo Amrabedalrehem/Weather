@@ -34,7 +34,7 @@ import coil.compose.AsyncImage
 import com.example.data.model.dto.CurrentWeatherDto
 import com.example.weather.R
 import androidx.compose.ui.res.stringResource
-import com.example.presentation.component.helper.toArabicDigits
+import com.example.presentation.utils.toArabicDigits
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale

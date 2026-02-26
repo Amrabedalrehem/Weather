@@ -7,8 +7,8 @@ import com.example.data.model.dto.CurrentWeatherDto
 import com.example.data.model.dto.FiveDayForecastResponse
 import com.example.data.model.dto.HourlyForecastResponse
 import com.example.data.model.entity.HomeWeatherCache
-import com.example.data.network.CheckNetwork
-import com.example.presentation.component.helper.UiState
+import com.example.presentation.utils.CheckNetwork
+import com.example.presentation.utils.UiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow

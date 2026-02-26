@@ -26,7 +26,7 @@ package com.example.presentation.component.home
  import com.example.data.model.dto.CurrentWeatherDto
 import com.example.weather.R
 import androidx.compose.ui.res.stringResource
-import com.example.presentation.component.helper.toArabicDigits
+import com.example.presentation.utils.toArabicDigits
 
 @Composable
 fun WeatherDetailsGrid(weatherData: CurrentWeatherDto?

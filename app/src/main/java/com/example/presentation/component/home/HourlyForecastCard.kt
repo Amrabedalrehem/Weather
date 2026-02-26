@@ -26,8 +26,8 @@ import coil.compose.AsyncImage
 import com.example.data.model.dto.HourlyForecastResponse
 import com.example.weather.R
 import androidx.compose.ui.res.stringResource
-import com.example.presentation.component.helper.toArabicDigits
-import com.example.presentation.component.helper.localizeWeatherMain
+import com.example.presentation.utils.toArabicDigits
+import com.example.presentation.utils.localizeWeatherMain
 
 
 @Composable

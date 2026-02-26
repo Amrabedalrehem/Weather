@@ -12,8 +12,8 @@ import com.example.data.model.dto.CurrentWeatherDto
 import com.example.data.model.dto.FiveDayForecastResponse
 import com.example.data.model.dto.HourlyForecastResponse
 import com.example.data.model.entity.FavouriteLocationCache
-import com.example.data.network.CheckNetwork
-import com.example.presentation.component.helper.UiState
+import com.example.presentation.utils.CheckNetwork
+import com.example.presentation.utils.UiState
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.flow.MutableStateFlow
