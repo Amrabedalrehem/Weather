@@ -18,9 +18,9 @@ import androidx.compose.ui.unit.sp
 import com.airbnb.lottie.compose.*
 import com.example.data.model.entity.FavouriteLocationCache
 import com.example.presentation.component.favourites.FavouriteCard
-import com.example.presentation.component.helper.CustomToast
-import com.example.presentation.component.helper.ToastType
-import com.example.presentation.component.helper.rememberToastState
+import com.example.presentation.utils.CustomToast
+import com.example.presentation.utils.ToastType
+import com.example.presentation.utils.rememberToastState
 import com.example.presentation.favorite.viewmodel.FavUiEvent
 import com.example.presentation.favorite.viewmodel.FavoritesViewModel
 import com.example.weather.R

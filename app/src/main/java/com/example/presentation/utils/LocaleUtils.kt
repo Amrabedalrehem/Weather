@@ -1,9 +1,10 @@
-package com.example.presentation.component.helper
+package com.example.presentation.utils
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import com.example.weather.R
 import java.util.Locale
+import kotlin.text.iterator
 
 
 fun String.toArabicDigits(): String {

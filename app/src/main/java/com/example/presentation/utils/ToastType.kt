@@ -1,4 +1,4 @@
-package com.example.presentation.component.helper
+package com.example.presentation.utils
 
 import androidx.compose.animation.*
 import androidx.compose.foundation.layout.*

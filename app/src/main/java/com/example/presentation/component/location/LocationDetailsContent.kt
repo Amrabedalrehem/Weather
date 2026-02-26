@@ -28,9 +28,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.example.presentation.component.helper.ErrorState
-import com.example.presentation.component.helper.LoadingState
-import com.example.presentation.component.helper.UiState
+import com.example.presentation.utils.ErrorState
+import com.example.presentation.utils.LoadingState
+import com.example.presentation.utils.UiState
 import com.example.presentation.component.home.CurrentWeatherSection
 import com.example.presentation.component.home.HourlyForecastSection
 import com.example.presentation.component.home.WeatherDetailsGrid

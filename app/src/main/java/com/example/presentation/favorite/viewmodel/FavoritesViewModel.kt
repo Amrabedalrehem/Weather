@@ -8,7 +8,7 @@ import com.example.data.Repository
 import com.example.presentation.component.alert.alarm.AlarmScheduler
 import com.example.data.model.entity.AlarmEntity
 import com.example.data.model.entity.FavouriteLocationCache
-import com.example.presentation.component.helper.ToastType
+import com.example.presentation.utils.ToastType
 import com.example.weather.R
 import android.content.res.Configuration
 import java.util.Locale

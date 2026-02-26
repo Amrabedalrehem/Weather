@@ -1,5 +1,5 @@
 package com.example.presentation.alarms.viewmodel
-import  com.example.presentation.component.helper.AlarmUiEvent
+import  com.example.presentation.utils.AlarmUiEvent
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -7,7 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.data.Repository
 import com.example.presentation.component.alert.alarm.AlarmScheduler
 import com.example.data.model.entity.AlarmEntity
-import com.example.presentation.component.helper.ToastType
+import com.example.presentation.utils.ToastType
 import com.example.weather.R
 import android.content.res.Configuration
 import java.util.Locale

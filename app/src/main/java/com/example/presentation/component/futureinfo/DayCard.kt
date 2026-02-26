@@ -30,7 +30,7 @@ import com.example.presentation.futureinfo.viewmodel.BadWeatherDay
 import com.example.presentation.futureinfo.viewmodel.Severity
 import com.example.weather.R
 import androidx.compose.ui.res.stringResource
-import com.example.presentation.component.helper.toArabicDigits
+import com.example.presentation.utils.toArabicDigits
 
 
 @Composable

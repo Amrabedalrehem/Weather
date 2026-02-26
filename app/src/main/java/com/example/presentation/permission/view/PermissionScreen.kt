@@ -24,7 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.presentation.component.helper.MyLottieAnimation
+import com.example.presentation.utils.MyLottieAnimation
 import com.example.presentation.component.permission.PermissionUiState
 import com.example.presentation.permission.viewmodel.PermissionViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi

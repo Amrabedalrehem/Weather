@@ -26,9 +26,9 @@ import androidx.compose.ui.unit.dp
 import com.example.data.model.dto.CurrentWeatherDto
 import com.example.data.model.dto.FiveDayForecastResponse
 import com.example.data.model.dto.HourlyForecastResponse
-import com.example.presentation.component.helper.ErrorState
-import com.example.presentation.component.helper.LoadingState
-import com.example.presentation.component.helper.UiState
+import com.example.presentation.utils.ErrorState
+import com.example.presentation.utils.LoadingState
+import com.example.presentation.utils.UiState
 import com.example.presentation.component.home.CurrentWeatherSection
 import com.example.presentation.component.home.HourlyForecastSection
 import com.example.presentation.component.home.WeatherDetailsGrid
