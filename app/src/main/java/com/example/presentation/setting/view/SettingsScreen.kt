@@ -35,8 +35,7 @@ fun SettingsScreen(
     snackbarHostState: SnackbarHostState,
     onNavigateToMap: () -> Unit,
  ) {
-    // These are internal keys like "celsius", "gps", "default", "ms", "system"
-    val temperatureKey by viewModel.temperature.collectAsState(initial = "celsius")
+     val temperatureKey by viewModel.temperature.collectAsState(initial = "celsius")
     val windSpeedKey by viewModel.windSpeed.collectAsState(initial = "ms")
     val languageKey by viewModel.language.collectAsState(initial = "default")
     val locationKey by viewModel.locationType.collectAsState(initial = "gps")
@@ -49,8 +48,7 @@ fun SettingsScreen(
     val noInternetMsg = stringResource(R.string.no_internet)
     val optionSelectedPattern = stringResource(R.string.option_selected)
 
-    // Key ↔ Label mapping pairs
-    val langOptions = listOf(
+     val langOptions = listOf(
         "default" to stringResource(R.string.lang_default),
         "en"      to stringResource(R.string.lang_english),
         "ar"      to stringResource(R.string.lang_arabic)
@@ -74,12 +72,10 @@ fun SettingsScreen(
         "light"  to stringResource(R.string.theme_light)
     )
 
-    // Helper: find label for a given key
-    fun List<Pair<String,String>>.labelFor(key: String) =
+     fun List<Pair<String,String>>.labelFor(key: String) =
         firstOrNull { it.first == key }?.second ?: first().second
 
-    // Helper: find key for a given label
-    fun List<Pair<String,String>>.keyFor(label: String) =
+     fun List<Pair<String,String>>.keyFor(label: String) =
         firstOrNull { it.second == label }?.first ?: first().first
 
     val showSnackbar: (String) -> Unit = { selectedLabel ->
@@ -127,11 +123,7 @@ fun SettingsScreen(
              .fillMaxSize()
             .background(
                 brush = Brush.verticalGradient(
-                    colors = listOf(
-                        Color(0xFF2196F3),
-                        Color(0xFF03A9F4),
-                        Color(0xFF00BCD4)
-                    )
+                    colors = com.example.presentation.theme.LocalWeatherGradient.current
                 )
             ).padding(vertical = 12.dp),
          contentPadding = androidx.compose.foundation.layout.PaddingValues(

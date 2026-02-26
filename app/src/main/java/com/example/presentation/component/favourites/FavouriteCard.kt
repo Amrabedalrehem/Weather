@@ -151,7 +151,7 @@ fun FavouriteCard(
      if (showDisableDialog) {
         AlertDialog(
             onDismissRequest = { showDisableDialog = false },
-            containerColor   = Color(0xFF1976D2),
+            containerColor   = androidx.compose.material3.MaterialTheme.colorScheme.primary,
             title = {
                 Text(stringResource(R.string.disable_alarm_title), color = Color.White, fontWeight = FontWeight.Bold, fontSize = 18.sp)
             },
@@ -193,7 +193,7 @@ fun FavouriteCard(
         ) {
             Card(
                 shape    = RoundedCornerShape(16.dp),
-                colors   = CardDefaults.cardColors(containerColor = Color(0xFF1976D2)),
+                colors   = androidx.compose.material3.CardDefaults.cardColors(containerColor = androidx.compose.material3.MaterialTheme.colorScheme.primary),
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp)
             ) {
                 Column(
@@ -206,14 +206,14 @@ fun FavouriteCard(
                      TimePicker(
                         state  = timePickerState,
                         colors = TimePickerDefaults.colors(
-                            clockDialColor                       = Color(0xFF1976D2),
+                            clockDialColor                       = androidx.compose.material3.MaterialTheme.colorScheme.primary,
                             clockDialSelectedContentColor        = Color.White,
                             clockDialUnselectedContentColor      = Color.White.copy(alpha = 0.7f),
                             selectorColor                        = Color(0xFF3B82F6),
-                            containerColor                       = Color(0xFF1976D2),
+                            containerColor                       = androidx.compose.material3.MaterialTheme.colorScheme.primary,
                             periodSelectorBorderColor            = Color(0xFF3B82F6),
                             timeSelectorSelectedContainerColor   = Color(0xFF3B82F6),
-                            timeSelectorUnselectedContainerColor = Color(0xFF1976D2),
+                            timeSelectorUnselectedContainerColor = androidx.compose.material3.MaterialTheme.colorScheme.primary,
                             timeSelectorSelectedContentColor     = Color.White,
                             timeSelectorUnselectedContentColor   = Color.White.copy(alpha = 0.7f)
                         )
@@ -246,7 +246,7 @@ fun FavouriteCard(
         ModalBottomSheet(
             onDismissRequest = { showAlarmSheet = false },
             sheetState       = sheetState,
-            containerColor   = Color(0xFF1976D2)
+            containerColor   = androidx.compose.material3.MaterialTheme.colorScheme.primary
         ) {
             Column(
                 modifier = Modifier
@@ -270,7 +270,7 @@ fun FavouriteCard(
                 DatePicker(
                     state  = datePickerState,
                     colors = DatePickerDefaults.colors(
-                        containerColor            = Color(0xFF1976D2),
+                        containerColor            = androidx.compose.material3.MaterialTheme.colorScheme.primary,
                         titleContentColor         = Color.White,
                         headlineContentColor      = Color.White,
                         weekdayContentColor       = Color.White.copy(alpha = 0.6f),

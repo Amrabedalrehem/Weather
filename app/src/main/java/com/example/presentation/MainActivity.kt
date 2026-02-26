@@ -152,13 +152,14 @@ class MainActivity : ComponentActivity() {
         }
         setContent {
             val savedLanguage by repository.language.collectAsState(initial = "default")
+            val savedTheme by repository.theme.collectAsState(initial = "system")
             val layoutDirection = if (savedLanguage == "ar") LayoutDirection.Rtl else LayoutDirection.Ltr
 
             val appScope = rememberCoroutineScope()
             val navController: NavHostController = rememberNavController()
             val homeViewModel: HomeViewModel = viewModel(factory = factory)
 
-            WeatherTheme {
+            WeatherTheme(themeMode = savedTheme) {
                  CompositionLocalProvider(LocalLayoutDirection provides layoutDirection) {
 
                     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -181,7 +182,7 @@ class MainActivity : ComponentActivity() {
                             SnackbarHost(hostState = snackbarHostState) { data ->
                                 Snackbar(
                                     snackbarData = data,
-                                    containerColor = Color(0xFF1976D2),
+                                    containerColor = androidx.compose.material3.MaterialTheme.colorScheme.primary,
                                     contentColor = Color.White,
                                 )
                             }

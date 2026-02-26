@@ -35,7 +35,7 @@ fun BottomNavigationBar(navController: NavHostController) {
                 .height(64.dp)
                 .align(Alignment.BottomCenter),
             shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
-            colors = CardDefaults.cardColors(containerColor = Color(0xFF1976D2)),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary),
             elevation = CardDefaults.cardElevation(8.dp)
         ) {
             Row(

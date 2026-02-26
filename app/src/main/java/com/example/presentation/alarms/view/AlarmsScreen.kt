@@ -80,7 +80,7 @@ fun AlarmsScreen(
             .fillMaxSize()
             .background(
                 Brush.verticalGradient(
-                    colors = listOf(Color(0xFF2196F3), Color(0xFF03A9F4), Color(0xFF00BCD4))
+                    colors = com.example.presentation.theme.LocalWeatherGradient.current
                 )
             )
     ) {
@@ -89,7 +89,7 @@ fun AlarmsScreen(
                 .fillMaxSize()
                 .background(
                     Brush.verticalGradient(
-                        colors = listOf(Color(0xFF2196F3), Color(0xFF03A9F4), Color(0xFF00BCD4))
+                        colors = com.example.presentation.theme.LocalWeatherGradient.current
                     )
                 )
         ) {
@@ -138,7 +138,7 @@ fun AlarmsScreen(
         ModalBottomSheet(
             onDismissRequest = { showAddSheet = false },
             sheetState       = addSheetState,
-            containerColor   = Color(0xFF1976D2)
+            containerColor   = androidx.compose.material3.MaterialTheme.colorScheme.primary
         ) {
             val currentLocationText = stringResource(R.string.current_location)
 
@@ -178,7 +178,7 @@ fun AlarmsScreen(
         ModalBottomSheet(
             onDismissRequest = { showEditSheet = false },
             sheetState       = editSheetState,
-            containerColor   = Color(0xFF1976D2)
+            containerColor   = androidx.compose.material3.MaterialTheme.colorScheme.primary
         ) {
             AlarmSheetContent(
                 title            = stringResource(R.string.edit_alarm),
@@ -212,7 +212,7 @@ fun AlarmsScreen(
     if (showResetDialog && alarmToReset != null) {
         AlertDialog(
             onDismissRequest = { showResetDialog = false },
-            containerColor   = Color(0xFF1976D2),
+            containerColor   = androidx.compose.material3.MaterialTheme.colorScheme.primary,
             title = { Text(stringResource(R.string.delete_alarm_title), color = Color.White, fontWeight = FontWeight.Bold) },
             text  = {
                 Text(
@@ -280,7 +280,7 @@ private fun AlarmSheetContent(
         DatePicker(
             state  = datePickerState,
             colors = DatePickerDefaults.colors(
-                containerColor            = Color(0xFF1976D2),
+                containerColor = androidx.compose.material3.MaterialTheme.colorScheme.primary,
                 titleContentColor         = Color.White,
                 headlineContentColor      = Color.White,
                 weekdayContentColor       = Color.White.copy(alpha = 0.6f),
@@ -370,7 +370,7 @@ private fun ClockPickerDialog(
     ) {
         Card(
             shape    = RoundedCornerShape(16.dp),
-            colors   = CardDefaults.cardColors(containerColor = Color(0xFF1976D2)),
+            colors   = CardDefaults.cardColors(containerColor = androidx.compose.material3.MaterialTheme.colorScheme.primary),
             modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp)
         ) {
             Column(
@@ -382,14 +382,14 @@ private fun ClockPickerDialog(
                 TimePicker(
                     state  = state,
                     colors = TimePickerDefaults.colors(
-                        clockDialColor                       = Color(0xFF1976D2),
+                        clockDialColor                       = androidx.compose.material3.MaterialTheme.colorScheme.primary,
                         clockDialSelectedContentColor        = Color.White,
                         clockDialUnselectedContentColor      = Color.White.copy(alpha = 0.7f),
                         selectorColor                        = Color(0xFF3B82F6),
-                        containerColor                       = Color(0xFF1976D2),
+                        containerColor                       = androidx.compose.material3.MaterialTheme.colorScheme.primary,
                         periodSelectorBorderColor            = Color(0xFF3B82F6),
                         timeSelectorSelectedContainerColor   = Color(0xFF3B82F6),
-                        timeSelectorUnselectedContainerColor = Color(0xFF1976D2),
+                        timeSelectorUnselectedContainerColor = androidx.compose.material3.MaterialTheme.colorScheme.primary,
                         timeSelectorSelectedContentColor     = Color.White,
                         timeSelectorUnselectedContentColor   = Color.White.copy(alpha = 0.7f)
                     )

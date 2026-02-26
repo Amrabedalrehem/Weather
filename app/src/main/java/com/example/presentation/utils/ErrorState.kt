@@ -37,11 +37,7 @@ fun ErrorState(
             .fillMaxSize()
             .background(
                 brush = Brush.verticalGradient(
-                    colors = listOf(
-                        Color(0xFF2196F3),
-                        Color(0xFF03A9F4),
-                        Color(0xFF00BCD4)
-                    )
+                    colors = com.example.presentation.theme.LocalWeatherGradient.current
                 )
             ),
         contentAlignment = Alignment.Center

@@ -113,9 +113,9 @@ fun MapPickerScreen(
                         }
                 ) {
                     Box(
-                        modifier = Modifier
+                            modifier = Modifier
                             .background(
-                                color = Color(0xFF1976D2).copy(alpha = 0.92f),
+                                color = androidx.compose.material3.MaterialTheme.colorScheme.primary.copy(alpha = 0.92f),
                                 shape = RoundedCornerShape(14.dp)
                             )
                             .padding(horizontal = 20.dp, vertical = 14.dp)
@@ -240,7 +240,7 @@ fun MapPickerScreen(
             modifier = Modifier
                 .align(Alignment.TopEnd)
                 .padding(top = 48.dp, end = 16.dp),
-            containerColor = Color(0xFF1976D2),
+            containerColor = androidx.compose.material3.MaterialTheme.colorScheme.primary,
             contentColor = Color.White,
             shape = CircleShape
         ) {
@@ -254,7 +254,7 @@ fun MapPickerScreen(
             modifier = Modifier
                 .align(Alignment.TopStart)
                 .padding(top = 48.dp, start = 16.dp),
-            containerColor = Color(0xFF1976D2),
+            containerColor = androidx.compose.material3.MaterialTheme.colorScheme.primary,
             contentColor = Color.White,
             shape = CircleShape
         ) {
@@ -283,7 +283,7 @@ fun MapPickerScreen(
                 modifier = Modifier
                     .align(Alignment.TopStart)
                     .padding(top = 48.dp, start = 16.dp),
-                containerColor = Color(0xFF1976D2),
+                containerColor = androidx.compose.material3.MaterialTheme.colorScheme.primary,
                 contentColor = Color.White,
                 shape = CircleShape
             ) {
@@ -296,7 +296,7 @@ fun MapPickerScreen(
         ModalBottomSheet(
             onDismissRequest = { showBottomSheet = false },
             sheetState = sheetState,
-            containerColor = Color(0xFF1976D2),
+            containerColor = androidx.compose.material3.MaterialTheme.colorScheme.primary,
             shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
         ) {
             LocationDetailsContent(
