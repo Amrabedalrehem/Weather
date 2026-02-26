@@ -3,6 +3,7 @@ package com.example.data
 import com.example.data.datasource.local.DataSourceLocal
 import com.example.data.datasource.local.IDataSourceLocal
 import com.example.data.datasource.remote.DataSourceRemote
+import com.example.data.datasource.remote.IDataSourceRemote
 import com.example.data.datasource.sharedPreference.DataStorePermission
 import com.example.data.datasource.sharedPreference.DataStoreSettings
 import com.example.data.model.dto.CurrentWeatherDto
@@ -17,7 +18,7 @@ import retrofit2.Response
 
 class Repository(
     private val local: IDataSourceLocal,
-    private val remote: DataSourceRemote,
+    private val remote: IDataSourceRemote,
     private val settings: DataStoreSettings,
     private val permission: DataStorePermission
 ) {

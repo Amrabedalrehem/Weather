@@ -120,6 +120,5 @@ dependencies {
       implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.7.3")
 
     implementation("androidx.work:work-runtime-ktx:2.9.0")
-    // data store
     implementation("androidx.datastore:datastore-preferences:1.1.1")
 }
