@@ -128,5 +128,84 @@ class DataSourceLocalTest {
         coVerify { homeWeatherDao.insertHomeWeather(cache) }
     }
 
+    @Test
+    fun getAllAlarms_returnsAlarmList() = runTest {
+        // Given data in the database
+        val fakeAlarms = listOf(
+            AlarmEntity(id = 1, city = "Cairo", latitude = 30.0, longitude = 31.0, timeInMillis = 1000L, type = "notification"),
+            AlarmEntity(id = 2, city = "Alexandria", latitude = 31.0, longitude = 30.0, timeInMillis = 2000L, type = "alarm")
+        )
+        every { alarmDao.getAllAlarms() } returns flowOf(fakeAlarms)
+
+        // When getAllAlarms is called
+        val result = dataSourceLocal.getAllAlarms().first()
+
+        // Then the result should contain the correct data
+        assertEquals(2, result.size)
+        assertEquals("Cairo", result[0].city)
+    }
+
+    @Test
+    fun insertAlarm_returnsGeneratedId() = runTest {
+        // Given data in the database
+        val alarm = AlarmEntity(city = "Cairo", latitude = 30.0, longitude = 31.0, timeInMillis = 1000L, type = "notification")
+        coEvery { alarmDao.insertAlarm(alarm) } returns 1L
+
+        // When insertAlarm is called with a new alarm
+        val result = dataSourceLocal.insertAlarm(alarm)
+
+        // Then the result should contain the new alarm
+        assertEquals(1L, result)
+    }
+
+    @Test
+    fun deleteAlarm_callsAlarmDaoDelete() = runTest {
+        // Given data in the database
+        val alarm = AlarmEntity(id = 1, city = "Cairo", latitude = 30.0, longitude = 31.0, timeInMillis = 1000L, type = "notification")
+        coEvery { alarmDao.deleteAlarm(alarm) } returns Unit
+
+        // When deleteAlarm is called with the correct alarm
+        dataSourceLocal.deleteAlarm(alarm)
+
+        // Then the result should not contain the deleted alarm
+        coVerify { alarmDao.deleteAlarm(alarm) }
+    }
+
+    @Test
+    fun getAlarmById_existingId_returnsAlarm() = runTest {
+        // Given data in the database
+        val alarm = AlarmEntity(id = 1, city = "Cairo", latitude = 30.0, longitude = 31.0, timeInMillis = 1000L, type = "notification")
+        coEvery { alarmDao.getAlarmById(1) } returns alarm
+
+        // When getAlarmById is called with the correct id
+        val result = dataSourceLocal.getAlarmById(1)
+
+        // Then the result should contain the correct alarm
+        assertEquals("Cairo", result?.city)
+    }
+
+    @Test
+    fun getAlarmById_nonExistingId_returnsNull() = runTest {
+        // Given data in the database
+        coEvery { alarmDao.getAlarmById(999) } returns null
+
+        // When getAlarmById is called with a non-existing id
+        val result = dataSourceLocal.getAlarmById(999)
+
+        // Then the result should be null
+        assertNull(result)
+    }
+
+    @Test
+    fun toggleAlarm_callsAlarmDaoToggle() = runTest {
+        // Given data in the database
+        coEvery { alarmDao.toggleAlarm(1, false) } returns Unit
+
+        // When toggleAlarm is called with the correct id
+        dataSourceLocal.toggleAlarm(1, false)
+
+        // Then the result should not contain the updated alarm
+        coVerify { alarmDao.toggleAlarm(1, false) }
+    }
 
 }
