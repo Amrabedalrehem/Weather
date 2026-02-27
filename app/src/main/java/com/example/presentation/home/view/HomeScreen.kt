@@ -1,5 +1,5 @@
 package com.example.presentation.home.view
-import FiveDayForecastSection
+import com.example.presentation.component.home.FiveDayForecastSection
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn

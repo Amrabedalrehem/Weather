@@ -11,7 +11,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -78,16 +77,25 @@ fun FavoriteScreen(
                     value         = searchQuery,
                     onValueChange = { searchQuery = it },
                     modifier      = Modifier.fillMaxWidth().padding(16.dp),
-                    placeholder   = { Text(stringResource(R.string.search_city), color = Color.White.copy(alpha = 0.7f)) },
-                    leadingIcon   = {
-                        Icon(Icons.Default.Search, contentDescription = "Search", tint = Color.White)
+                    placeholder   = {
+                        Text(
+                            stringResource(R.string.search_city),
+                            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
+                        )
+                    },
+                    leadingIcon = {
+                        Icon(
+                            Icons.Default.Search,
+                            contentDescription = "Search",
+                            tint = MaterialTheme.colorScheme.onBackground
+                        )
                     },
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedTextColor     = Color.White,
-                        unfocusedTextColor   = Color.White,
-                        cursorColor          = Color.White,
-                        focusedBorderColor   = Color.White,
-                        unfocusedBorderColor = Color.White.copy(alpha = 0.5f),
+                        focusedTextColor     = MaterialTheme.colorScheme.onBackground,
+                        unfocusedTextColor   = MaterialTheme.colorScheme.onBackground,
+                        cursorColor          = MaterialTheme.colorScheme.onBackground,
+                        focusedBorderColor   = MaterialTheme.colorScheme.onBackground,
+                        unfocusedBorderColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
                     ),
                     shape      = RoundedCornerShape(25.dp),
                     singleLine = true
@@ -110,9 +118,18 @@ fun FavoriteScreen(
                             modifier    = Modifier.size(220.dp)
                         )
                         Spacer(modifier = Modifier.height(5.dp))
-                        Text(stringResource(R.string.no_favorites_yet), fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                        Text(
+                            stringResource(R.string.no_favorites_yet),
+                            fontSize   = 20.sp,
+                            fontWeight = FontWeight.Bold,
+                            color      = MaterialTheme.colorScheme.onBackground
+                        )
                         Spacer(modifier = Modifier.height(4.dp))
-                        Text(stringResource(R.string.tap_button_add_city), fontSize = 16.sp, color = Color.White.copy(alpha = 0.7f))
+                        Text(
+                            stringResource(R.string.tap_button_add_city),
+                            fontSize = 16.sp,
+                            color    = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
+                        )
                     }
                 }
 
@@ -122,19 +139,23 @@ fun FavoriteScreen(
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Text(stringResource(R.string.no_cities_match), fontSize = 18.sp, fontWeight = FontWeight.Medium, color = Color.White)
+                        Text(
+                            stringResource(R.string.no_cities_match),
+                            fontSize   = 18.sp,
+                            fontWeight = FontWeight.Medium,
+                            color      = MaterialTheme.colorScheme.onBackground
+                        )
                     }
                 }
 
                 else -> {
                     LazyColumn(
-                        modifier            = Modifier.fillMaxSize().padding(horizontal = 16.dp),
+                        modifier  = Modifier.fillMaxSize().padding(horizontal = 16.dp),
                         verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
-
                         items(filteredFavourites) { location ->
-                            val message = stringResource(R.string.city_removed, location.city)
-                            val activelabel =stringResource(R.string.undo)
+                            val message     = stringResource(R.string.city_removed, location.city)
+                            val activelabel = stringResource(R.string.undo)
                             FavouriteCard(
                                 location         = location,
                                 activeAlarms     = activeAlarms,
@@ -144,7 +165,7 @@ fun FavoriteScreen(
                                     scope.launch {
                                         val result = snackbarHostState.showSnackbar(
                                             message     = message,
-                                            actionLabel =activelabel ,
+                                            actionLabel = activelabel,
                                             duration    = SnackbarDuration.Short
                                         )
                                         when (result) {

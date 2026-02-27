@@ -1,5 +1,4 @@
 package com.example.presentation.futureinfo.viewmodel
-
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModelProvider

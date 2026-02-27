@@ -1,3 +1,4 @@
+package com.example.presentation.component.home
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
@@ -33,12 +34,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.Image
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.res.painterResource
 import com.example.presentation.utils.getWeatherIcon
 import com.airbnb.lottie.compose.LottieAnimation
@@ -53,10 +54,10 @@ import com.example.weather.R
 import androidx.compose.ui.res.stringResource
 import com.example.presentation.utils.toArabicDigits
 
-
 @Composable
-fun FiveDayForecastSection(fiveDayData: FiveDayForecastResponse?,
-                           windUnit: String? = "ms"
+fun FiveDayForecastSection(
+    fiveDayData: FiveDayForecastResponse?,
+    windUnit: String? = "ms"
 ) {
     Column(
         modifier = Modifier
@@ -67,19 +68,18 @@ fun FiveDayForecastSection(fiveDayData: FiveDayForecastResponse?,
             text = stringResource(R.string.five_day_forecast),
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
-            color = Color.White,
+            color = MaterialTheme.colorScheme.onBackground,
             modifier = Modifier.padding(bottom = 16.dp)
         )
-
 
         fiveDayData?.fiveDay?.forEachIndexed { index, day ->
             FiveDayForecastCard(
                 day = "${dateFormat(fiveDayData.fiveDay[index].dt)}".toArabicDigits(),
                 highTemp = "${fiveDayData.fiveDay[index].temp.max}°".toArabicDigits(),
                 lowTemp = "${fiveDayData.fiveDay[index].temp.min}°".toArabicDigits(),
-                icon =fiveDayData.fiveDay[index].weather[0].icon,
+                icon = fiveDayData.fiveDay[index].weather[0].icon,
                 humidity = "${fiveDayData.fiveDay[index].humidity}%".toArabicDigits(),
-                windSpeed =  if (windUnit == "mph") {
+                windSpeed = if (windUnit == "mph") {
                     "${"%.1f".format(fiveDayData.fiveDay[index].speed * 2.23694)} mph".toArabicDigits()
                 } else {
                     "${fiveDayData.fiveDay[index].speed} m/s".toArabicDigits()
@@ -112,7 +112,7 @@ fun FiveDayForecastCard(
     Card(
         shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color.White.copy(alpha = 0.2f)
+            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
         ),
         modifier = Modifier
             .fillMaxWidth()
@@ -128,17 +128,17 @@ fun FiveDayForecastCard(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                 Text(
+                Text(
                     text = day,
                     fontSize = 13.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.onBackground,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.weight(1.3f)
                 )
 
-                 Image(
+                Image(
                     painter = painterResource(id = getWeatherIcon(icon)),
                     contentDescription = null,
                     modifier = Modifier.size(32.dp)
@@ -146,7 +146,7 @@ fun FiveDayForecastCard(
 
                 Spacer(modifier = Modifier.width(8.dp))
 
-                 Row(
+                Row(
                     modifier = Modifier.weight(1.5f),
                     horizontalArrangement = Arrangement.End,
                     verticalAlignment = Alignment.CenterVertically
@@ -155,18 +155,18 @@ fun FiveDayForecastCard(
                         text = highTemp,
                         fontSize = 13.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color.White,
+                        color = MaterialTheme.colorScheme.onBackground,
                         maxLines = 1
                     )
                     Text(
                         text = "/",
                         fontSize = 13.sp,
-                        color = Color.White.copy(alpha = 0.5f)
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
                     )
                     Text(
                         text = lowTemp,
                         fontSize = 13.sp,
-                        color = Color.White.copy(alpha = 0.7f),
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
                         maxLines = 1
                     )
                 }
@@ -177,142 +177,137 @@ fun FiveDayForecastCard(
                     else
                         Icons.Default.KeyboardArrowDown,
                     contentDescription = null,
-                    tint = Color.White.copy(alpha = 0.7f),
-                    modifier = Modifier
-                        .size(20.dp)
+                    tint = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
+                    modifier = Modifier.size(20.dp)
                 )
             }
         }
     }
 
-             AnimatedVisibility(
-                visible = isExpanded,
-                enter = fadeIn(tween(500)) + expandVertically(tween(300)),
-                exit = fadeOut(tween(500)) + shrinkVertically(tween(300))
+    AnimatedVisibility(
+        visible = isExpanded,
+        enter = fadeIn(tween(500)) + expandVertically(tween(300)),
+        exit = fadeOut(tween(500)) + shrinkVertically(tween(300))
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 20.dp)
+        ) {
+            Divider(
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.3f),
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 20.dp)
-                ) {
-                     Divider(
-                        color = Color.White.copy(alpha = 0.3f),
-                        modifier = Modifier.padding(bottom = 16.dp)
-                    )
+                val composition by rememberLottieComposition(
+                    LottieCompositionSpec.RawRes(R.raw.cloud_and_sun_animation)
+                )
+                LottieAnimation(
+                    composition = composition,
+                    iterations = LottieConstants.IterateForever,
+                    modifier = Modifier.size(40.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = description,
+                    fontSize = 14.sp,
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.9f),
+                    fontWeight = FontWeight.Medium
+                )
+            }
 
-                     Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                         val composition by rememberLottieComposition(
-                             LottieCompositionSpec.RawRes(R.raw.cloud_and_sun_animation)
-                         )
-                         LottieAnimation(
-                             composition = composition,
-                             iterations = LottieConstants.IterateForever,
-                             modifier = Modifier.size(40.dp)
-                         )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = description,
-                            fontSize = 14.sp,
-                            color = Color.White.copy(alpha = 0.9f),
-                            fontWeight = FontWeight.Medium
-                        )
-                    }
+            Spacer(modifier = Modifier.height(16.dp))
 
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                DayDetailItem(
+                    R.raw.waterdrop,
+                    label = stringResource(R.string.humidity),
+                    value = humidity,
+                    modifier = Modifier.weight(1f)
+                )
+                DayDetailItem(
+                    icon = R.raw.cloud,
+                    label = stringResource(R.string.wind),
+                    value = windSpeed,
+                    modifier = Modifier.weight(1f)
+                )
+            }
 
-                    Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
-                     Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        DayDetailItem(
-                            R.raw.waterdrop,
-                            label = stringResource(R.string.humidity),
-                            value = humidity,
-                            modifier = Modifier.weight(1f)
-                        )
-                        DayDetailItem(
-                            icon = R.raw.cloud,
-                            label = stringResource(R.string.wind),
-                            value = windSpeed,
-                            modifier = Modifier.weight(1f)
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(12.dp))
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        DayDetailItem(
-                            icon = R.raw.speed,
-                            label = stringResource(R.string.pressure),
-                            value = pressure,
-                            modifier = Modifier.weight(1f)
-                        )
-                        DayDetailItem(
-                            icon = R.raw.cloud_and_sun_animation,
-                            label = stringResource(R.string.clouds),
-                            value = clouds,
-                            modifier = Modifier.weight(1f)
-                        )
-                    }
-                }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                DayDetailItem(
+                    icon = R.raw.speed,
+                    label = stringResource(R.string.pressure),
+                    value = pressure,
+                    modifier = Modifier.weight(1f)
+                )
+                DayDetailItem(
+                    icon = R.raw.cloud_and_sun_animation,
+                    label = stringResource(R.string.clouds),
+                    value = clouds,
+                    modifier = Modifier.weight(1f)
+                )
             }
         }
+    }
+}
 
+@Composable
+fun DayDetailItem(
+    icon: Int,
+    label: String,
+    value: String,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .size(width = 100.dp, height = 100.dp)
+            .clip(RoundedCornerShape(12.dp))
+            .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            val composition by rememberLottieComposition(
+                LottieCompositionSpec.RawRes(icon)
+            )
+            LottieAnimation(
+                composition = composition,
+                iterations = LottieConstants.IterateForever,
+                modifier = Modifier.size(40.dp)
+            )
+            Spacer(modifier = Modifier.height(6.dp))
+            Text(
+                text = label,
+                fontSize = 11.sp,
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
+            )
+            Spacer(modifier = Modifier.height(2.dp))
+            Text(
+                text = value,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+        }
+    }
+}
 
- @Composable
- fun DayDetailItem(
-     icon: Int,
-     label: String,
-     value: String,
-     modifier: Modifier = Modifier
- ) {
-     Box(
-         modifier = modifier
-             .size(width = 100.dp, height = 100.dp)
-             .clip(RoundedCornerShape(12.dp))
-             .background(Color.White.copy(alpha = 0.1f)),
-         contentAlignment = Alignment.Center
-     ) {
-         Column(
-             horizontalAlignment = Alignment.CenterHorizontally,
-             verticalArrangement = Arrangement.Center
-         ) {
-
-
-             val composition by rememberLottieComposition(
-                 LottieCompositionSpec.RawRes(icon)
-             )
-             LottieAnimation(
-                 composition = composition,
-                 iterations = LottieConstants.IterateForever,
-                 modifier = Modifier.size(40.dp)
-             )
-             Spacer(modifier = Modifier.height(6.dp))
-             Text(
-                 text = label,
-                 fontSize = 11.sp,
-                 color = Color.White.copy(alpha = 0.6f)
-             )
-             Spacer(modifier = Modifier.height(2.dp))
-             Text(
-                 text = value,
-                 fontSize = 14.sp,
-                 fontWeight = FontWeight.Bold,
-                 color = Color.White
-             )
-         }
-     }
- }
 fun dateFormat(dt: Long): String {
     val date = Date(dt * 1000)
     val format = SimpleDateFormat("EEE, dd MMM", Locale.getDefault())
     return format.format(date)
 }
-

@@ -9,7 +9,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
- import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -33,7 +33,6 @@ fun FavouriteCard(
     onAddAlarm: (AlarmEntity) -> Unit,
     onDisableAlarm: (AlarmEntity) -> Unit
 ) {
-
     val activeAlarm    = activeAlarms.firstOrNull { it.city == location.city && it.isActive }
     val isAlarmEnabled = activeAlarm != null
 
@@ -45,7 +44,7 @@ fun FavouriteCard(
     val datePickerState   = rememberDatePickerState(initialSelectedDateMillis = System.currentTimeMillis())
     val timePickerState   = rememberTimePickerState()
 
-     val formattedTime by remember(timePickerState.hour, timePickerState.minute) {
+    val formattedTime by remember(timePickerState.hour, timePickerState.minute) {
         derivedStateOf {
             val cal = java.util.Calendar.getInstance().apply {
                 set(java.util.Calendar.HOUR_OF_DAY, timePickerState.hour)
@@ -55,9 +54,11 @@ fun FavouriteCard(
         }
     }
 
-     Card(
+    Card(
         shape    = RoundedCornerShape(28.dp),
-        colors   = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.15f)),
+        colors   = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
+        ),
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp)
@@ -78,12 +79,12 @@ fun FavouriteCard(
                     text       = "${location.currentWeather?.name} (${location.city})",
                     fontSize   = 20.sp,
                     fontWeight = FontWeight.Bold,
-                    color      = Color.White
+                    color      = MaterialTheme.colorScheme.onBackground
                 )
                 Text(
                     text     = location.currentWeather?.sys?.country ?: stringResource(R.string.unknown),
                     fontSize = 16.sp,
-                    color    = Color.White.copy(alpha = 0.7f)
+                    color    = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
                 )
 
                 Row(
@@ -95,12 +96,12 @@ fun FavouriteCard(
                         text       = localizeWeatherMain(location.currentWeather?.weather?.get(0)?.main ?: stringResource(R.string.unknown)),
                         fontSize   = 24.sp,
                         fontWeight = FontWeight.Medium,
-                        color      = Color.White.copy(alpha = 0.9f)
+                        color      = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.9f)
                     )
                     Text(
                         text     = stringResource(R.string.feels_like, (location.currentWeather?.main?.feelsLike?.toInt() ?: "--").toString()).toArabicDigits(),
                         fontSize = 16.sp,
-                        color    = Color.White.copy(alpha = 0.7f)
+                        color    = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
                     )
                 }
 
@@ -118,13 +119,13 @@ fun FavouriteCard(
                         Column {
                             Text(
                                 text       = if (isAlarmEnabled) stringResource(R.string.alarm_set) else stringResource(R.string.no_alarm_set),
-                                color      = if (isAlarmEnabled) Color(0xFF3B82F6) else Color.White,
+                                color      = if (isAlarmEnabled) Color(0xFF3B82F6) else MaterialTheme.colorScheme.onBackground,
                                 fontSize   = 16.sp,
                                 fontWeight = FontWeight.Medium
                             )
                             Text(
                                 text     = if (isAlarmEnabled) stringResource(R.string.tap_switch_disable) else stringResource(R.string.stay_ready),
-                                color    = Color.White.copy(alpha = 0.6f),
+                                color    = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
                                 fontSize = 14.sp
                             )
                         }
@@ -138,9 +139,9 @@ fun FavouriteCard(
                         },
                         colors = SwitchDefaults.colors(
                             checkedThumbColor   = Color(0xFF1976D2),
-                            checkedTrackColor   = Color.White,
+                            checkedTrackColor   = MaterialTheme.colorScheme.surfaceVariant,
                             uncheckedThumbColor = Color(0xFF1976D2),
-                            uncheckedTrackColor = Color.White.copy(alpha = 0.5f)
+                            uncheckedTrackColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
                         )
                     )
                 }
@@ -148,10 +149,10 @@ fun FavouriteCard(
         }
     }
 
-     if (showDisableDialog) {
+    if (showDisableDialog) {
         AlertDialog(
             onDismissRequest = { showDisableDialog = false },
-            containerColor   = androidx.compose.material3.MaterialTheme.colorScheme.primary,
+            containerColor   = MaterialTheme.colorScheme.primary,
             title = {
                 Text(stringResource(R.string.disable_alarm_title), color = Color.White, fontWeight = FontWeight.Bold, fontSize = 18.sp)
             },
@@ -186,14 +187,14 @@ fun FavouriteCard(
         )
     }
 
-     if (showTimePicker) {
+    if (showTimePicker) {
         Dialog(
             onDismissRequest = { showTimePicker = false },
             properties       = DialogProperties(usePlatformDefaultWidth = false)
         ) {
             Card(
                 shape    = RoundedCornerShape(16.dp),
-                colors   = androidx.compose.material3.CardDefaults.cardColors(containerColor = androidx.compose.material3.MaterialTheme.colorScheme.primary),
+                colors   = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary),
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp)
             ) {
                 Column(
@@ -203,17 +204,17 @@ fun FavouriteCard(
                     Text(stringResource(R.string.select_time), fontSize = 18.sp, fontWeight = FontWeight.Bold, color = Color.White)
                     Spacer(modifier = Modifier.height(20.dp))
 
-                     TimePicker(
+                    TimePicker(
                         state  = timePickerState,
                         colors = TimePickerDefaults.colors(
-                            clockDialColor                       = androidx.compose.material3.MaterialTheme.colorScheme.primary,
+                            clockDialColor                       = MaterialTheme.colorScheme.primary,
                             clockDialSelectedContentColor        = Color.White,
                             clockDialUnselectedContentColor      = Color.White.copy(alpha = 0.7f),
                             selectorColor                        = Color(0xFF3B82F6),
-                            containerColor                       = androidx.compose.material3.MaterialTheme.colorScheme.primary,
+                            containerColor                       = MaterialTheme.colorScheme.primary,
                             periodSelectorBorderColor            = Color(0xFF3B82F6),
                             timeSelectorSelectedContainerColor   = Color(0xFF3B82F6),
-                            timeSelectorUnselectedContainerColor = androidx.compose.material3.MaterialTheme.colorScheme.primary,
+                            timeSelectorUnselectedContainerColor = MaterialTheme.colorScheme.primary,
                             timeSelectorSelectedContentColor     = Color.White,
                             timeSelectorUnselectedContentColor   = Color.White.copy(alpha = 0.7f)
                         )
@@ -242,11 +243,11 @@ fun FavouriteCard(
         }
     }
 
-     if (showAlarmSheet) {
+    if (showAlarmSheet) {
         ModalBottomSheet(
             onDismissRequest = { showAlarmSheet = false },
             sheetState       = sheetState,
-            containerColor   = androidx.compose.material3.MaterialTheme.colorScheme.primary
+            containerColor   = MaterialTheme.colorScheme.primary
         ) {
             Column(
                 modifier = Modifier
@@ -270,7 +271,7 @@ fun FavouriteCard(
                 DatePicker(
                     state  = datePickerState,
                     colors = DatePickerDefaults.colors(
-                        containerColor            = androidx.compose.material3.MaterialTheme.colorScheme.primary,
+                        containerColor            = MaterialTheme.colorScheme.primary,
                         titleContentColor         = Color.White,
                         headlineContentColor      = Color.White,
                         weekdayContentColor       = Color.White.copy(alpha = 0.6f),
@@ -288,7 +289,7 @@ fun FavouriteCard(
                 Text(stringResource(R.string.choose_time), fontSize = 16.sp, fontWeight = FontWeight.SemiBold, color = Color.White)
                 Spacer(modifier = Modifier.height(8.dp))
 
-                 OutlinedButton(
+                OutlinedButton(
                     onClick  = { showTimePicker = true },
                     shape    = RoundedCornerShape(12.dp),
                     colors   = ButtonDefaults.outlinedButtonColors(contentColor = Color.White),

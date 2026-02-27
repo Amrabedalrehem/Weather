@@ -25,7 +25,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -46,58 +45,53 @@ fun SettingsCard(
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
             .padding(top = 16.dp, bottom = 8.dp),
-        shape = RoundedCornerShape(28.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = Color.Transparent
-        ),
+        shape  = RoundedCornerShape(28.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.Transparent),
         elevation = CardDefaults.cardElevation(0.dp)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(
-                    Color.White.copy(alpha = 0.15f),
+                    MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f) ,
                     RoundedCornerShape(28.dp)
                 )
                 .padding(16.dp)
         ) {
-
             Row(
-                verticalAlignment = Alignment.CenterVertically,
+                verticalAlignment     = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
-            )
-            {
+            ) {
                 Row(
                     modifier = Modifier
                         .size(42.dp)
                         .clip(CircleShape)
-                        .background(Color.White.copy(.2f)),
+                        .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)),
                     horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment     = Alignment.CenterVertically
                 ) {
                     Icon(
-                        painter = painterResource(icon),
+                        painter           = painterResource(icon),
                         contentDescription = null,
-                        modifier = Modifier.size(22.dp),
-                        tint = Color.Unspecified
-
+                        modifier          = Modifier.size(22.dp),
+                        tint              = Color.Unspecified
                     )
                 }
 
                 Text(
-                    text = title,
-                    style = MaterialTheme.typography.titleLarge,
+                    text       = title,
+                    style      = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
-                    color = Color.White
+                    color      = MaterialTheme.colorScheme.onBackground
                 )
             }
 
             Spacer(modifier = Modifier.height(12.dp))
 
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier              = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment     = Alignment.CenterVertically
             ) {
                 options.forEach { option ->
                     Row(
@@ -106,39 +100,37 @@ fun SettingsCard(
                             .weight(1f)
                             .clip(RoundedCornerShape(12.dp))
                             .selectable(
-                                selected = option == selectedOption,
-                                onClick = { onOptionSelected(option) },
-                                indication = null,
+                                selected          = option == selectedOption,
+                                onClick           = { onOptionSelected(option) },
+                                indication        = null,
                                 interactionSource = remember { MutableInteractionSource() }
                             )
                             .padding(vertical = 8.dp, horizontal = 6.dp)
                     ) {
                         RadioButton(
                             selected = option == selectedOption,
-                            onClick = null,
+                            onClick  = null,
                             modifier = Modifier.size(18.dp),
-                            colors = RadioButtonDefaults.colors(
-                                selectedColor = Color.White,
-                                unselectedColor = Color.White
+                            colors   = RadioButtonDefaults.colors(
+                                selectedColor   = MaterialTheme.colorScheme.onBackground,
+                                unselectedColor = MaterialTheme.colorScheme.onBackground
                             )
                         )
 
                         Spacer(modifier = Modifier.width(4.dp))
 
                         Text(
-                            text = option,
-                            fontSize = 13.sp,
-                            fontWeight = if (option == selectedOption)
-                                FontWeight.Bold else FontWeight.Normal,
-                            color = if (option == selectedOption)
-                                Color.White else Color.White.copy(alpha = 0.7f)
+                            text       = option,
+                            fontSize   = 13.sp,
+                            fontWeight = if (option == selectedOption) FontWeight.Bold else FontWeight.Normal,
+                            color      = if (option == selectedOption)
+                                MaterialTheme.colorScheme.onBackground
+                            else
+                                MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
                         )
-
                     }
                 }
             }
         }
     }
-
-
 }

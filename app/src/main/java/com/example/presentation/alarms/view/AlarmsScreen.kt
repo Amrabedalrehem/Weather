@@ -21,7 +21,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.airbnb.lottie.compose.*
 import com.example.data.model.entity.AlarmEntity
- import com.example.presentation.alarms.viewmodel.AlarmViewModel
+import com.example.presentation.alarms.viewmodel.AlarmViewModel
 import com.example.presentation.utils.AlarmUiEvent
 import com.example.presentation.utils.CustomToast
 import com.example.presentation.utils.rememberToastState
@@ -29,6 +29,7 @@ import com.example.weather.R
 import androidx.compose.ui.res.stringResource
 import com.example.presentation.utils.toArabicDigits
 import java.util.Calendar
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AlarmsScreen(
@@ -106,9 +107,18 @@ fun AlarmsScreen(
                         modifier    = Modifier.size(220.dp)
                     )
                     Spacer(Modifier.height(5.dp))
-                    Text(stringResource(R.string.journey_quiet), fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                    Text(
+                        stringResource(R.string.journey_quiet),
+                        fontSize   = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        color      = MaterialTheme.colorScheme.onBackground
+                    )
                     Spacer(Modifier.height(4.dp))
-                    Text(stringResource(R.string.no_weather_alarms), fontSize = 16.sp, color = Color.White.copy(alpha = 0.7f))
+                    Text(
+                        stringResource(R.string.no_weather_alarms),
+                        fontSize = 16.sp,
+                        color    = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
+                    )
                 }
             } else {
                 LazyColumn(
@@ -118,8 +128,7 @@ fun AlarmsScreen(
                     items(alarms, key = { it.id }) { alarm ->
                         AlarmCard(
                             alarm    = alarm,
-                            onDelete = { alarmToReset = alarm;
-                                showResetDialog = true },
+                            onDelete = { alarmToReset = alarm; showResetDialog = true },
                             onEdit   = {
                                 alarmToEdit      = alarm
                                 editSelectedType = alarm.type
@@ -138,10 +147,9 @@ fun AlarmsScreen(
         ModalBottomSheet(
             onDismissRequest = { showAddSheet = false },
             sheetState       = addSheetState,
-            containerColor   = androidx.compose.material3.MaterialTheme.colorScheme.primary
+            containerColor   = MaterialTheme.colorScheme.primary
         ) {
             val currentLocationText = stringResource(R.string.current_location)
-
             AlarmSheetContent(
                 title            = stringResource(R.string.choose_date_time),
                 datePickerState  = datePickerState,
@@ -153,7 +161,7 @@ fun AlarmsScreen(
                     val calendar = buildCalendar(datePickerState, timePickerState)
                     viewModel.addAlarm(
                         AlarmEntity(
-                            city         =currentLocationText,
+                            city         = currentLocationText,
                             latitude     = currentLocation.first,
                             longitude    = currentLocation.second,
                             timeInMillis = calendar.timeInMillis,
@@ -178,7 +186,7 @@ fun AlarmsScreen(
         ModalBottomSheet(
             onDismissRequest = { showEditSheet = false },
             sheetState       = editSheetState,
-            containerColor   = androidx.compose.material3.MaterialTheme.colorScheme.primary
+            containerColor   = MaterialTheme.colorScheme.primary
         ) {
             AlarmSheetContent(
                 title            = stringResource(R.string.edit_alarm),
@@ -212,9 +220,11 @@ fun AlarmsScreen(
     if (showResetDialog && alarmToReset != null) {
         AlertDialog(
             onDismissRequest = { showResetDialog = false },
-            containerColor   = androidx.compose.material3.MaterialTheme.colorScheme.primary,
-            title = { Text(stringResource(R.string.delete_alarm_title), color = Color.White, fontWeight = FontWeight.Bold) },
-            text  = {
+            containerColor   = MaterialTheme.colorScheme.primary,
+            title = {
+                Text(stringResource(R.string.delete_alarm_title), color = Color.White, fontWeight = FontWeight.Bold)
+            },
+            text = {
                 Text(
                     stringResource(R.string.delete_alarm_msg, alarmToReset?.city ?: ""),
                     color = Color.White.copy(alpha = 0.8f)
@@ -280,7 +290,7 @@ private fun AlarmSheetContent(
         DatePicker(
             state  = datePickerState,
             colors = DatePickerDefaults.colors(
-                containerColor = androidx.compose.material3.MaterialTheme.colorScheme.primary,
+                containerColor            = MaterialTheme.colorScheme.primary,
                 titleContentColor         = Color.White,
                 headlineContentColor      = Color.White,
                 weekdayContentColor       = Color.White.copy(alpha = 0.6f),
@@ -318,21 +328,21 @@ private fun AlarmSheetContent(
             fontWeight = FontWeight.Bold,
             modifier   = Modifier.padding(vertical = 4.dp)
         )
-                Row(
-                    modifier              = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly
-                ) {
-                    val typeLabels = mapOf(
-                        "Alert" to stringResource(R.string.alert),
-                        "Notification" to stringResource(R.string.notification)
-                    )
-                    typeLabels.forEach { (key, label) ->
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            RadioButton(selected = selectedType == key, onClick = { onTypeChange(key) })
-                            Text(label, color = Color.White, fontSize = 16.sp)
-                        }
-                    }
+        Row(
+            modifier              = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            val typeLabels = mapOf(
+                "Alert"        to stringResource(R.string.alert),
+                "Notification" to stringResource(R.string.notification)
+            )
+            typeLabels.forEach { (key, label) ->
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    RadioButton(selected = selectedType == key, onClick = { onTypeChange(key) })
+                    Text(label, color = Color.White, fontSize = 16.sp)
                 }
+            }
+        }
         Spacer(Modifier.height(24.dp))
         Button(
             onClick  = onDone,
@@ -370,7 +380,7 @@ private fun ClockPickerDialog(
     ) {
         Card(
             shape    = RoundedCornerShape(16.dp),
-            colors   = CardDefaults.cardColors(containerColor = androidx.compose.material3.MaterialTheme.colorScheme.primary),
+            colors   = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary),
             modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp)
         ) {
             Column(
@@ -382,14 +392,14 @@ private fun ClockPickerDialog(
                 TimePicker(
                     state  = state,
                     colors = TimePickerDefaults.colors(
-                        clockDialColor                       = androidx.compose.material3.MaterialTheme.colorScheme.primary,
+                        clockDialColor                       = MaterialTheme.colorScheme.primary,
                         clockDialSelectedContentColor        = Color.White,
                         clockDialUnselectedContentColor      = Color.White.copy(alpha = 0.7f),
                         selectorColor                        = Color(0xFF3B82F6),
-                        containerColor                       = androidx.compose.material3.MaterialTheme.colorScheme.primary,
+                        containerColor                       = MaterialTheme.colorScheme.primary,
                         periodSelectorBorderColor            = Color(0xFF3B82F6),
                         timeSelectorSelectedContainerColor   = Color(0xFF3B82F6),
-                        timeSelectorUnselectedContainerColor = androidx.compose.material3.MaterialTheme.colorScheme.primary,
+                        timeSelectorUnselectedContainerColor = MaterialTheme.colorScheme.primary,
                         timeSelectorSelectedContentColor     = Color.White,
                         timeSelectorUnselectedContentColor   = Color.White.copy(alpha = 0.7f)
                     )

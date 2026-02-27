@@ -1,33 +1,34 @@
 package com.example.presentation.theme
 
-import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.dynamicDarkColorScheme
-import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.staticCompositionLocalOf
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
-
-private val DarkColorScheme = darkColorScheme(
-    primary = WeatherBlueLight,
-    secondary = WeatherBlueMid,
-    tertiary = WeatherCyan,
-    background = Color(0xFF0D1B2A),
-    surface = Color(0xFF1B2838)
-)
 
 private val LightColorScheme = lightColorScheme(
     primary = WeatherBlueMid,
+    onPrimary = Color.White,
     secondary = WeatherBlueDark,
     tertiary = WeatherCyan,
-    background = Color(0xFF2196F3),
-    surface = Color(0xFF03A9F4)
+    background = LightBackground,
+    surface = Color.White,
+    onBackground = Color(0xFF1A1C1E),
+    onSurface = Color(0xFF1A1C1E)
+)
+
+private val DarkColorScheme = darkColorScheme(
+    primary = WeatherBlueLight,
+    onPrimary = Color(0xFF003355),
+    secondary = WeatherBlueMid,
+    tertiary = WeatherCyan,
+    background = DarkBackground,
+    surface = Color(0xFF1B2838),
+    onBackground = Color(0xFFE2E2E6),
+    onSurface = Color(0xFFE2E2E6)
 )
 
  val LocalWeatherGradient = staticCompositionLocalOf { LightGradient }
@@ -49,7 +50,7 @@ fun WeatherTheme(
     CompositionLocalProvider(LocalWeatherGradient provides gradient) {
         MaterialTheme(
             colorScheme = colorScheme,
-            typography = Typography,
+             typography = MaterialTheme.typography,
             content = content
         )
     }

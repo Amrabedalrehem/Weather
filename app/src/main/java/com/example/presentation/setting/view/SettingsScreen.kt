@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -34,21 +35,21 @@ fun SettingsScreen(
     viewModel: SettingsViewModel,
     snackbarHostState: SnackbarHostState,
     onNavigateToMap: () -> Unit,
- ) {
-     val temperatureKey by viewModel.temperature.collectAsState(initial = "celsius")
-    val windSpeedKey by viewModel.windSpeed.collectAsState(initial = "ms")
-    val languageKey by viewModel.language.collectAsState(initial = "default")
-    val locationKey by viewModel.locationType.collectAsState(initial = "gps")
-    val themeKey by viewModel.theme.collectAsState(initial = "system")
-    var showMapDialog by remember { mutableStateOf(false) }
-    val isConnected by viewModel.isConnected.collectAsState()
-    val scope = rememberCoroutineScope()
-    val context = LocalContext.current
+) {
+    val temperatureKey by viewModel.temperature.collectAsState(initial = "celsius")
+    val windSpeedKey   by viewModel.windSpeed.collectAsState(initial = "ms")
+    val languageKey    by viewModel.language.collectAsState(initial = "default")
+    val locationKey    by viewModel.locationType.collectAsState(initial = "gps")
+    val themeKey       by viewModel.theme.collectAsState(initial = "system")
+    var showMapDialog  by remember { mutableStateOf(false) }
+    val isConnected    by viewModel.isConnected.collectAsState()
+    val scope          = rememberCoroutineScope()
+    val context        = LocalContext.current
 
-    val noInternetMsg = stringResource(R.string.no_internet)
+    val noInternetMsg       = stringResource(R.string.no_internet)
     val optionSelectedPattern = stringResource(R.string.option_selected)
 
-     val langOptions = listOf(
+    val langOptions = listOf(
         "default" to stringResource(R.string.lang_default),
         "en"      to stringResource(R.string.lang_english),
         "ar"      to stringResource(R.string.lang_arabic)
@@ -72,10 +73,10 @@ fun SettingsScreen(
         "light"  to stringResource(R.string.theme_light)
     )
 
-     fun List<Pair<String,String>>.labelFor(key: String) =
+    fun List<Pair<String, String>>.labelFor(key: String) =
         firstOrNull { it.first == key }?.second ?: first().second
 
-     fun List<Pair<String,String>>.keyFor(label: String) =
+    fun List<Pair<String, String>>.keyFor(label: String) =
         firstOrNull { it.second == label }?.first ?: first().first
 
     val showSnackbar: (String) -> Unit = { selectedLabel ->
@@ -108,37 +109,37 @@ fun SettingsScreen(
                 }
             },
             dismissButton = {
-                TextButton(onClick = {
-                    showMapDialog = false
-                }) {
-                    Text(stringResource(R.string.no), color = Color.Gray)
+                TextButton(onClick = { showMapDialog = false }) {
+                    Text(stringResource(R.string.no), color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f))
                 }
             }
         )
     }
-     LazyColumn(
+
+    LazyColumn(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top,
-         modifier = Modifier
-             .fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
             .background(
                 brush = Brush.verticalGradient(
                     colors = com.example.presentation.theme.LocalWeatherGradient.current
                 )
-            ).padding(vertical = 12.dp),
-         contentPadding = androidx.compose.foundation.layout.PaddingValues(
-             top = 0.dp,
-             bottom = 80.dp
-         )
+            )
+            .padding(vertical = 12.dp),
+        contentPadding = androidx.compose.foundation.layout.PaddingValues(
+            top    = 0.dp,
+            bottom = 80.dp
+        )
     ) {
         item {
             SettingsCard(
-                title = stringResource(R.string.language),
-                icon = R.drawable.languages,
-                options = langOptions.map { it.second },
+                title          = stringResource(R.string.language),
+                icon           = R.drawable.languages,
+                options        = langOptions.map { it.second },
                 selectedOption = langOptions.labelFor(languageKey),
                 onOptionSelected = { label ->
-                    val key = langOptions.keyFor(label)
+                    val key       = langOptions.keyFor(label)
                     val localeTag = when (key) {
                         "en" -> "en"
                         "ar" -> "ar"
@@ -153,9 +154,9 @@ fun SettingsScreen(
         }
         item {
             SettingsCard(
-                title = stringResource(R.string.temperature_unit),
-                icon = R.drawable.temperature,
-                options = tempOptions.map { it.second },
+                title          = stringResource(R.string.temperature_unit),
+                icon           = R.drawable.temperature,
+                options        = tempOptions.map { it.second },
                 selectedOption = tempOptions.labelFor(temperatureKey),
                 onOptionSelected = { label ->
                     val key = tempOptions.keyFor(label)
@@ -166,9 +167,9 @@ fun SettingsScreen(
         }
         item {
             SettingsCard(
-                title = stringResource(R.string.location),
-                icon = R.drawable.map,
-                options = locOptions.map { it.second },
+                title          = stringResource(R.string.location),
+                icon           = R.drawable.map,
+                options        = locOptions.map { it.second },
                 selectedOption = locOptions.labelFor(locationKey),
                 onOptionSelected = { label ->
                     val key = locOptions.keyFor(label)
@@ -176,16 +177,16 @@ fun SettingsScreen(
                         showMapDialog = true
                     } else {
                         viewModel.getCurrentLocation()
-                          showSnackbar(label)
+                        showSnackbar(label)
                     }
                 }
             )
         }
         item {
             SettingsCard(
-                title = stringResource(R.string.wind_speed_unit),
-                icon = R.drawable.wind,
-                options = windOptions.map { it.second },
+                title          = stringResource(R.string.wind_speed_unit),
+                icon           = R.drawable.wind,
+                options        = windOptions.map { it.second },
                 selectedOption = windOptions.labelFor(windSpeedKey),
                 onOptionSelected = { label ->
                     val key = windOptions.keyFor(label)
@@ -196,9 +197,9 @@ fun SettingsScreen(
         }
         item {
             SettingsCard(
-                title = stringResource(R.string.theme),
-                icon = R.drawable.color,
-                options = themeOptions.map { it.second },
+                title          = stringResource(R.string.theme),
+                icon           = R.drawable.color,
+                options        = themeOptions.map { it.second },
                 selectedOption = themeOptions.labelFor(themeKey),
                 onOptionSelected = { label ->
                     val key = themeOptions.keyFor(label)
