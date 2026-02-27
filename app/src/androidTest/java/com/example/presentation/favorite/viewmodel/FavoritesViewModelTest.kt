@@ -1,11 +1,12 @@
 package com.example.presentation.favorite.viewmodel
- 
+
 import android.content.Context
 import com.example.data.IRepository
 import com.example.data.model.entity.AlarmEntity
 import com.example.data.model.entity.FavouriteLocationCache
 import com.example.presentation.component.alert.alarm.IAlarmScheduler
- import io.mockk.coEvery
+import com.example.presentation.utils.ToastType
+import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
@@ -19,6 +20,7 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -32,7 +34,11 @@ class FavoritesViewModelTest {
     private lateinit var viewModel: FavoritesViewModel
 
     private val testDispatcher = StandardTestDispatcher()
- 
+
+    // ========================
+    // Setup & Teardown
+    // ========================
+
     @Before
     fun setup() {
         Dispatchers.setMain(testDispatcher)
@@ -52,6 +58,10 @@ class FavoritesViewModelTest {
         Dispatchers.resetMain()
     }
 
+    // ========================
+    // markForDeletion()
+    // ========================
+
     @Test
     fun markForDeletion_addsIdToPendingDeletion() = runTest {
         // Given
@@ -70,6 +80,9 @@ class FavoritesViewModelTest {
         assertTrue(result.none { it.id == 1 })
     }
 
+    // ========================
+    // confirmDelete()
+    // ========================
 
     @Test
     fun confirmDelete_callsRepositoryDelete() = runTest {
@@ -86,6 +99,10 @@ class FavoritesViewModelTest {
         // Then
         coVerify { repository.delete(location) }
     }
+
+    // ========================
+    // undoDelete()
+    // ========================
 
     @Test
     fun undoDelete_removesIdFromPendingDeletion() = runTest {
@@ -108,7 +125,80 @@ class FavoritesViewModelTest {
         assertTrue(result.any { it.id == 1 })
     }
 
+    // ========================
+    // addAlarm()
+    // ========================
 
+    @Test
+    fun addAlarm_pastTime_emitsErrorEvent() = runTest {
+        // Given
+        val alarm = AlarmEntity(
+            city = "Cairo",
+            latitude = 30.0,
+            longitude = 31.0,
+            timeInMillis = 1000L, // وقت في الماضي
+            type = "notification"
+        )
+        every { context.resources } returns mockk(relaxed = true)
+        every { context.resources.configuration } returns mockk(relaxed = true)
+        every { context.createConfigurationContext(any()) } returns mockk(relaxed = true) {
+            every { getString(any()) } returns "Choose future time"
+            every { getString(any(), any()) } returns "Choose future time"
+        }
+
+        val events = mutableListOf<FavUiEvent>()
+        val job = kotlinx.coroutines.launch {
+            viewModel.uiEvent.collect { events.add(it) }
+        }
+
+        // When
+        viewModel.addAlarm(alarm)
+        advanceUntilIdle()
+
+        // Then
+        assertTrue(events.any { it is FavUiEvent.ShowCard && (it as FavUiEvent.ShowCard).type == ToastType.ERROR })
+
+        job.cancel()
+    }
+
+    @Test
+    fun addAlarm_futureTime_schedulesAlarmAndEmitsSuccess() = runTest {
+        // Given
+        val alarm = AlarmEntity(
+            city = "Cairo",
+            latitude = 30.0,
+            longitude = 31.0,
+            timeInMillis = System.currentTimeMillis() + 100000L, // وقت في المستقبل
+            type = "notification"
+        )
+        coEvery { repository.insertAlarm(alarm) } returns 1L
+        every { context.resources } returns mockk(relaxed = true)
+        every { context.resources.configuration } returns mockk(relaxed = true)
+        every { context.createConfigurationContext(any()) } returns mockk(relaxed = true) {
+            every { getString(any()) } returns "Alarm set"
+            every { getString(any(), any()) } returns "Alarm set for Cairo"
+        }
+
+        val events = mutableListOf<FavUiEvent>()
+        val job = kotlinx.coroutines.launch {
+            viewModel.uiEvent.collect { events.add(it) }
+        }
+
+        // When
+        viewModel.addAlarm(alarm)
+        advanceUntilIdle()
+
+        // Then
+        coVerify { repository.insertAlarm(alarm) }
+        verify { alarmScheduler.schedule(any()) }
+        assertTrue(events.any { it is FavUiEvent.ShowCard && (it as FavUiEvent.ShowCard).type == ToastType.SUCCESS })
+
+        job.cancel()
+    }
+
+    // ========================
+    // disableAlarm()
+    // ========================
 
     @Test
     fun disableAlarm_cancelsAndDeletesAlarm() = runTest {

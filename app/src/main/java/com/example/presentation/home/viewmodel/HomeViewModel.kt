@@ -2,8 +2,8 @@ package com.example.presentation.home.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.example.data.ApiResult
 import com.example.data.IRepository
-import com.example.data.Repository
 import com.example.data.model.dto.CurrentWeatherDto
 import com.example.data.model.dto.FiveDayForecastResponse
 import com.example.data.model.dto.HourlyForecastResponse
@@ -40,18 +40,20 @@ class HomeViewModel(
             started = SharingStarted.Lazily,
             initialValue = "ms"
         )
+
     val isConnected: StateFlow<Boolean> = networkObserver.isConnected
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = false
         )
+
     fun getInfoWeather() {
         viewModelScope.launch {
             val isConnected = networkObserver.isConnected.first()
 
             if (!isConnected) {
-                 val cache = repository.getHomeWeather().first()
+                val cache = repository.getHomeWeather().first()
                 if (cache != null) {
                     cache.currentWeather?.let { _currentWeather.value = UiState.Success(it) }
                     cache.hourlyForecast?.let { _hourlyForecast.value = UiState.Success(it) }
@@ -63,46 +65,42 @@ class HomeViewModel(
                 }
                 return@launch
             }
-            _currentWeather.value = UiState.Loading
-            val responseCurrentWeather = repository.getCurrentWeather()
-            if (responseCurrentWeather.isSuccessful) {
-                val data = responseCurrentWeather.body()
-                if (data != null) _currentWeather.value = UiState.Success(data)
-                else _currentWeather.value = UiState.Error("No Data")
-            } else {
-                _currentWeather.value = UiState.Error("Error ${responseCurrentWeather.code()}")
+
+             repository.getCurrentWeather().collect { result ->
+                when (result) {
+                    is ApiResult.Loading -> _currentWeather.value = UiState.Loading
+                    is ApiResult.Success -> _currentWeather.value = UiState.Success(result.data)
+                    is ApiResult.Error   -> _currentWeather.value = UiState.Error(result.message)
+                }
             }
 
             val cityName = (_currentWeather.value as? UiState.Success)?.data?.name ?: "Cairo"
 
-            _hourlyForecast.value = UiState.Loading
-            val responseHourForecast = repository.getHourlyForecast(cityName)
-            if (responseHourForecast.isSuccessful) {
-                val data = responseHourForecast.body()
-                if (data != null) _hourlyForecast.value = UiState.Success(data)
-                else _hourlyForecast.value = UiState.Error("No Data")
-            } else {
-                _hourlyForecast.value = UiState.Error("Error ${responseHourForecast.code()}")
+             repository.getHourlyForecast(cityName).collect { result ->
+                when (result) {
+                    is ApiResult.Loading -> _hourlyForecast.value = UiState.Loading
+                    is ApiResult.Success -> _hourlyForecast.value = UiState.Success(result.data)
+                    is ApiResult.Error   -> _hourlyForecast.value = UiState.Error(result.message)
+                }
             }
 
-            _fiveDayForecast.value = UiState.Loading
-            val response = repository.getFiveDayForecast(cityName)
-            if (response.isSuccessful) {
-                val data = response.body()
-                if (data != null) _fiveDayForecast.value = UiState.Success(data)
-                else _fiveDayForecast.value = UiState.Error("No Data")
-            } else {
-                _fiveDayForecast.value = UiState.Error("Error ${response.code()}")
+             repository.getFiveDayForecast(cityName).collect { result ->
+                when (result) {
+                    is ApiResult.Loading -> _fiveDayForecast.value = UiState.Loading
+                    is ApiResult.Success -> _fiveDayForecast.value = UiState.Success(result.data)
+                    is ApiResult.Error   -> _fiveDayForecast.value = UiState.Error(result.message)
+                }
             }
-            val current = (_currentWeather.value as? UiState.Success)?.data
-            val hourly = (_hourlyForecast.value as? UiState.Success)?.data
+
+             val current = (_currentWeather.value as? UiState.Success)?.data
+            val hourly  = (_hourlyForecast.value as? UiState.Success)?.data
             val fiveDay = (_fiveDayForecast.value as? UiState.Success)?.data
 
             if (current != null && hourly != null && fiveDay != null) {
                 repository.insertHomeWeather(
                     HomeWeatherCache(
-                        currentWeather = current,
-                        hourlyForecast = hourly,
+                        currentWeather  = current,
+                        hourlyForecast  = hourly,
                         fiveDayForecast = fiveDay
                     )
                 )
@@ -114,7 +112,7 @@ class HomeViewModel(
         viewModelScope.launch {
             getInfoWeather()
 
-             combine(
+            combine(
                 repository.language,
                 repository.temperatureUnit,
                 repository.latitude,
@@ -125,7 +123,7 @@ class HomeViewModel(
                 .collectLatest { getInfoWeather() }
         }
 
-         viewModelScope.launch {
+        viewModelScope.launch {
             networkObserver.isConnected
                 .drop(1)
                 .collectLatest { isConnected ->

@@ -3,6 +3,7 @@ package com.example.presentation.alart.viewmodel
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.data.ApiResult
 import com.example.data.IRepository
 import com.example.presentation.utils.WeatherAlertState
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,24 +19,18 @@ class AlertViewModel(
 
     private val _weatherState = MutableStateFlow<WeatherAlertState>(WeatherAlertState.Loading)
     val weatherState: StateFlow<WeatherAlertState> = _weatherState
-
     fun fetchWeather() {
         viewModelScope.launch {
-            _weatherState.value = WeatherAlertState.Loading
-            try {
-                val response = repository.getCurrentWeather(lat, lon)
-                if (response.isSuccessful) {
-                    val weather = response.body()
-                    _weatherState.value = WeatherAlertState.Success(
-                        temp        = weather?.main?.temp?.toInt()                 ?: 0,
-                        description = weather?.weather?.firstOrNull()?.description ?: "",
-                        feelsLike   = weather?.main?.feelsLike?.toInt()            ?: 0
+            repository.getCurrentWeather(lat, lon).collect { result ->
+                when (result) {
+                    is ApiResult.Loading -> _weatherState.value = WeatherAlertState.Loading
+                    is ApiResult.Success -> _weatherState.value = WeatherAlertState.Success(
+                        temp        = result.data.main?.temp?.toInt()                 ?: 0,
+                        description = result.data.weather?.firstOrNull()?.description ?: "",
+                        feelsLike   = result.data.main?.feelsLike?.toInt()            ?: 0
                     )
-                } else {
-                    _weatherState.value = WeatherAlertState.Error
+                    is ApiResult.Error   -> _weatherState.value = WeatherAlertState.Error
                 }
-            } catch (e: Exception) {
-                _weatherState.value = WeatherAlertState.Error
             }
         }
     }

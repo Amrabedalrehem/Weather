@@ -5,7 +5,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.data.IRepository
-import com.example.data.Repository
+import com.example.data.ApiResult
 import com.example.data.model.dto.FiveDayForecastResponse
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -53,20 +53,21 @@ class FutureInfoViewModel(
     fun fetchForecast() {
         viewModelScope.launch {
             _state.value = FutureInfoState.Loading
-            try {
-                val currentResponse = repository.getCurrentWeather()
-                val cityName = if (currentResponse.isSuccessful) {
-                    currentResponse.body()?.name ?: "Cairo"
-                } else "Cairo"
 
-                val response = repository.getFiveDayForecast(cityName)
-                if (response.isSuccessful) {
-                    _state.value = FutureInfoState.Success(parseBadDays(response.body()))
-                } else {
-                    _state.value = FutureInfoState.Error
+            var cityName = "Cairo"
+
+             repository.getCurrentWeather().collect { result ->
+                if (result is ApiResult.Success) {
+                    cityName = result.data.name ?: "Cairo"
                 }
-            } catch (e: Exception) {
-                _state.value = FutureInfoState.Error
+            }
+
+             repository.getFiveDayForecast(cityName).collect { result ->
+                when (result) {
+                    is ApiResult.Loading -> _state.value = FutureInfoState.Loading
+                    is ApiResult.Success -> _state.value = FutureInfoState.Success(parseBadDays(result.data))
+                    is ApiResult.Error   -> _state.value = FutureInfoState.Error
+                }
             }
         }
     }

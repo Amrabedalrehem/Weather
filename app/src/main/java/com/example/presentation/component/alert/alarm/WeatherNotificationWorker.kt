@@ -7,6 +7,7 @@ import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
+import com.example.data.ApiResult
 import com.example.data.IRepository
 import com.example.weather.R
 
@@ -17,29 +18,31 @@ class WeatherNotificationWorker(
 ) : CoroutineWorker(context, workerParams) {
 
     override suspend fun doWork(): Result {
-        val city = inputData.getString("city") ?: return Result.failure()
-        val lat = inputData.getDouble("lat", 0.0)
-        val lon = inputData.getDouble("lon", 0.0)
+        val city    = inputData.getString("city") ?: return Result.failure()
+        val lat     = inputData.getDouble("lat", 0.0)
+        val lon     = inputData.getDouble("lon", 0.0)
         val alarmId = inputData.getInt("alarmId", -1)
 
-        return try {
-             val response = repository.getCurrentWeather(lat, lon)
-            if (response.isSuccessful) {
-                val weather = response.body()
-                val temp = weather?.main?.temp?.toInt() ?: 0
-                val description = weather?.weather?.firstOrNull()?.description ?: ""
+        var finalResult = Result.failure()
 
-                showNotification(city, temp, description, alarmId)
-                Result.success()
-            } else {
-                 showNotification(city, 0, "Check the weather", alarmId)
-                Result.failure()
+        repository.getCurrentWeather(lat, lon).collect { result ->
+            when (result) {
+                is ApiResult.Loading -> {}
+                is ApiResult.Success -> {
+                    val temp        = result.data.main?.temp?.toInt() ?: 0
+                    val description = result.data.weather?.firstOrNull()?.description ?: ""
+                    showNotification(city, temp, description, alarmId)
+                    finalResult = Result.success()
+                }
+                is ApiResult.Error -> {
+                    showNotification(city, 0, "Check the weather", alarmId)
+                    finalResult = Result.failure()
+                }
             }
-        } catch (e: Exception) {
-            Result.failure()
         }
-    }
 
+        return finalResult
+    }
     private fun showNotification(city: String, temp: Int, description: String, alarmId: Int) {
         val notificationManager =
             context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager

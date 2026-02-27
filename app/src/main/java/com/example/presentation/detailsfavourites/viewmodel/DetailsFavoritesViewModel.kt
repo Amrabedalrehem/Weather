@@ -3,6 +3,7 @@ package com.example.presentation.detailsfavourites.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.example.data.ApiResult
 import com.example.data.IRepository
 import com.example.data.Repository
 import com.example.data.model.entity.FavouriteLocationCache
@@ -69,21 +70,31 @@ class DetailsFavoritesViewModel(
             val lat = current.lat
             val lon = current.lon
             val city = current.city
-            try {
-                val currentWeather = repository.getCurrentWeather(lat, lon)
-                val hourly = repository.getHourlyForecast(city)
-                val fiveDay = repository.getFiveDayForecast(city)
 
-                if (currentWeather.isSuccessful && hourly.isSuccessful && fiveDay.isSuccessful) {
-                    repository.insert(
-                        current.copy(
-                            currentWeather = currentWeather.body(),
-                            hourlyForecast = hourly.body(),
-                            fiveDayForecast = fiveDay.body()
-                        )
+            var currentWeatherData = current.currentWeather
+            var hourlyData = current.hourlyForecast
+            var fiveDayData = current.fiveDayForecast
+
+            repository.getCurrentWeather(lat, lon).collect { result ->
+                if (result is ApiResult.Success) currentWeatherData = result.data
+            }
+
+            repository.getHourlyForecast(city).collect { result ->
+                if (result is ApiResult.Success) hourlyData = result.data
+            }
+
+            repository.getFiveDayForecast(city).collect { result ->
+                if (result is ApiResult.Success) fiveDayData = result.data
+            }
+
+            if (currentWeatherData != null && hourlyData != null && fiveDayData != null) {
+                repository.insert(
+                    current.copy(
+                        currentWeather = currentWeatherData,
+                        hourlyForecast = hourlyData,
+                        fiveDayForecast = fiveDayData
                     )
-                }
-            } catch (e: Exception) {
+                )
             }
         }
     }

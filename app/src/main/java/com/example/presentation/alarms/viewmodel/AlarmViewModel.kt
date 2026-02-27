@@ -1,18 +1,19 @@
 package com.example.presentation.alarms.viewmodel
-import  com.example.presentation.utils.AlarmUiEvent
+
+import com.example.presentation.utils.AlarmUiEvent
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.example.data.Repository
 import com.example.presentation.component.alert.alarm.AlarmScheduler
 import com.example.data.model.entity.AlarmEntity
 import com.example.presentation.utils.ToastType
 import com.example.weather.R
 import android.content.res.Configuration
 import com.example.data.IRepository
+import com.example.presentation.component.alert.alarm.IAlarmScheduler
 import java.util.Locale
- import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -20,17 +21,18 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-
 class AlarmViewModel(
     private val repository: IRepository,
-    private val context: Context
+    private val context: Context,
+    private val alarmScheduler: IAlarmScheduler = AlarmScheduler(context)
 ) : ViewModel() {
 
-    private val alarmScheduler = AlarmScheduler(context)
+    private val appContext = context.applicationContext
 
     private fun localizedString(resId: Int, vararg args: Any): String {
-        val config = Configuration(context.resources.configuration).apply { setLocale(Locale.getDefault()) }
-        return context.createConfigurationContext(config).getString(resId, *args)
+        val config = Configuration(appContext.resources.configuration)
+            .apply { setLocale(Locale.getDefault()) }
+        return appContext.createConfigurationContext(config).getString(resId, *args)
     }
 
     private val _uiEvent = MutableSharedFlow<AlarmUiEvent>()

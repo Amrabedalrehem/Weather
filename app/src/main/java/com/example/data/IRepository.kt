@@ -28,10 +28,10 @@ interface IRepository {
     suspend fun saveLocationType(value: String)
     suspend fun saveTheme(value: String)
 
-    suspend fun getCurrentWeather(): Response<CurrentWeatherDto>
-    suspend fun getCurrentWeather(lat: Double, lon: Double): Response<CurrentWeatherDto>
-    suspend fun getHourlyForecast(city: String): Response<HourlyForecastResponse>
-    suspend fun getFiveDayForecast(city: String): Response<FiveDayForecastResponse>
+    fun getCurrentWeather(): Flow<ApiResult<CurrentWeatherDto>>
+    fun getCurrentWeather(lat: Double, lon: Double): Flow<ApiResult<CurrentWeatherDto>>
+    fun getHourlyForecast(city: String): Flow<ApiResult<HourlyForecastResponse>>
+    fun getFiveDayForecast(city: String): Flow<ApiResult<FiveDayForecastResponse>>
 
     fun getAllFavourites(): Flow<List<FavouriteLocationCache>>
     fun getFavouriteById(id: Int): Flow<FavouriteLocationCache?>

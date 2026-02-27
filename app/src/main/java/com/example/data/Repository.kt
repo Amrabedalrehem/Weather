@@ -1,11 +1,7 @@
 package com.example.data
 
-import com.example.data.datasource.local.DataSourceLocal
 import com.example.data.datasource.local.IDataSourceLocal
-import com.example.data.datasource.remote.DataSourceRemote
 import com.example.data.datasource.remote.IDataSourceRemote
-import com.example.data.datasource.sharedPreference.DataStorePermission
-import com.example.data.datasource.sharedPreference.DataStoreSettings
 import com.example.data.datasource.sharedPreference.IDataStorePermission
 import com.example.data.datasource.sharedPreference.IDataStoreSettings
 import com.example.data.model.dto.CurrentWeatherDto
@@ -16,7 +12,7 @@ import com.example.data.model.entity.FavouriteLocationCache
 import com.example.data.model.entity.HomeWeatherCache
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
-import retrofit2.Response
+import kotlinx.coroutines.flow.flow
 
 class Repository(
     private val local: IDataSourceLocal,
@@ -59,34 +55,72 @@ class Repository(
         else -> "en"
     }
 
-    override suspend fun getCurrentWeather(): Response<CurrentWeatherDto> {
-        val lat   = permission.latitude.first()
-        val lon   = permission.longitude.first()
-        val lang  = mapLanguage(settings.language.first())
-        val units = mapUnits(settings.temperatureUnit.first())
-        return remote.getCurrentWeather(lat = lat, lon = lon, lang = lang, units = units)
+    override fun getCurrentWeather(): Flow<ApiResult<CurrentWeatherDto>> = flow {
+        emit(ApiResult.Loading)
+        try {
+            val lat   = permission.latitude.first()
+            val lon   = permission.longitude.first()
+            val lang  = mapLanguage(settings.language.first())
+            val units = mapUnits(settings.temperatureUnit.first())
+            val response = remote.getCurrentWeather(lat = lat, lon = lon, lang = lang, units = units)
+            if (response.isSuccessful && response.body() != null) {
+                emit(ApiResult.Success(response.body()!!))
+            } else {
+                emit(ApiResult.Error(response.message()))
+            }
+        } catch (e: Exception) {
+            emit(ApiResult.Error(e.message ?: "Unknown error"))
+        }
     }
 
-    override suspend fun getCurrentWeather(lat: Double, lon: Double): Response<CurrentWeatherDto> {
-        val lang  = mapLanguage(settings.language.first())
-        val units = mapUnits(settings.temperatureUnit.first())
-        return remote.getCurrentWeather(lat = lat, lon = lon, lang = lang, units = units)
+    override fun getCurrentWeather(lat: Double, lon: Double): Flow<ApiResult<CurrentWeatherDto>> = flow {
+        emit(ApiResult.Loading)
+        try {
+            val lang  = mapLanguage(settings.language.first())
+            val units = mapUnits(settings.temperatureUnit.first())
+            val response = remote.getCurrentWeather(lat = lat, lon = lon, lang = lang, units = units)
+            if (response.isSuccessful && response.body() != null) {
+                emit(ApiResult.Success(response.body()!!))
+            } else {
+                emit(ApiResult.Error(response.message()))
+            }
+        } catch (e: Exception) {
+            emit(ApiResult.Error(e.message ?: "Unknown error"))
+        }
     }
 
-    override suspend fun getHourlyForecast(city: String): Response<HourlyForecastResponse> {
-        val lang  = mapLanguage(settings.language.first())
-        val units = mapUnits(settings.temperatureUnit.first())
-        return remote.getHourlyForecast(city = city, units = units, lang = lang)
+    override fun getHourlyForecast(city: String): Flow<ApiResult<HourlyForecastResponse>> = flow {
+        emit(ApiResult.Loading)
+        try {
+            val lang  = mapLanguage(settings.language.first())
+            val units = mapUnits(settings.temperatureUnit.first())
+            val response = remote.getHourlyForecast(city = city, units = units, lang = lang)
+            if (response.isSuccessful && response.body() != null) {
+                emit(ApiResult.Success(response.body()!!))
+            } else {
+                emit(ApiResult.Error(response.message()))
+            }
+        } catch (e: Exception) {
+            emit(ApiResult.Error(e.message ?: "Unknown error"))
+        }
     }
 
-    override suspend fun getFiveDayForecast(city: String): Response<FiveDayForecastResponse> {
-        val lat   = permission.latitude.first()
-        val lon   = permission.longitude.first()
-        val lang  = mapLanguage(settings.language.first())
-        val units = mapUnits(settings.temperatureUnit.first())
-        return remote.getFiveDayForecast(
-            city = city, lat = lat, lon = lon, units = units, lang = lang
-        )
+    override fun getFiveDayForecast(city: String): Flow<ApiResult<FiveDayForecastResponse>> = flow {
+        emit(ApiResult.Loading)
+        try {
+            val lat   = permission.latitude.first()
+            val lon   = permission.longitude.first()
+            val lang  = mapLanguage(settings.language.first())
+            val units = mapUnits(settings.temperatureUnit.first())
+            val response = remote.getFiveDayForecast(city = city, lat = lat, lon = lon, units = units, lang = lang)
+            if (response.isSuccessful && response.body() != null) {
+                emit(ApiResult.Success(response.body()!!))
+            } else {
+                emit(ApiResult.Error(response.message()))
+            }
+        } catch (e: Exception) {
+            emit(ApiResult.Error(e.message ?: "Unknown error"))
+        }
     }
 
     override fun getAllFavourites() = local.getAllFavourites()
