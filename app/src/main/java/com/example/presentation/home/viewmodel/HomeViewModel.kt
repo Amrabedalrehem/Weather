@@ -51,60 +51,75 @@ class HomeViewModel(
     fun getInfoWeather() {
         viewModelScope.launch {
             val isConnected = networkObserver.isConnected.first()
-
             if (!isConnected) {
-                val cache = repository.getHomeWeather().first()
-                if (cache != null) {
-                    cache.currentWeather?.let { _currentWeather.value = UiState.Success(it) }
-                    cache.hourlyForecast?.let { _hourlyForecast.value = UiState.Success(it) }
-                    cache.fiveDayForecast?.let { _fiveDayForecast.value = UiState.Success(it) }
-                } else {
-                    _currentWeather.value = UiState.Error("No internet & No cached data")
-                    _hourlyForecast.value = UiState.Error("No internet & No cached data")
-                    _fiveDayForecast.value = UiState.Error("No internet & No cached data")
-                }
+                loadFromCache()
                 return@launch
             }
-
-             repository.getCurrentWeather().collect { result ->
-                when (result) {
-                    is ApiResult.Loading -> _currentWeather.value = UiState.Loading
-                    is ApiResult.Success -> _currentWeather.value = UiState.Success(result.data)
-                    is ApiResult.Error   -> _currentWeather.value = UiState.Error(result.message)
-                }
-            }
-
+            fetchCurrentWeather()
             val cityName = (_currentWeather.value as? UiState.Success)?.data?.name ?: "Cairo"
+            fetchHourlyForecast(cityName)
+            fetchFiveDayForecast(cityName)
+            cacheWeatherData()
+        }
+    }
 
-             repository.getHourlyForecast(cityName).collect { result ->
-                when (result) {
-                    is ApiResult.Loading -> _hourlyForecast.value = UiState.Loading
-                    is ApiResult.Success -> _hourlyForecast.value = UiState.Success(result.data)
-                    is ApiResult.Error   -> _hourlyForecast.value = UiState.Error(result.message)
-                }
+    private suspend fun loadFromCache() {
+        val cache = repository.getHomeWeather().first()
+        if (cache != null) {
+            cache.currentWeather?.let { _currentWeather.value = UiState.Success(it) }
+            cache.hourlyForecast?.let { _hourlyForecast.value = UiState.Success(it) }
+            cache.fiveDayForecast?.let { _fiveDayForecast.value = UiState.Success(it) }
+        } else {
+            val error = UiState.Error("No internet & No cached data")
+            _currentWeather.value  = error
+            _hourlyForecast.value  = error
+            _fiveDayForecast.value = error
+        }
+    }
+
+    private suspend fun fetchCurrentWeather() {
+        repository.getCurrentWeather().collect { result ->
+            when (result) {
+                is ApiResult.Loading -> _currentWeather.value = UiState.Loading
+                is ApiResult.Success -> _currentWeather.value = UiState.Success(result.data)
+                is ApiResult.Error   -> _currentWeather.value = UiState.Error(result.message)
             }
+        }
+    }
 
-             repository.getFiveDayForecast(cityName).collect { result ->
-                when (result) {
-                    is ApiResult.Loading -> _fiveDayForecast.value = UiState.Loading
-                    is ApiResult.Success -> _fiveDayForecast.value = UiState.Success(result.data)
-                    is ApiResult.Error   -> _fiveDayForecast.value = UiState.Error(result.message)
-                }
+    private suspend fun fetchHourlyForecast(cityName: String) {
+        repository.getHourlyForecast(cityName).collect { result ->
+            when (result) {
+                is ApiResult.Loading -> _hourlyForecast.value = UiState.Loading
+                is ApiResult.Success -> _hourlyForecast.value = UiState.Success(result.data)
+                is ApiResult.Error   -> _hourlyForecast.value = UiState.Error(result.message)
             }
+        }
+    }
 
-             val current = (_currentWeather.value as? UiState.Success)?.data
-            val hourly  = (_hourlyForecast.value as? UiState.Success)?.data
-            val fiveDay = (_fiveDayForecast.value as? UiState.Success)?.data
+    private suspend fun fetchFiveDayForecast(cityName: String) {
+        repository.getFiveDayForecast(cityName).collect { result ->
+            when (result) {
+                is ApiResult.Loading -> _fiveDayForecast.value = UiState.Loading
+                is ApiResult.Success -> _fiveDayForecast.value = UiState.Success(result.data)
+                is ApiResult.Error   -> _fiveDayForecast.value = UiState.Error(result.message)
+            }
+        }
+    }
 
-            if (current != null && hourly != null && fiveDay != null) {
-                repository.insertHomeWeather(
-                    HomeWeatherCache(
-                        currentWeather  = current,
-                        hourlyForecast  = hourly,
-                        fiveDayForecast = fiveDay
-                    )
+    private suspend fun cacheWeatherData() {
+        val current = (_currentWeather.value as? UiState.Success)?.data
+        val hourly  = (_hourlyForecast.value as? UiState.Success)?.data
+        val fiveDay = (_fiveDayForecast.value as? UiState.Success)?.data
+
+        if (current != null && hourly != null && fiveDay != null) {
+            repository.insertHomeWeather(
+                HomeWeatherCache(
+                    currentWeather  = current,
+                    hourlyForecast  = hourly,
+                    fiveDayForecast = fiveDay
                 )
-            }
+            )
         }
     }
 
