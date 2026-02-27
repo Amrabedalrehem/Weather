@@ -7,13 +7,13 @@ import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import com.example.data.Repository
+import com.example.data.IRepository
 import com.example.weather.R
 
 class WeatherNotificationWorker(
     private val context: Context,
     workerParams: WorkerParameters,
-    private val repository: Repository
+    private val repository: IRepository
 ) : CoroutineWorker(context, workerParams) {
 
     override suspend fun doWork(): Result {

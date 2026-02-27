@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.example.data.IRepository
 import com.example.data.Repository
 import com.example.data.model.dto.FiveDayForecastResponse
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,7 +27,7 @@ enum class Severity { MODERATE, HIGH, EXTREME }
 
 class FutureInfoViewModel(
     application: Application,
-    private val repository: Repository
+    private val repository: IRepository
 ) : AndroidViewModel(application) {
 
     private val _state = MutableStateFlow<FutureInfoState>(FutureInfoState.Loading)
@@ -115,7 +116,7 @@ class FutureInfoViewModel(
 
 class FutureInfoViewModelFactory(
     private val application: Application,
-    private val repository: Repository
+    private val repository: IRepository
 ) : ViewModelProvider.Factory {
     override fun <T : androidx.lifecycle.ViewModel> create(modelClass: Class<T>): T {
         return FutureInfoViewModel(application, repository) as T

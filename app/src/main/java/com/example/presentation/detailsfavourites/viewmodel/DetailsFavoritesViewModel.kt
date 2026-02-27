@@ -3,6 +3,7 @@ package com.example.presentation.detailsfavourites.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.example.data.IRepository
 import com.example.data.Repository
 import com.example.data.model.entity.FavouriteLocationCache
 import com.example.presentation.utils.CheckNetwork
@@ -17,7 +18,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class DetailsFavoritesViewModel(
-    val repository: Repository,
+    val repository: IRepository,
     private val locationId: Int,
     private val networkObserver: CheckNetwork
 ) : ViewModel() {
@@ -88,7 +89,7 @@ class DetailsFavoritesViewModel(
     }
 }
 class DetailsViewModelFactory(
-    private val repository: Repository,
+    private val repository: IRepository,
     private val locationId: Int,
     private val networkObserver: CheckNetwork
 ) : ViewModelProvider.Factory {

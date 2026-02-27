@@ -10,6 +10,7 @@ import com.example.data.model.entity.AlarmEntity
 import com.example.presentation.utils.ToastType
 import com.example.weather.R
 import android.content.res.Configuration
+import com.example.data.IRepository
 import java.util.Locale
  import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -21,7 +22,7 @@ import kotlinx.coroutines.launch
 
 
 class AlarmViewModel(
-    private val repository: Repository,
+    private val repository: IRepository,
     private val context: Context
 ) : ViewModel() {
 
@@ -105,7 +106,7 @@ class AlarmViewModel(
 }
 
 class AlarmViewModelFactory(
-    private val repository: Repository,
+    private val repository: IRepository,
     private val context: Context
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {

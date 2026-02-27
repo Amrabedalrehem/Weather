@@ -2,6 +2,7 @@ package com.example.presentation.home.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.example.data.IRepository
 import com.example.data.Repository
 import com.example.data.model.dto.CurrentWeatherDto
 import com.example.data.model.dto.FiveDayForecastResponse
@@ -20,7 +21,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class HomeViewModel(
-    val repository: Repository,
+    val repository: IRepository,
     private val networkObserver: CheckNetwork
 ) : ViewModel() {
 
@@ -135,7 +136,7 @@ class HomeViewModel(
 }
 
 class HomeViewModelFactory(
-    private val repository: Repository,
+    private val repository: IRepository,
     private val networkObserver: CheckNetwork
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
