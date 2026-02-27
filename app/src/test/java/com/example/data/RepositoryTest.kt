@@ -15,6 +15,7 @@ import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -29,8 +30,6 @@ class RepositoryTest {
     private lateinit var settings: IDataStoreSettings
     private lateinit var permission: IDataStorePermission
     private lateinit var repository: Repository
-
-
 
     @Before
     fun setup() {
@@ -51,107 +50,165 @@ class RepositoryTest {
         repository = Repository(local, remote, settings, permission)
     }
 
+
     @Test
-    fun getCurrentWeather_celsius_callsMetricUnits() = runTest {
-        // Given data in the repository
+    fun getCurrentWeather_celsius_emitsLoadingThenSuccess() = runTest {
+        // Given
+        val fakeDto = mockk<CurrentWeatherDto>()
         val fakeResponse = mockk<Response<CurrentWeatherDto>> {
             every { isSuccessful } returns true
+            every { body() } returns fakeDto
         }
         coEvery {
             remote.getCurrentWeather(lat = 30.0, lon = 31.0, lang = "en", units = "metric")
         } returns fakeResponse
 
-        // When call getCurrentWeather with celsius
-        val result = repository.getCurrentWeather()
+        // When
+        val results = repository.getCurrentWeather().toList()
 
-        // Then the result should be successful
-        assertTrue(result.isSuccessful)
+        // Then
+        assertTrue(results[0] is ApiResult.Loading)
+        assertTrue(results[1] is ApiResult.Success)
         coVerify { remote.getCurrentWeather(lat = 30.0, lon = 31.0, lang = "en", units = "metric") }
     }
 
     @Test
     fun getCurrentWeather_fahrenheit_callsImperialUnits() = runTest {
-        // Given data in the repository
+        // Given
         every { settings.temperatureUnit } returns flowOf("fahrenheit")
         repository = Repository(local, remote, settings, permission)
 
+        val fakeDto = mockk<CurrentWeatherDto>()
         val fakeResponse = mockk<Response<CurrentWeatherDto>> {
             every { isSuccessful } returns true
+            every { body() } returns fakeDto
         }
         coEvery {
             remote.getCurrentWeather(lat = 30.0, lon = 31.0, lang = "en", units = "imperial")
         } returns fakeResponse
 
-        // When call getCurrentWeather with fahrenheit
-        val result = repository.getCurrentWeather()
+        // When
+        val results = repository.getCurrentWeather().toList()
 
-        // Then the result should be successful
-        assertTrue(result.isSuccessful)
+        // Then
+        assertTrue(results[1] is ApiResult.Success)
         coVerify { remote.getCurrentWeather(lat = 30.0, lon = 31.0, lang = "en", units = "imperial") }
     }
 
     @Test
     fun getCurrentWeather_kelvin_callsStandardUnits() = runTest {
-        // Given data in the repository
+        // Given
         every { settings.temperatureUnit } returns flowOf("kelvin")
         repository = Repository(local, remote, settings, permission)
 
+        val fakeDto = mockk<CurrentWeatherDto>()
         val fakeResponse = mockk<Response<CurrentWeatherDto>> {
             every { isSuccessful } returns true
+            every { body() } returns fakeDto
         }
         coEvery {
             remote.getCurrentWeather(lat = 30.0, lon = 31.0, lang = "en", units = "standard")
         } returns fakeResponse
 
-        // When call getCurrentWeather with kelvin
-        repository.getCurrentWeather()
+        // When
+        repository.getCurrentWeather().toList()
 
-        // Then the result should be successful
+        // Then
         coVerify { remote.getCurrentWeather(lat = 30.0, lon = 31.0, lang = "en", units = "standard") }
     }
 
     @Test
-    fun getCurrentWeather_withLatLon_callsCorrectParams() = runTest {
-        // Given data in the repository
+    fun getCurrentWeather_failureResponse_emitsError() = runTest {
+        // Given
+        val fakeResponse = mockk<Response<CurrentWeatherDto>> {
+            every { isSuccessful } returns false
+            every { body() } returns null
+            every { message() } returns "Not Found"
+        }
+        coEvery {
+            remote.getCurrentWeather(lat = 30.0, lon = 31.0, lang = "en", units = "metric")
+        } returns fakeResponse
+
+        // When
+        val results = repository.getCurrentWeather().toList()
+
+        // Then
+        assertTrue(results[0] is ApiResult.Loading)
+        assertTrue(results[1] is ApiResult.Error)
+        assertEquals("Not Found", (results[1] as ApiResult.Error).message)
+    }
+
+
+    @Test
+    fun getCurrentWeather_withLatLon_emitsSuccess() = runTest {
+        // Given
+        val fakeDto = mockk<CurrentWeatherDto>()
         val fakeResponse = mockk<Response<CurrentWeatherDto>> {
             every { isSuccessful } returns true
+            every { body() } returns fakeDto
         }
         coEvery {
             remote.getCurrentWeather(lat = 25.0, lon = 45.0, lang = "en", units = "metric")
         } returns fakeResponse
 
-        // When call getCurrentWeather with lat and lon
-        val result = repository.getCurrentWeather(lat = 25.0, lon = 45.0)
+        // When
+        val results = repository.getCurrentWeather(lat = 25.0, lon = 45.0).toList()
 
-        // Then the result should be successful
-        assertTrue(result.isSuccessful)
+        // Then
+        assertTrue(results[0] is ApiResult.Loading)
+        assertTrue(results[1] is ApiResult.Success)
         coVerify { remote.getCurrentWeather(lat = 25.0, lon = 45.0, lang = "en", units = "metric") }
     }
 
     @Test
-    fun getHourlyForecast_successResponse_returnsData() = runTest {
-        // Given data in the repository
+    fun getHourlyForecast_successResponse_emitsSuccess() = runTest {
+        // Given
+        val fakeDto = mockk<HourlyForecastResponse>()
         val fakeResponse = mockk<Response<HourlyForecastResponse>> {
             every { isSuccessful } returns true
+            every { body() } returns fakeDto
         }
         coEvery {
             remote.getHourlyForecast(city = "Cairo", units = "metric", lang = "en")
         } returns fakeResponse
 
-        // When call getHourlyForecast
-        val result = repository.getHourlyForecast("Cairo")
+        // When
+        val results = repository.getHourlyForecast("Cairo").toList()
 
-        // Then  the result should be successful
-        assertTrue(result.isSuccessful)
+        // Then
+        assertTrue(results[0] is ApiResult.Loading)
+        assertTrue(results[1] is ApiResult.Success)
         coVerify { remote.getHourlyForecast(city = "Cairo", units = "metric", lang = "en") }
+    }
+
+    @Test
+    fun getHourlyForecast_failureResponse_emitsError() = runTest {
+        // Given
+        val fakeResponse = mockk<Response<HourlyForecastResponse>> {
+            every { isSuccessful } returns false
+            every { body() } returns null
+            every { message() } returns "Server Error"
+        }
+        coEvery {
+            remote.getHourlyForecast(city = "Cairo", units = "metric", lang = "en")
+        } returns fakeResponse
+
+        // When
+        val results = repository.getHourlyForecast("Cairo").toList()
+
+        // Then
+        assertTrue(results[1] is ApiResult.Error)
+        assertEquals("Server Error", (results[1] as ApiResult.Error).message)
     }
 
 
     @Test
-    fun getFiveDayForecast_successResponse_returnsData() = runTest {
-        // Given data in the repository
+    fun getFiveDayForecast_successResponse_emitsSuccess() = runTest {
+        // Given
+        val fakeDto = mockk<FiveDayForecastResponse>()
         val fakeResponse = mockk<Response<FiveDayForecastResponse>> {
             every { isSuccessful } returns true
+            every { body() } returns fakeDto
         }
         coEvery {
             remote.getFiveDayForecast(
@@ -159,11 +216,12 @@ class RepositoryTest {
             )
         } returns fakeResponse
 
-        // When call getFiveDayForecast
-        val result = repository.getFiveDayForecast("Cairo")
+        // When
+        val results = repository.getFiveDayForecast("Cairo").toList()
 
-        // Then the result should be successful
-        assertTrue(result.isSuccessful)
+        // Then
+        assertTrue(results[0] is ApiResult.Loading)
+        assertTrue(results[1] is ApiResult.Success)
         coVerify {
             remote.getFiveDayForecast(
                 city = "Cairo", lat = 30.0, lon = 31.0, units = "metric", lang = "en"
@@ -174,110 +232,112 @@ class RepositoryTest {
 
     @Test
     fun getAllFavourites_returnsList() = runTest {
-        // Given data in the repository
+        // Given
         val fakeList = listOf(
             FavouriteLocationCache(id = 1, city = "Cairo", country = "EG", lat = 30.0, lon = 31.0)
         )
         every { local.getAllFavourites() } returns flowOf(fakeList)
 
-        // When call getAllFavourites
+        // When
         val result = repository.getAllFavourites().first()
 
-        // Then the result should contain the correct data
+        // Then
         assertEquals(1, result.size)
         assertEquals("Cairo", result[0].city)
     }
 
     @Test
     fun insert_callsLocalInsert() = runTest {
-        // Given data in the repository
+        // Given
         val location = FavouriteLocationCache(id = 1, city = "Cairo", country = "EG", lat = 30.0, lon = 31.0)
         coEvery { local.insert(location) } returns Unit
 
-        // When call insert with a new location
+        // When
         repository.insert(location)
 
-        // Then the result should contain the new item
+        // Then
         coVerify { local.insert(location) }
     }
 
     @Test
     fun delete_callsLocalDelete() = runTest {
-        // Given data in the repository
+        // Given
         val location = FavouriteLocationCache(id = 1, city = "Cairo", country = "EG", lat = 30.0, lon = 31.0)
         coEvery { local.delete(location) } returns Unit
 
-        // When call delete with the correct location
+        // When
         repository.delete(location)
 
-        // Then the result should not contain the deleted item
+        // Then
         coVerify { local.delete(location) }
     }
 
-
     @Test
     fun getHomeWeather_returnsCache() = runTest {
-        // Given data in the repository
+        // Given
         val fakeCache = HomeWeatherCache(id = 1, lastUpdated = 1000L)
         every { local.getHomeWeather() } returns flowOf(fakeCache)
 
-        // When call getHomeWeather
+        // When
         val result = repository.getHomeWeather().first()
 
-        // Then the result should contain the correct data
+        // Then
         assertEquals(1000L, result?.lastUpdated)
     }
 
+
+
     @Test
     fun insertAlarm_returnsGeneratedId() = runTest {
-        // Given data in the repository
+        // Given
         val alarm = AlarmEntity(
             city = "Cairo", latitude = 30.0, longitude = 31.0,
             timeInMillis = 1000L, type = "notification"
         )
         coEvery { local.insertAlarm(alarm) } returns 1L
 
-        // When call insertAlarm with a new alarm
+        // When
         val result = repository.insertAlarm(alarm)
 
-        // Then the result should contain the new alarm
+        // Then
         assertEquals(1L, result)
     }
 
     @Test
     fun toggleAlarm_callsLocalToggle() = runTest {
-        // Given data in the repository
+        // Given
         coEvery { local.toggleAlarm(1, false) } returns Unit
 
-        // When call toggleAlarm with the correct id
+        // When
         repository.toggleAlarm(1, false)
 
-        // Then the result should not contain the updated alarm
+        // Then
         coVerify { local.toggleAlarm(1, false) }
     }
 
 
+
     @Test
     fun clearSavedLocation_savesZeroLatLon() = runTest {
-        // Given data in the repository
+        // Given
         coEvery { permission.saveLocation(0.0, 0.0) } returns Unit
 
-        // When call clearSavedLocation
+        // When
         repository.clearSavedLocation()
 
-        // Then the result should not contain the updated alarm
+        // Then
         coVerify { permission.saveLocation(0.0, 0.0) }
     }
 
     @Test
     fun saveLocation_callsPermissionSaveLocation() = runTest {
-        // Given data in the repository
+        // Given
         coEvery { permission.saveLocation(25.0, 45.0) } returns Unit
 
-        // When call saveLocation with lat and lon
+        // When
         repository.saveLocation(25.0, 45.0)
 
-        // Then the result should not contain the updated alarm
+        // Then
         coVerify { permission.saveLocation(25.0, 45.0) }
     }
 }
