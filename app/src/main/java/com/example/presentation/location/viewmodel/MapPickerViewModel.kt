@@ -102,30 +102,39 @@ class MapPickerViewModel(val repository: IRepository, private val networkObserve
     }
     fun getWeatherByLocation(lat: Double, lon: Double) {
         viewModelScope.launch {
-             repository.getCurrentWeather(lat, lon).collect { result ->
-                when (result) {
-                    is ApiResult.Loading -> _currentWeather.value = UiState.Loading
-                    is ApiResult.Success -> _currentWeather.value = UiState.Success(result.data)
-                    is ApiResult.Error   -> _currentWeather.value = UiState.Error(result.message)
-                }
-            }
-
+            fetchCurrentWeather(lat, lon)
             val cityName = (_currentWeather.value as? UiState.Success)?.data?.name ?: "Cairo"
+            fetchHourlyForecast(cityName)
+            fetchFiveDayForecast(cityName)
+        }
+    }
 
-             repository.getHourlyForecast(cityName).collect { result ->
-                when (result) {
-                    is ApiResult.Loading -> _hourlyForecast.value = UiState.Loading
-                    is ApiResult.Success -> _hourlyForecast.value = UiState.Success(result.data)
-                    is ApiResult.Error   -> _hourlyForecast.value = UiState.Error(result.message)
-                }
+    private suspend fun fetchCurrentWeather(lat: Double, lon: Double) {
+        repository.getCurrentWeather(lat, lon).collect { result ->
+            when (result) {
+                is ApiResult.Loading -> _currentWeather.value = UiState.Loading
+                is ApiResult.Success -> _currentWeather.value = UiState.Success(result.data)
+                is ApiResult.Error   -> _currentWeather.value = UiState.Error(result.message)
             }
+        }
+    }
 
-             repository.getFiveDayForecast(cityName).collect { result ->
-                when (result) {
-                    is ApiResult.Loading -> _fiveDayForecast.value = UiState.Loading
-                    is ApiResult.Success -> _fiveDayForecast.value = UiState.Success(result.data)
-                    is ApiResult.Error   -> _fiveDayForecast.value = UiState.Error(result.message)
-                }
+    private suspend fun fetchHourlyForecast(cityName: String) {
+        repository.getHourlyForecast(cityName).collect { result ->
+            when (result) {
+                is ApiResult.Loading -> _hourlyForecast.value = UiState.Loading
+                is ApiResult.Success -> _hourlyForecast.value = UiState.Success(result.data)
+                is ApiResult.Error   -> _hourlyForecast.value = UiState.Error(result.message)
+            }
+        }
+    }
+
+    private suspend fun fetchFiveDayForecast(cityName: String) {
+        repository.getFiveDayForecast(cityName).collect { result ->
+            when (result) {
+                is ApiResult.Loading -> _fiveDayForecast.value = UiState.Loading
+                is ApiResult.Success -> _fiveDayForecast.value = UiState.Success(result.data)
+                is ApiResult.Error   -> _fiveDayForecast.value = UiState.Error(result.message)
             }
         }
     }
