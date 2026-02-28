@@ -3,6 +3,7 @@ package com.example.presentation.detailsfavourites.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.example.data.ApiResult
 import com.example.data.IRepository
 import com.example.data.Repository
 import com.example.data.model.entity.FavouriteLocationCache
@@ -66,26 +67,35 @@ class DetailsFavoritesViewModel(
             if (!isConnected) return@launch
 
             val current = itemFavourite.filterNotNull().first()
-            val lat = current.lat
-            val lon = current.lon
-            val city = current.city
-            try {
-                val currentWeather = repository.getCurrentWeather(lat, lon)
-                val hourly = repository.getHourlyForecast(city)
-                val fiveDay = repository.getFiveDayForecast(city)
-
-                if (currentWeather.isSuccessful && hourly.isSuccessful && fiveDay.isSuccessful) {
-                    repository.insert(
-                        current.copy(
-                            currentWeather = currentWeather.body(),
-                            hourlyForecast = hourly.body(),
-                            fiveDayForecast = fiveDay.body()
-                        )
-                    )
-                }
-            } catch (e: Exception) {
-            }
+            val updatedWeather = fetchWeatherData(current)
+            updatedWeather?.let { repository.insert(it) }
         }
+    }
+
+    private suspend fun fetchWeatherData(current: FavouriteLocationCache): FavouriteLocationCache? {
+        var currentWeatherData = current.currentWeather
+        var hourlyData = current.hourlyForecast
+        var fiveDayData = current.fiveDayForecast
+
+        repository.getCurrentWeather(current.lat, current.lon).collect { result ->
+            if (result is ApiResult.Success) currentWeatherData = result.data
+        }
+
+        repository.getHourlyForecast(current.city).collect { result ->
+            if (result is ApiResult.Success) hourlyData = result.data
+        }
+
+        repository.getFiveDayForecast(current.city).collect { result ->
+            if (result is ApiResult.Success) fiveDayData = result.data
+        }
+
+        if (currentWeatherData == null || hourlyData == null || fiveDayData == null) return null
+
+        return current.copy(
+            currentWeather = currentWeatherData,
+            hourlyForecast = hourlyData,
+            fiveDayForecast = fiveDayData
+        )
     }
 }
 class DetailsViewModelFactory(

@@ -1,36 +1,37 @@
 package com.example.presentation.component.home
- import androidx.compose.foundation.layout.Arrangement
- import androidx.compose.foundation.layout.Column
- import androidx.compose.foundation.layout.Row
- import androidx.compose.foundation.layout.Spacer
- import androidx.compose.foundation.layout.fillMaxWidth
- import androidx.compose.foundation.layout.height
- import androidx.compose.foundation.layout.padding
- import androidx.compose.foundation.layout.size
- import androidx.compose.foundation.shape.RoundedCornerShape
- import androidx.compose.material3.Card
- import androidx.compose.material3.CardDefaults
- import androidx.compose.material3.Text
- import androidx.compose.runtime.Composable
- import androidx.compose.runtime.getValue
- import androidx.compose.ui.Alignment
- import androidx.compose.ui.Modifier
- import androidx.compose.ui.graphics.Color
- import androidx.compose.ui.text.font.FontWeight
- import androidx.compose.ui.unit.dp
- import androidx.compose.ui.unit.sp
- import com.airbnb.lottie.compose.LottieAnimation
- import com.airbnb.lottie.compose.LottieCompositionSpec
- import com.airbnb.lottie.compose.LottieConstants
- import com.airbnb.lottie.compose.rememberLottieComposition
- import com.example.data.model.dto.CurrentWeatherDto
-import com.example.weather.R
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.rememberLottieComposition
+import com.example.data.model.dto.CurrentWeatherDto
 import com.example.presentation.utils.toArabicDigits
+import com.example.weather.R
 
 @Composable
-fun WeatherDetailsGrid(weatherData: CurrentWeatherDto?
-,   windUnit: String = "ms"
+fun WeatherDetailsGrid(
+    weatherData: CurrentWeatherDto?,
+    windUnit: String = "ms"
 ) {
     val windSpeed = if (windUnit == "mph") {
         stringResource(R.string.wind_speed_mph, "%.1f".format(weatherData?.wind?.speed?.times(2.23694))).toArabicDigits()
@@ -41,13 +42,12 @@ fun WeatherDetailsGrid(weatherData: CurrentWeatherDto?
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 24.dp)
-    )
-    {
+    ) {
         Text(
             text = stringResource(R.string.weather_details),
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
-            color = Color.White,
+            color = MaterialTheme.colorScheme.onBackground,
             modifier = Modifier.padding(bottom = 16.dp)
         )
 
@@ -58,11 +58,11 @@ fun WeatherDetailsGrid(weatherData: CurrentWeatherDto?
             WeatherDetailCard(
                 icon = R.raw.humidity,
                 label = stringResource(R.string.humidity),
-                 value = "${weatherData?.main?.humidity}%".toArabicDigits(),
+                value = "${weatherData?.main?.humidity}%".toArabicDigits(),
                 modifier = Modifier.weight(1f)
             )
             WeatherDetailCard(
-                icon =  R.raw.windgust,
+                icon = R.raw.windgust,
                 label = stringResource(R.string.wind),
                 value = windSpeed,
                 modifier = Modifier.weight(1f)
@@ -76,7 +76,7 @@ fun WeatherDetailsGrid(weatherData: CurrentWeatherDto?
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             WeatherDetailCard(
-                icon =R.raw.thermometercolder,
+                icon = R.raw.thermometercolder,
                 label = stringResource(R.string.pressure),
                 value = stringResource(R.string.pressure_hpa, weatherData?.main?.pressure.toString()).toArabicDigits(),
                 modifier = Modifier.weight(1f)
@@ -90,9 +90,10 @@ fun WeatherDetailsGrid(weatherData: CurrentWeatherDto?
         }
     }
 }
+
 @Composable
 fun WeatherDetailCard(
-    icon:  Int,
+    icon: Int,
     label: String,
     value: String,
     modifier: Modifier = Modifier
@@ -101,7 +102,7 @@ fun WeatherDetailCard(
         modifier = modifier,
         shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color.White.copy(alpha = 0.2f)
+            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
         )
     ) {
         Column(
@@ -122,14 +123,14 @@ fun WeatherDetailCard(
             Text(
                 text = label,
                 fontSize = 14.sp,
-                color = Color.White.copy(alpha = 0.7f)
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = value,
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color.White
+                color = MaterialTheme.colorScheme.onBackground
             )
         }
     }

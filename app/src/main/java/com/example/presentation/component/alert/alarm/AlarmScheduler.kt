@@ -8,11 +8,12 @@ import android.os.Build
 import android.provider.Settings
 import com.example.data.model.entity.AlarmEntity
 
-class AlarmScheduler(private val context: Context) {
+class AlarmScheduler(private val context: Context) : IAlarmScheduler {
+
 
     private val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
-    fun schedule(alarm: AlarmEntity) {
+    override fun schedule(alarm: AlarmEntity) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             if (!alarmManager.canScheduleExactAlarms()) {
                 val intent = Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM).apply {
@@ -48,7 +49,7 @@ class AlarmScheduler(private val context: Context) {
             e.printStackTrace()
         }
     }
-    fun cancel(alarm: AlarmEntity) {
+    override fun cancel(alarm: AlarmEntity) {
         val intent = Intent(context, AlarmReceiver::class.java).apply {
              putExtra("type",    alarm.type)
             putExtra("city",    alarm.city)

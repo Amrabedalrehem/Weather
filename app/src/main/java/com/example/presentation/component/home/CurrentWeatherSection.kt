@@ -1,4 +1,5 @@
 package com.example.presentation.component.home
+
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -20,6 +21,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -27,12 +29,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
+ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.AsyncImage
 import com.example.data.model.dto.CurrentWeatherDto
 import com.example.weather.R
 import androidx.compose.ui.res.stringResource
@@ -42,10 +42,8 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
-
 @Composable
 fun CurrentWeatherSection(currentWeather: CurrentWeatherDto?) {
-
 
     val scale by rememberInfiniteTransition().animateFloat(
         initialValue = 1f,
@@ -58,7 +56,9 @@ fun CurrentWeatherSection(currentWeather: CurrentWeatherDto?) {
 
     Column(
         modifier = Modifier
-            .fillMaxWidth().padding(horizontal = 24.dp).padding(top = 48.dp),
+            .fillMaxWidth()
+            .padding(horizontal = 24.dp)
+            .padding(top = 48.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
          Row(
@@ -68,14 +68,14 @@ fun CurrentWeatherSection(currentWeather: CurrentWeatherDto?) {
             Icon(
                 imageVector = Icons.Default.LocationOn,
                 contentDescription = null,
-                tint = Color.White,
+                 tint = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier.size(20.dp)
             )
             Text(
-                text = currentWeather?.name + " " + currentWeather?.sys?.country,
+                text = "${currentWeather?.name}, ${currentWeather?.sys?.country}",
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Medium,
-                color = Color.White.copy(alpha = 0.9f)
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.9f)
             )
         }
 
@@ -84,43 +84,45 @@ fun CurrentWeatherSection(currentWeather: CurrentWeatherDto?) {
          Text(
             text = getCurrentDate().toArabicDigits(),
             fontSize = 14.sp,
-            color = Color.White.copy(alpha = 0.7f)
+            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
         )
 
         Text(
             text = getCurrentTime().toArabicDigits(),
             fontSize = 14.sp,
-            color = Color.White.copy(alpha = 0.7f)
+            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
         )
 
         Spacer(modifier = Modifier.height(32.dp))
 
          Box(
             modifier = Modifier
-                .size(180.dp).scale(scale).clip(CircleShape).background(Color.White.copy(alpha = 0.2f)),
-               contentAlignment = Alignment.Center
+                .size(180.dp)
+                .scale(scale)
+                .clip(CircleShape)
+                 .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)),
+            contentAlignment = Alignment.Center
         ) {
-             Image(
-                 painter = painterResource(id = getWeatherIcon(currentWeather?.weather?.firstOrNull()?.icon)),
-                 contentDescription = stringResource(R.string.weather_icon),
-                 modifier = Modifier.size(100.dp)
-             )
-         }
+            Image(
+                painter = painterResource(id = getWeatherIcon(currentWeather?.weather?.firstOrNull()?.icon)),
+                contentDescription = stringResource(R.string.weather_icon),
+                modifier = Modifier.size(110.dp)
+            )
+        }
 
-
-             Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(32.dp))
 
          Text(
-             text = "${currentWeather?.main?.temp?.toInt()}°".toArabicDigits(),
+            text = "${currentWeather?.main?.temp?.toInt()}°".toArabicDigits(),
             fontSize = 96.sp,
             fontWeight = FontWeight.Bold,
-            color = Color.White,
+            color = MaterialTheme.colorScheme.onBackground,
             lineHeight = 96.sp
         )
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        currentWeather?.weather?.get(0)?.main?.let {
+         currentWeather?.weather?.get(0)?.main?.let {
             val localizedMain = when (it) {
                 "Clear" -> stringResource(R.string.weather_clear)
                 "Clouds" -> stringResource(R.string.weather_clouds)
@@ -142,17 +144,18 @@ fun CurrentWeatherSection(currentWeather: CurrentWeatherDto?) {
                 text = localizedMain,
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Medium,
-                color = Color.White.copy(alpha = 0.9f)
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.9f)
             )
         }
 
-        Text(
+         Text(
             text = stringResource(R.string.feels_like, currentWeather?.weather?.get(0)?.description ?: "").toArabicDigits(),
             fontSize = 16.sp,
-            color = Color.White.copy(alpha = 0.7f)
+            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
         )
     }
 }
+
 @Composable
 fun getCurrentDate(): String {
     val current = LocalDateTime.now()
@@ -166,4 +169,3 @@ fun getCurrentTime(): String {
     val formatter = DateTimeFormatter.ofPattern("hh:mm a", Locale.getDefault())
     return current.format(formatter)
 }
-

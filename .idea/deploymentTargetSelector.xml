@@ -13,9 +13,6 @@
         </DropdownSelection>
         <DialogSelection />
       </SelectionState>
-      <SelectionState runConfigName="getHomeWeather_emptyDatabase_returnsNull()">
-        <option name="selectionMode" value="DROPDOWN" />
-      </SelectionState>
       <SelectionState runConfigName="HomeWeatherDaoTest">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>

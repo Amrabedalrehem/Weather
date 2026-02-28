@@ -1,6 +1,5 @@
 package com.example.presentation.component.location
-
-import FiveDayForecastSection
+import com.example.presentation.component.home.FiveDayForecastSection
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -54,9 +53,10 @@ fun LocationDetailsContent(
     appScope: CoroutineScope
 ) {
     val currentUiState by viewModel.currentWeather.collectAsState()
-    val hourlyUiState by viewModel.hourlyForecast.collectAsState()
+    val hourlyUiState  by viewModel.hourlyForecast.collectAsState()
     val fiveDayUiState by viewModel.fiveDayForecast.collectAsState()
-     LaunchedEffect(latLng) {
+
+    LaunchedEffect(latLng) {
         latLng?.let {
             viewModel.getWeatherByLocation(it.latitude, it.longitude)
         }
@@ -73,13 +73,13 @@ fun LocationDetailsContent(
         val apiCityName = (currentUiState as? UiState.Success)?.data?.name
 
         Text(
-            text = apiCityName ?: city.ifEmpty { address },
-            style = MaterialTheme.typography.titleLarge,
+            text       = apiCityName ?: city.ifEmpty { address },
+            style      = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold,
-            color = Color.White
+            color      = MaterialTheme.colorScheme.onBackground
         )
 
-        HorizontalDivider(color = Color.White.copy(alpha = 0.2f))
+        HorizontalDivider(color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.2f))
 
         when {
             currentUiState is UiState.Loading -> LoadingState()
@@ -98,7 +98,7 @@ fun LocationDetailsContent(
                     hourlyUiState is UiState.Success &&
                     fiveDayUiState is UiState.Success -> {
                 val currentData = (currentUiState as UiState.Success).data
-                val hourlyData = (hourlyUiState as UiState.Success).data
+                val hourlyData  = (hourlyUiState as UiState.Success).data
                 val fiveDayData = (fiveDayUiState as UiState.Success).data
 
                 LazyColumn {
@@ -112,62 +112,57 @@ fun LocationDetailsContent(
                     item { Spacer(Modifier.height(16.dp)) }
                     item {
                         Column(
-                            modifier = Modifier.fillMaxWidth(),
+                            modifier            = Modifier.fillMaxWidth(),
                             verticalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
                             Row(
-                                modifier = Modifier.fillMaxWidth(),
+                                modifier              = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
                                 OutlinedButton(
-                                    onClick = onDismiss,
+                                    onClick  = onDismiss,
                                     modifier = Modifier.weight(1f),
-                                    border = BorderStroke(1.dp, Color.White),
-                                    colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.White)
+                                    border   = BorderStroke(1.dp, MaterialTheme.colorScheme.onBackground),
+                                    colors   = ButtonDefaults.outlinedButtonColors(
+                                        contentColor = MaterialTheme.colorScheme.onBackground
+                                    )
                                 ) {
                                     Text(stringResource(R.string.cancel))
                                 }
                                 Button(
                                     onClick = {
                                         latLng?.let { location ->
-                                            viewModel.saveLocation(
-                                                location.latitude,
-                                                location.longitude
-                                            )
+                                            viewModel.saveLocation(location.latitude, location.longitude)
                                             onConfirm()
                                         }
                                     },
                                     modifier = Modifier.weight(1f),
-                                    colors = ButtonDefaults.buttonColors(
-                                        containerColor = Color(
-                                            0xFF4A90D9
-                                        )
-                                    )
+                                    colors   = ButtonDefaults.buttonColors(containerColor = Color(0xFF4A90D9))
                                 ) {
                                     Text(stringResource(R.string.change_location_btn))
                                 }
                             }
-                           val  massage =stringResource(R.string.city_added_fav, city)
+
+                            val massage     = stringResource(R.string.city_added_fav, city)
                             val actionLabel = stringResource(R.string.undo)
 
                             Button(
                                 onClick = {
                                     latLng?.let { location ->
-                                         viewModel.addFavourite(
-                                            city = city,
+                                        viewModel.addFavourite(
+                                            city    = city,
                                             country = country,
-                                            lat = location.latitude,
-                                            lon = location.longitude
+                                            lat     = location.latitude,
+                                            lon     = location.longitude
                                         ) { savedItem ->
                                             appScope.launch {
                                                 val result = snackbarHostState.showSnackbar(
-                                                    message =massage ,
-                                                    actionLabel =actionLabel,
-                                                    duration = SnackbarDuration.Short
+                                                    message     = massage,
+                                                    actionLabel = actionLabel,
+                                                    duration    = SnackbarDuration.Short
                                                 )
-
                                                 if (result == SnackbarResult.ActionPerformed) {
-                                                     viewModel.deleteFavourite(savedItem)
+                                                    viewModel.deleteFavourite(savedItem)
                                                 }
                                             }
                                         }
@@ -175,7 +170,7 @@ fun LocationDetailsContent(
                                     }
                                 },
                                 modifier = Modifier.fillMaxWidth(),
-                                colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
+                                colors   = ButtonDefaults.buttonColors(containerColor = Color.Red)
                             ) {
                                 Text(stringResource(R.string.add_favourite))
                             }
@@ -183,6 +178,6 @@ fun LocationDetailsContent(
                     }
                 }
             }
-                    }
-                }
-            }
+        }
+    }
+}

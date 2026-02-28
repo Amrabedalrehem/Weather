@@ -10,6 +10,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -29,7 +30,6 @@ import com.example.presentation.utils.toArabicDigits
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-
 @Composable
 fun AlarmCard(
     alarm: AlarmEntity,
@@ -42,7 +42,9 @@ fun AlarmCard(
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape    = RoundedCornerShape(16.dp),
-        colors   = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.15f))
+        colors   = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
+        )
     ) {
         Row(
             modifier              = Modifier.fillMaxWidth().padding(16.dp),
@@ -50,22 +52,33 @@ fun AlarmCard(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Column(modifier = Modifier.weight(1f)) {
-                Text(alarm.city, fontSize = 18.sp, fontWeight = FontWeight.Bold, color = Color.White)
-                Text(formattedTime.toArabicDigits(), fontSize = 14.sp, color = Color.White.copy(alpha = 0.7f))
+                Text(
+                    alarm.city,
+                    fontSize   = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    color      = MaterialTheme.colorScheme.onBackground
+                )
+                Text(
+                    formattedTime.toArabicDigits(),
+                    fontSize = 14.sp,
+                    color    = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
+                )
                 val typeLabel = when (alarm.type) {
-                    "Alert" -> androidx.compose.ui.res.stringResource(R.string.alert)
+                    "Alert"        -> androidx.compose.ui.res.stringResource(R.string.alert)
                     "Notification" -> androidx.compose.ui.res.stringResource(R.string.notification)
-                    else -> alarm.type
+                    else           -> alarm.type
                 }
                 Text(typeLabel, fontSize = 12.sp, color = Color(0xFF3B82F6))
             }
             Row(verticalAlignment = Alignment.CenterVertically) {
                 IconButton(onClick = onEdit) {
                     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.pencilwrite))
-                    LottieAnimation(composition = composition, iterations = LottieConstants.IterateForever, modifier = Modifier.size(50.dp))                              }
+                    LottieAnimation(composition = composition, iterations = LottieConstants.IterateForever, modifier = Modifier.size(50.dp))
+                }
                 IconButton(onClick = onDelete) {
                     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.minuscircle))
-                    LottieAnimation(composition = composition, iterations = LottieConstants.IterateForever, modifier = Modifier.size(50.dp))                }
+                    LottieAnimation(composition = composition, iterations = LottieConstants.IterateForever, modifier = Modifier.size(50.dp))
+                }
             }
         }
     }

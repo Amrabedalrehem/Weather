@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -26,16 +27,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
-import com.example.presentation.utils.MyLottieAnimation
 import com.example.presentation.splash.viewmodel.SplashViewModel
+import com.example.presentation.utils.MyLottieAnimation
 import com.example.weather.R
-import androidx.compose.ui.res.stringResource
 import kotlinx.coroutines.delay
 
 @Composable
@@ -62,7 +62,7 @@ fun SplashScreen(
 
     LaunchedEffect(navigateTo) {
         when (navigateTo) {
-            "home" -> onNavigateToHome()
+            "home"       -> onNavigateToHome()
             "permission" -> onNavigateToPermission()
         }
     }
@@ -80,8 +80,8 @@ fun SplashScreen(
     ) {
         AnimatedVisibility(
             visible = isVisible,
-            enter = fadeIn(animationSpec = tween(1000)) + scaleIn(animationSpec = tween(1000)),
-            exit = fadeOut(animationSpec = tween(500)) + scaleOut(animationSpec = tween(500))
+            enter   = fadeIn(animationSpec = tween(1000)) + scaleIn(animationSpec = tween(1000)),
+            exit    = fadeOut(animationSpec = tween(500)) + scaleOut(animationSpec = tween(500))
         ) {
             MyLottieAnimation(size = 280.dp)
         }
@@ -90,18 +90,17 @@ fun SplashScreen(
 
         AnimatedVisibility(
             visible = isVisible,
-            enter = fadeIn(
-                animationSpec = tween(1000, delayMillis = 500)
-            ) + slideInVertically(
-                animationSpec = tween(1000, delayMillis = 500),
-                initialOffsetY = { it / 2 }
-            )
+            enter   = fadeIn(animationSpec = tween(1000, delayMillis = 500)) +
+                    slideInVertically(
+                        animationSpec  = tween(1000, delayMillis = 500),
+                        initialOffsetY = { it / 2 }
+                    )
         ) {
             Text(
-                text = stringResource(R.string.weather_title),
-                fontSize = 42.sp,
-                color = Color.White,
-                fontWeight = FontWeight.Bold,
+                text          = stringResource(R.string.weather_title),
+                fontSize      = 42.sp,
+                color         = MaterialTheme.colorScheme.onBackground,
+                fontWeight    = FontWeight.Bold,
                 letterSpacing = 0.5.sp
             )
         }
