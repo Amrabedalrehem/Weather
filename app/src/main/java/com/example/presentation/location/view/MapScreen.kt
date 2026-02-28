@@ -56,7 +56,7 @@ fun MapPickerScreen(
     val selectedCity = viewModel.selectedCity
     val selectedCountry = viewModel.selectedCountry
     val windUnit by viewModel.windSpeedUnit.collectAsState()
-      var showSearchBar by remember { mutableStateOf(false) }
+    var showSearchBar by remember { mutableStateOf(false) }
     var searchQuery by remember { mutableStateOf("") }
     var searchResults by remember { mutableStateOf<List<Address>>(emptyList()) }
     var showResults by remember { mutableStateOf(false) }
@@ -71,7 +71,7 @@ fun MapPickerScreen(
 
     Box(modifier = Modifier.fillMaxSize()) {
 
-         GoogleMap(
+        GoogleMap(
             modifier = Modifier.fillMaxSize(),
             cameraPositionState = cameraPositionState,
             onMapClick = { latLng ->
@@ -89,7 +89,7 @@ fun MapPickerScreen(
             }
         }
 
-         if (selectedLocation != null) {
+        if (selectedLocation != null) {
             val cameraPos = cameraPositionState.position
             val projection = cameraPositionState.projection
             val markerScreenPos = remember(cameraPos, selectedLocation) {
@@ -114,7 +114,7 @@ fun MapPickerScreen(
                         }
                 ) {
                     Box(
-                            modifier = Modifier
+                        modifier = Modifier
                             .background(
                                 color = androidx.compose.material3.MaterialTheme.colorScheme.primary.copy(alpha = 0.92f),
                                 shape = RoundedCornerShape(14.dp)
@@ -141,7 +141,7 @@ fun MapPickerScreen(
             }
         }
 
-         if (showSearchBar) {
+        if (showSearchBar) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -250,7 +250,7 @@ fun MapPickerScreen(
                 contentDescription = "Search"
             )
         }
-         FloatingActionButton(
+        FloatingActionButton(
             onClick = { nav.popBackStack() },
             modifier = Modifier
                 .align(Alignment.TopStart)
