@@ -24,6 +24,7 @@ import com.example.presentation.favorite.viewmodel.FavUiEvent
 import com.example.presentation.favorite.viewmodel.FavoritesViewModel
 import com.example.weather.R
 import androidx.compose.ui.res.stringResource
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
@@ -33,19 +34,30 @@ fun FavoriteScreen(
     onFavouriteClick: (FavouriteLocationCache) -> Unit,
     snackbarHostState: SnackbarHostState
 ) {
-    val favourites   by viewModel.favourites.collectAsState()
+    val favourites by viewModel.favourites.collectAsState()
     val activeAlarms by viewModel.alarms.collectAsState()
-    val scope        = rememberCoroutineScope()
-    val toastState   = rememberToastState()
+    val scope = rememberCoroutineScope()
+    val toastState = rememberToastState()
+
+    var isInitialLoading by remember { mutableStateOf(true) }
 
     LaunchedEffect(Unit) {
         viewModel.uiEvent.collect { event ->
             when (event) {
                 is FavUiEvent.ShowCard -> toastState.show(
                     message = event.message,
-                    type    = ToastType.INFO
+                    type = ToastType.INFO
                 )
             }
+        }
+    }
+
+    LaunchedEffect(favourites) {
+        if (favourites.isNotEmpty()) {
+            isInitialLoading = false
+        } else {
+            delay(300)
+            isInitialLoading = false
         }
     }
 
@@ -64,20 +76,16 @@ fun FavoriteScreen(
             )
     ) {
         Column(
-            modifier = modifier
-                .fillMaxSize()
-                .background(
-                    brush = Brush.verticalGradient(
-                        colors = com.example.presentation.theme.LocalWeatherGradient.current
-                    )
-                )
+            modifier = modifier.fillMaxSize()
         ) {
-            if (favourites.isNotEmpty()) {
+            if (!isInitialLoading && favourites.isNotEmpty()) {
                 OutlinedTextField(
-                    value         = searchQuery,
+                    value = searchQuery,
                     onValueChange = { searchQuery = it },
-                    modifier      = Modifier.fillMaxWidth().padding(16.dp),
-                    placeholder   = {
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    placeholder = {
                         Text(
                             stringResource(R.string.search_city),
                             color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
@@ -91,21 +99,25 @@ fun FavoriteScreen(
                         )
                     },
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedTextColor     = MaterialTheme.colorScheme.onBackground,
-                        unfocusedTextColor   = MaterialTheme.colorScheme.onBackground,
-                        cursorColor          = MaterialTheme.colorScheme.onBackground,
-                        focusedBorderColor   = MaterialTheme.colorScheme.onBackground,
+                        focusedTextColor = MaterialTheme.colorScheme.onBackground,
+                        unfocusedTextColor = MaterialTheme.colorScheme.onBackground,
+                        cursorColor = MaterialTheme.colorScheme.onBackground,
+                        focusedBorderColor = MaterialTheme.colorScheme.onBackground,
                         unfocusedBorderColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
                     ),
-                    shape      = RoundedCornerShape(25.dp),
+                    shape = RoundedCornerShape(25.dp),
                     singleLine = true
                 )
             }
 
             when {
+                isInitialLoading -> {
+                    Box(modifier = Modifier.fillMaxSize())
+                }
+
                 favourites.isEmpty() -> {
                     Column(
-                        modifier            = Modifier.fillMaxSize(),
+                        modifier = Modifier.fillMaxSize(),
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
@@ -114,67 +126,69 @@ fun FavoriteScreen(
                         )
                         LottieAnimation(
                             composition = composition,
-                            iterations  = LottieConstants.IterateForever,
-                            modifier    = Modifier.size(220.dp)
+                            iterations = LottieConstants.IterateForever,
+                            modifier = Modifier.size(220.dp)
                         )
                         Spacer(modifier = Modifier.height(5.dp))
                         Text(
                             stringResource(R.string.no_favorites_yet),
-                            fontSize   = 20.sp,
+                            fontSize = 20.sp,
                             fontWeight = FontWeight.Bold,
-                            color      = MaterialTheme.colorScheme.onBackground
+                            color = MaterialTheme.colorScheme.onBackground
                         )
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
                             stringResource(R.string.tap_button_add_city),
                             fontSize = 16.sp,
-                            color    = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
+                            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
                         )
                     }
                 }
 
                 filteredFavourites.isEmpty() -> {
                     Column(
-                        modifier            = Modifier.fillMaxSize(),
+                        modifier = Modifier.fillMaxSize(),
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
                             stringResource(R.string.no_cities_match),
-                            fontSize   = 18.sp,
+                            fontSize = 18.sp,
                             fontWeight = FontWeight.Medium,
-                            color      = MaterialTheme.colorScheme.onBackground
+                            color = MaterialTheme.colorScheme.onBackground
                         )
                     }
                 }
 
                 else -> {
                     LazyColumn(
-                        modifier  = Modifier.fillMaxSize().padding(horizontal = 16.dp),
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(horizontal = 16.dp),
                         verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
                         items(filteredFavourites) { location ->
-                            val message     = stringResource(R.string.city_removed, location.city)
+                            val message = stringResource(R.string.city_removed, location.city)
                             val activelabel = stringResource(R.string.undo)
                             FavouriteCard(
-                                location         = location,
-                                activeAlarms     = activeAlarms,
-                                onClick          = { onFavouriteClick(location) },
+                                location = location,
+                                activeAlarms = activeAlarms,
+                                onClick = { onFavouriteClick(location) },
                                 onDeleteWithUndo = {
                                     viewModel.markForDeletion(location)
                                     scope.launch {
                                         val result = snackbarHostState.showSnackbar(
-                                            message     = message,
+                                            message = message,
                                             actionLabel = activelabel,
-                                            duration    = SnackbarDuration.Short
+                                            duration = SnackbarDuration.Short
                                         )
                                         when (result) {
-                                            SnackbarResult.Dismissed       -> viewModel.confirmDelete(location)
+                                            SnackbarResult.Dismissed -> viewModel.confirmDelete(location)
                                             SnackbarResult.ActionPerformed -> viewModel.undoDelete(location)
                                         }
                                     }
                                 },
-                                onAddAlarm     = { alarm -> viewModel.addAlarm(alarm) },
+                                onAddAlarm = { alarm -> viewModel.addAlarm(alarm) },
                                 onDisableAlarm = { alarm -> viewModel.disableAlarm(alarm) }
                             )
                         }
@@ -183,7 +197,6 @@ fun FavoriteScreen(
                 }
             }
         }
-
         CustomToast(state = toastState)
     }
 }

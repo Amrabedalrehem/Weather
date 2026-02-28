@@ -15,6 +15,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -37,7 +38,6 @@ import com.example.weather.R
 import androidx.compose.ui.res.stringResource
 import com.example.presentation.utils.toArabicDigits
 
-
 @Composable
 fun AlertScreen(
     city: String,
@@ -49,7 +49,7 @@ fun AlertScreen(
     LaunchedEffect(Unit) { viewModel.fetchWeather() }
 
     Column(
-        modifier            = Modifier.fillMaxSize().background(Color(0xFF1976D2)),
+        modifier            = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.primary),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -72,7 +72,9 @@ fun AlertScreen(
                 Card(
                     modifier = Modifier.fillMaxWidth().padding(horizontal = 32.dp),
                     shape    = RoundedCornerShape(16.dp),
-                    colors   = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.15f))
+                    colors   = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+                    )
                 ) {
                     Column(
                         modifier            = Modifier.fillMaxWidth().padding(20.dp),

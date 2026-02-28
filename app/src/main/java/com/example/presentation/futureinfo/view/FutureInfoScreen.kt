@@ -1,4 +1,5 @@
 package com.example.presentation.futureinfo.view
+
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -52,33 +53,28 @@ fun FutureInfoScreen(
         ) {
             IconButton(onClick = onBack) {
                 Icon(
-                    imageVector = Icons.Default.ArrowBack,
+                    imageVector        = Icons.Default.ArrowBack,
                     contentDescription = "Back",
-                    tint = Color.White
+                    tint               = MaterialTheme.colorScheme.onBackground
                 )
             }
             Spacer(Modifier.width(8.dp))
-            Column {
-                Text(
-                    text = stringResource(R.string.upcoming_bad_weather),
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White
-                )
-            }
+            Text(
+                text       = stringResource(R.string.upcoming_bad_weather),
+                fontSize   = 20.sp,
+                fontWeight = FontWeight.Bold,
+                color      = MaterialTheme.colorScheme.onBackground
+            )
         }
 
-        HorizontalDivider(color = Color.White.copy(alpha = 0.08f))
+        HorizontalDivider(color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.08f))
 
         when (val s = state) {
             is FutureInfoState.Loading -> LoadingContent()
             is FutureInfoState.Error   -> ErrorContent()
             is FutureInfoState.Success -> {
-                if (s.days.isEmpty()) {
-                    AllClearContent()
-                } else {
-                    SuccessContent(days = s.days)
-                }
+                if (s.days.isEmpty()) AllClearContent()
+                else SuccessContent(days = s.days)
             }
         }
     }
@@ -90,7 +86,11 @@ private fun LoadingContent() {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             CircularProgressIndicator(color = Color(0xFF3B82F6))
             Spacer(Modifier.height(12.dp))
-            Text(stringResource(R.string.checking_days), color = Color.White.copy(alpha = 0.6f), fontSize = 14.sp)
+            Text(
+                stringResource(R.string.checking_days),
+                color    = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
+                fontSize = 14.sp
+            )
         }
     }
 }
@@ -101,8 +101,17 @@ private fun ErrorContent() {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text("⚠️", fontSize = 48.sp)
             Spacer(Modifier.height(12.dp))
-            Text(stringResource(R.string.could_not_load_forecast), color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.Bold)
-            Text(stringResource(R.string.check_connection), color = Color.White.copy(alpha = 0.5f), fontSize = 13.sp)
+            Text(
+                stringResource(R.string.could_not_load_forecast),
+                color      = MaterialTheme.colorScheme.onBackground,
+                fontSize   = 16.sp,
+                fontWeight = FontWeight.Bold
+            )
+            Text(
+                stringResource(R.string.check_connection),
+                color    = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
+                fontSize = 13.sp
+            )
         }
     }
 }
@@ -110,7 +119,10 @@ private fun ErrorContent() {
 @Composable
 private fun AllClearContent() {
     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.padding(32.dp)) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier            = Modifier.padding(32.dp)
+        ) {
             val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.notification))
             LottieAnimation(
                 composition = composition,
@@ -122,13 +134,13 @@ private fun AllClearContent() {
                 text       = stringResource(R.string.all_clear),
                 fontSize   = 24.sp,
                 fontWeight = FontWeight.Bold,
-                color      = Color.White
+                color      = MaterialTheme.colorScheme.onBackground
             )
             Spacer(Modifier.height(8.dp))
             Text(
                 text      = stringResource(R.string.no_bad_weather_5days),
                 fontSize  = 15.sp,
-                color     = Color.White.copy(alpha = 0.6f),
+                color     = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
                 textAlign = TextAlign.Center
             )
         }
@@ -147,7 +159,7 @@ private fun SuccessContent(days: List<BadWeatherDay>) {
         Text(
             text       = stringResource(R.string.detailed_forecast),
             fontSize   = 14.sp,
-            color      = Color.White.copy(alpha = 0.5f),
+            color      = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
             fontWeight = FontWeight.SemiBold,
             modifier   = Modifier.padding(bottom = 10.dp)
         )

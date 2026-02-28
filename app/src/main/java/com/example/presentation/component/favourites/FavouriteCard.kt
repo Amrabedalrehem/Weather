@@ -19,6 +19,8 @@ import com.example.data.model.entity.AlarmEntity
 import com.example.data.model.entity.FavouriteLocationCache
 import com.example.weather.R
 import androidx.compose.ui.res.stringResource
+import com.example.presentation.utils.SharedAlarmSheetContent
+import com.example.presentation.utils.buildCalendar
 import com.example.presentation.utils.toArabicDigits
 import com.example.presentation.utils.localizeWeatherMain
 import java.util.Calendar
@@ -152,14 +154,19 @@ fun FavouriteCard(
     if (showDisableDialog) {
         AlertDialog(
             onDismissRequest = { showDisableDialog = false },
-            containerColor   = MaterialTheme.colorScheme.primary,
             title = {
-                Text(stringResource(R.string.disable_alarm_title), color = Color.White, fontWeight = FontWeight.Bold, fontSize = 18.sp)
+                Text(
+                    text = stringResource(R.string.disable_alarm_title),
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 18.sp
+                )
             },
             text = {
                 Text(
-                    stringResource(R.string.disable_alarm_msg, location.city),
-                    color = Color.White.copy(alpha = 0.8f),
+                    text = stringResource(
+                        R.string.disable_alarm_msg,
+                        location.city
+                    ),
                     fontSize = 15.sp
                 )
             },
@@ -169,17 +176,15 @@ fun FavouriteCard(
                         activeAlarm?.let { onDisableAlarm(it) }
                         showDisableDialog = false
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color.Red.copy(alpha = 0.8f)),
-                    shape  = RoundedCornerShape(8.dp)
+                    shape = RoundedCornerShape(8.dp)
                 ) {
-                    Text(stringResource(R.string.disable), color = Color.White)
+                    Text(stringResource(R.string.disable))
                 }
             },
             dismissButton = {
                 OutlinedButton(
                     onClick = { showDisableDialog = false },
-                    shape   = RoundedCornerShape(8.dp),
-                    colors  = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFF3B82F6))
+                    shape = RoundedCornerShape(8.dp)
                 ) {
                     Text(stringResource(R.string.cancel))
                 }
@@ -190,52 +195,52 @@ fun FavouriteCard(
     if (showTimePicker) {
         Dialog(
             onDismissRequest = { showTimePicker = false },
-            properties       = DialogProperties(usePlatformDefaultWidth = false)
+            properties = DialogProperties(usePlatformDefaultWidth = false)
         ) {
             Card(
-                shape    = RoundedCornerShape(16.dp),
-                colors   = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary),
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp)
+                shape = RoundedCornerShape(24.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 24.dp)
             ) {
                 Column(
-                    modifier            = Modifier.padding(24.dp),
+                    modifier = Modifier.padding(24.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text(stringResource(R.string.select_time), fontSize = 18.sp, fontWeight = FontWeight.Bold, color = Color.White)
-                    Spacer(modifier = Modifier.height(20.dp))
-
-                    TimePicker(
-                        state  = timePickerState,
-                        colors = TimePickerDefaults.colors(
-                            clockDialColor                       = MaterialTheme.colorScheme.primary,
-                            clockDialSelectedContentColor        = Color.White,
-                            clockDialUnselectedContentColor      = Color.White.copy(alpha = 0.7f),
-                            selectorColor                        = Color(0xFF3B82F6),
-                            containerColor                       = MaterialTheme.colorScheme.primary,
-                            periodSelectorBorderColor            = Color(0xFF3B82F6),
-                            timeSelectorSelectedContainerColor   = Color(0xFF3B82F6),
-                            timeSelectorUnselectedContainerColor = MaterialTheme.colorScheme.primary,
-                            timeSelectorSelectedContentColor     = Color.White,
-                            timeSelectorUnselectedContentColor   = Color.White.copy(alpha = 0.7f)
-                        )
+                    Text(
+                        text = stringResource(R.string.select_time),
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold
                     )
 
                     Spacer(modifier = Modifier.height(20.dp))
 
+                    TimePicker(
+                        state = timePickerState
+                    )
+
+                    Spacer(modifier = Modifier.height(24.dp))
+
                     Row(
-                        modifier              = Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.End
                     ) {
-                        TextButton(onClick = { showTimePicker = false }) {
-                            Text(stringResource(R.string.cancel), color = Color.White.copy(alpha = 0.7f))
+                        TextButton(
+                            onClick = { showTimePicker = false }
+                        ) {
+                            Text(text = stringResource(R.string.cancel))
                         }
+
                         Spacer(modifier = Modifier.width(8.dp))
+
                         Button(
                             onClick = { showTimePicker = false },
-                            colors  = ButtonDefaults.buttonColors(containerColor = Color(0xFF3B82F6)),
-                            shape   = RoundedCornerShape(8.dp)
+                            shape = RoundedCornerShape(12.dp)
                         ) {
-                            Text(stringResource(R.string.ok), color = Color.White)
+                            Text(
+                                text = stringResource(R.string.ok),
+                                fontWeight = FontWeight.ExtraBold
+                            )
                         }
                     }
                 }
@@ -247,120 +252,30 @@ fun FavouriteCard(
         ModalBottomSheet(
             onDismissRequest = { showAlarmSheet = false },
             sheetState       = sheetState,
-            containerColor   = MaterialTheme.colorScheme.primary
+            containerColor   = MaterialTheme.colorScheme.primary,
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .verticalScroll(rememberScrollState())
-                    .padding(horizontal = 16.dp)
-                    .padding(bottom = 32.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Spacer(modifier = Modifier.height(8.dp))
-
-                Text(
-                    text       = stringResource(R.string.set_alarm_for, location.city),
-                    fontSize   = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                    color      = Color.White
-                )
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                DatePicker(
-                    state  = datePickerState,
-                    colors = DatePickerDefaults.colors(
-                        containerColor            = MaterialTheme.colorScheme.primary,
-                        titleContentColor         = Color.White,
-                        headlineContentColor      = Color.White,
-                        weekdayContentColor       = Color.White.copy(alpha = 0.6f),
-                        dayContentColor           = Color.White,
-                        selectedDayContainerColor = Color(0xFF3B82F6),
-                        todayContentColor         = Color(0xFF3B82F6),
-                        todayDateBorderColor      = Color(0xFF3B82F6)
-                    )
-                )
-
-                Spacer(modifier = Modifier.height(16.dp))
-                HorizontalDivider(color = Color.White.copy(alpha = 0.1f))
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Text(stringResource(R.string.choose_time), fontSize = 16.sp, fontWeight = FontWeight.SemiBold, color = Color.White)
-                Spacer(modifier = Modifier.height(8.dp))
-
-                OutlinedButton(
-                    onClick  = { showTimePicker = true },
-                    shape    = RoundedCornerShape(12.dp),
-                    colors   = ButtonDefaults.outlinedButtonColors(contentColor = Color.White),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text("🕐  $formattedTime".toArabicDigits(), fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.White)
-                }
-
-                Spacer(modifier = Modifier.height(20.dp))
-                HorizontalDivider(color = Color.White.copy(alpha = 0.1f))
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Text(
-                    text     = stringResource(R.string.weather_updates_city, location.city),
-                    color    = Color.White.copy(alpha = 0.8f),
-                    fontSize = 14.sp
-                )
-                Text(
-                    text       = stringResource(R.string.choose_preferred_option),
-                    color      = Color(0xFF3B82F6),
-                    fontSize   = 13.sp,
-                    fontWeight = FontWeight.Bold,
-                    modifier   = Modifier.padding(vertical = 4.dp)
-                )
-
-                Row(
-                    modifier              = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly
-                ) {
-                    val typeLabels = mapOf(
-                        "Alert" to stringResource(R.string.alert),
-                        "Notification" to stringResource(R.string.notification)
-                    )
-                    typeLabels.forEach { (key, label) ->
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            RadioButton(selected = selectedType == key, onClick = { selectedType = key })
-                            Text(text = label, color = Color.White, fontSize = 16.sp)
-                        }
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(24.dp))
-
-                Button(
-                    onClick = {
-                        val selectedDate = datePickerState.selectedDateMillis ?: System.currentTimeMillis()
-                        val calendar = Calendar.getInstance().apply {
-                            timeInMillis = selectedDate
-                            set(Calendar.HOUR_OF_DAY, timePickerState.hour)
-                            set(Calendar.MINUTE,      timePickerState.minute)
-                            set(Calendar.SECOND,      0)
-                            set(Calendar.MILLISECOND, 0)
-                        }
-                        onAddAlarm(
-                            AlarmEntity(
-                                city         = location.city,
-                                latitude     = location.lat,
-                                longitude    = location.lon,
-                                timeInMillis = calendar.timeInMillis,
-                                type         = selectedType
-                            )
+            SharedAlarmSheetContent(
+                title = stringResource(R.string.set_alarm_for, location.city),
+                subtitle = stringResource(R.string.weather_updates_city, location.city),
+                datePickerState = datePickerState,
+                timePickerState = timePickerState,
+                selectedType = selectedType,
+                onTypeChange = { selectedType = it },
+                onShowTimePicker = { showTimePicker = true },
+                onDone = {
+                    val calendar = buildCalendar(datePickerState, timePickerState)
+                    onAddAlarm(
+                        AlarmEntity(
+                            city         = location.city,
+                            latitude     = location.lat,
+                            longitude    = location.lon,
+                            timeInMillis = calendar.timeInMillis,
+                            type         = selectedType
                         )
-                        showAlarmSheet = false
-                    },
-                    modifier = Modifier.fillMaxWidth().height(52.dp),
-                    colors   = ButtonDefaults.buttonColors(containerColor = Color(0xFF3B82F6)),
-                    shape    = RoundedCornerShape(12.dp)
-                ) {
-                    Text(stringResource(R.string.done), fontSize = 18.sp, color = Color.White, fontWeight = FontWeight.Bold)
+                    )
+                    showAlarmSheet = false
                 }
-            }
+            )
         }
     }
 }

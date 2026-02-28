@@ -20,18 +20,18 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.presentation.utils.MyLottieAnimation
 import com.example.presentation.component.permission.PermissionUiState
 import com.example.presentation.permission.viewmodel.PermissionViewModel
+import com.example.presentation.utils.MyLottieAnimation
+import com.example.weather.R
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.MultiplePermissionsState
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
-import com.example.weather.R
-import androidx.compose.ui.res.stringResource
 import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalPermissionsApi::class)
@@ -44,7 +44,7 @@ fun PermissionScreen(
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
 
-     lateinit var locationPermissionState: MultiplePermissionsState
+    lateinit var locationPermissionState: MultiplePermissionsState
     locationPermissionState = rememberMultiplePermissionsState(
         permissions = listOf(
             Manifest.permission.ACCESS_FINE_LOCATION,
@@ -52,8 +52,8 @@ fun PermissionScreen(
         )
     ) { permissions ->
         val isGranted = permissions.values.all { it }
-         viewModel.onPermissionResult(
-            isGranted = isGranted,
+        viewModel.onPermissionResult(
+            isGranted           = isGranted,
             shouldShowRationale = locationPermissionState.shouldShowRationale
         )
     }
@@ -61,11 +61,12 @@ fun PermissionScreen(
     LaunchedEffect(locationPermissionState.allPermissionsGranted) {
         if (locationPermissionState.allPermissionsGranted) {
             viewModel.onButtonClicked(
-                hasPermission = true,
+                hasPermission       = true,
                 shouldShowRationale = false
             )
         }
     }
+
     LaunchedEffect(uiState) {
         when (uiState) {
             is PermissionUiState.NavigateToHome -> {
@@ -80,12 +81,12 @@ fun PermissionScreen(
         }
     }
 
-if (uiState is PermissionUiState.ShowRationale) {
+    if (uiState is PermissionUiState.ShowRationale) {
         AlertDialog(
             onDismissRequest = { viewModel.resetState() },
-            title = { Text(stringResource(R.string.location_needed), fontWeight = FontWeight.Bold) },
-            text = { Text(stringResource(R.string.location_rationale)) },
-            confirmButton = {
+            title            = { Text(stringResource(R.string.location_needed), fontWeight = FontWeight.Bold) },
+            text             = { Text(stringResource(R.string.location_rationale)) },
+            confirmButton    = {
                 TextButton(onClick = {
                     viewModel.resetState()
                     locationPermissionState.launchMultiplePermissionRequest()
@@ -95,7 +96,7 @@ if (uiState is PermissionUiState.ShowRationale) {
             },
             dismissButton = {
                 TextButton(onClick = { viewModel.resetState() }) {
-                    Text(stringResource(R.string.cancel), color = Color.Gray)
+                    Text(stringResource(R.string.cancel), color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f))
                 }
             }
         )
@@ -104,9 +105,9 @@ if (uiState is PermissionUiState.ShowRationale) {
     if (uiState is PermissionUiState.ShowLocationError) {
         AlertDialog(
             onDismissRequest = { viewModel.resetState() },
-            title = { Text(stringResource(R.string.gps_disabled), fontWeight = FontWeight.Bold) },
-            text = { Text(stringResource(R.string.gps_message)) },
-            confirmButton = {
+            title            = { Text(stringResource(R.string.gps_disabled), fontWeight = FontWeight.Bold) },
+            text             = { Text(stringResource(R.string.gps_message)) },
+            confirmButton    = {
                 TextButton(onClick = {
                     viewModel.resetState()
                     val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
@@ -117,7 +118,7 @@ if (uiState is PermissionUiState.ShowRationale) {
             },
             dismissButton = {
                 TextButton(onClick = { viewModel.resetState() }) {
-                    Text(stringResource(R.string.cancel), color = Color.Gray)
+                    Text(stringResource(R.string.cancel), color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f))
                 }
             }
         )
@@ -126,9 +127,9 @@ if (uiState is PermissionUiState.ShowRationale) {
     if (uiState is PermissionUiState.GoToSettings) {
         AlertDialog(
             onDismissRequest = { viewModel.resetState() },
-            title = { Text(stringResource(R.string.permission_denied), fontWeight = FontWeight.Bold) },
-            text = { Text(stringResource(R.string.permission_denied_msg)) },
-            confirmButton = {
+            title            = { Text(stringResource(R.string.permission_denied), fontWeight = FontWeight.Bold) },
+            text             = { Text(stringResource(R.string.permission_denied_msg)) },
+            confirmButton    = {
                 TextButton(onClick = {
                     viewModel.resetState()
                     val intent = Intent(
@@ -142,7 +143,7 @@ if (uiState is PermissionUiState.ShowRationale) {
             },
             dismissButton = {
                 TextButton(onClick = { viewModel.resetState() }) {
-                    Text(stringResource(R.string.cancel), color = Color.Gray)
+                    Text(stringResource(R.string.cancel), color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f))
                 }
             }
         )
@@ -168,7 +169,7 @@ if (uiState is PermissionUiState.ShowRationale) {
     ) {
         AnimatedVisibility(
             visible = isVisible,
-            enter = fadeIn(tween(1000)) + scaleIn(tween(1000))
+            enter   = fadeIn(tween(1000)) + scaleIn(tween(1000))
         ) {
             MyLottieAnimation(size = 200.dp)
         }
@@ -177,17 +178,17 @@ if (uiState is PermissionUiState.ShowRationale) {
 
         AnimatedVisibility(
             visible = isVisible,
-            enter = fadeIn(tween(1000, 500)) + slideInVertically(
+            enter   = fadeIn(tween(1000, 500)) + slideInVertically(
                 tween(1000, 500),
                 initialOffsetY = { it / 2 }
             )
         ) {
             Text(
-                text = stringResource(R.string.weather_title),
-                fontSize = 40.sp,
-                color = Color.White,
+                text       = stringResource(R.string.weather_title),
+                fontSize   = 40.sp,
+                color      = MaterialTheme.colorScheme.onBackground,
                 fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Center
+                textAlign  = TextAlign.Center
             )
         }
 
@@ -195,10 +196,10 @@ if (uiState is PermissionUiState.ShowRationale) {
 
         AnimatedVisibility(visible = isVisible, enter = fadeIn(tween(1000, 700))) {
             Text(
-                text = stringResource(R.string.track_weather),
-                fontSize = 16.sp,
-                color = Color.White.copy(alpha = 0.8f),
-                textAlign = TextAlign.Center,
+                text       = stringResource(R.string.track_weather),
+                fontSize   = 16.sp,
+                color      = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f),
+                textAlign  = TextAlign.Center,
                 fontWeight = FontWeight.Bold
             )
         }
@@ -207,12 +208,12 @@ if (uiState is PermissionUiState.ShowRationale) {
 
         AnimatedVisibility(
             visible = isVisible,
-            enter = fadeIn(tween(1000, 1100)) + scaleIn(tween(1000, 1100))
+            enter   = fadeIn(tween(1000, 1100)) + scaleIn(tween(1000, 1100))
         ) {
             Button(
                 onClick = {
-                     viewModel.onButtonClicked(
-                        hasPermission = locationPermissionState.allPermissionsGranted,
+                    viewModel.onButtonClicked(
+                        hasPermission       = locationPermissionState.allPermissionsGranted,
                         shouldShowRationale = locationPermissionState.shouldShowRationale
                     )
                 },
@@ -221,18 +222,18 @@ if (uiState is PermissionUiState.ShowRationale) {
                     .height(56.dp)
                     .shadow(8.dp, RoundedCornerShape(21.dp)),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.White,
-                    contentColor = Color(0xFF3B82F6)
+                    containerColor = MaterialTheme.colorScheme.onBackground,
+                    contentColor   = MaterialTheme.colorScheme.primary
                 ),
                 shape = RoundedCornerShape(20.dp)
             ) {
                 Text(
                     text = when {
                         locationPermissionState.allPermissionsGranted -> stringResource(R.string.get_started)
-                        locationPermissionState.shouldShowRationale -> stringResource(R.string.why_need_location)
-                        else -> stringResource(R.string.allow_location)
+                        locationPermissionState.shouldShowRationale   -> stringResource(R.string.why_need_location)
+                        else                                          -> stringResource(R.string.allow_location)
                     },
-                    fontSize = 18.sp,
+                    fontSize   = 18.sp,
                     fontWeight = FontWeight.Bold
                 )
             }
