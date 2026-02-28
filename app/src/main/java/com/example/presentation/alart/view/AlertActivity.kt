@@ -1,5 +1,4 @@
 package com.example.presentation.alart.view
-
 import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Intent
@@ -7,38 +6,38 @@ import android.os.Bundle
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.padding
-import androidx.compose.ui.Modifier
-import com.example.data.IRepository
 import com.example.data.Repository
 import com.example.presentation.component.alert.alarm.AlarmReceiver
 import com.example.data.datasource.local.DataSourceLocal
 import com.example.data.datasource.remote.DataSourceRemote
-import com.example.data.datasource.remote.IDataSourceRemote
 import com.example.data.datasource.sharedPreference.DataStorePermission
 import com.example.data.datasource.sharedPreference.DataStoreSettings
 import com.example.data.dp.AppDatabase
 import com.example.presentation.alart.viewmodel.AlertViewModel
-import com.example.presentation.utils.CheckNetwork
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class AlertActivity : ComponentActivity() {
-    private val dataSourceRemote: IDataSourceRemote = DataSourceRemote()
+    private var alarmId: Int = -1
+    private val dataSourceRemote by lazy { DataSourceRemote() }
     private val database by lazy { AppDatabase.getInstance(this) }
     private val dataSourceLocal by lazy {
-        DataSourceLocal(
-            database.favouriteDao(),
-            database.homeWeatherDao(),
-            database.alarmDao()
-        )
+        DataSourceLocal(database.favouriteDao(), database.homeWeatherDao(), database.alarmDao())
     }
     private val dataStoreSettings by lazy { DataStoreSettings(this) }
     private val dataStorePermission by lazy { DataStorePermission(this) }
-     private val repository: IRepository by lazy {
+    private val repository by lazy {
         Repository(dataSourceLocal, dataSourceRemote, dataStoreSettings, dataStorePermission)
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        AlarmReceiver.ringtone?.stop()
+        AlarmReceiver.ringtone = null
+        deleteAlarm(alarmId)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -48,12 +47,11 @@ class AlertActivity : ComponentActivity() {
                     WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or
                     WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
         )
-
+        alarmId = intent.getIntExtra("alarmId", -1)
         val city = intent.getStringExtra("city") ?: "Unknown"
         val lat = intent.getDoubleExtra("lat", 0.0)
         val lon = intent.getDoubleExtra("lon", 0.0)
         val alarmId = intent.getIntExtra("alarmId", -1)
-
 
         val viewModel = AlertViewModel(application, lat, lon, repository)
 
@@ -61,13 +59,13 @@ class AlertActivity : ComponentActivity() {
             AlertScreen(
                 city = city,
                 viewModel = viewModel,
-                 onDismiss = {
-                    AlarmReceiver.Companion.ringtone?.stop()
+                onDismiss = {
+                    AlarmReceiver.ringtone?.stop()
                     deleteAlarm(alarmId)
                     finish()
                 },
                 onSnooze = { minutes ->
-                    AlarmReceiver.Companion.ringtone?.stop()
+                    AlarmReceiver.ringtone?.stop()
                     scheduleSnooze(alarmId, city, lat, lon, minutes)
                     finish()
                 }
@@ -78,7 +76,7 @@ class AlertActivity : ComponentActivity() {
     private fun deleteAlarm(alarmId: Int) {
         if (alarmId == -1) return
 
-          CoroutineScope(Dispatchers.IO).launch {
+        CoroutineScope(Dispatchers.IO).launch {
             val alarm = repository.getAlarmById(alarmId)
             alarm?.let { repository.deleteAlarm(it) }
         }

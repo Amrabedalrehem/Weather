@@ -161,7 +161,7 @@
     <string name="choose_future_time">Please choose a future time</string>
     <string name="alarm_set_success">Alarm set successfully</string>
     <string name="alarm_updated">Alarm updated</string>
-    <string name="alarm_set_for">Alarm set for %1$s</string>
+    <string name="alarm_set_for">ٍCreate alarm</string>
 
     <!-- Weather Conditions (API main field) -->
     <string name="weather_clear">Clear</string>
@@ -187,4 +187,18 @@
     <string name="wind_speed_ms">%1$s m/s</string>
     <string name="wind_speed_mph">%1$s mph</string>
     <string name="pressure_hpa">%1$s hPa</string>
+
+    <string name="storm_alert_info">Configure Weather Alert</string>
+    <string name="threshold_level">Threshold Level</string>
+    <string name="create_alert">Create Alert</string>
+
+    <string name="alert_rain">Rain</string>
+    <string name="alert_wind">Wind</string>
+    <string name="alert_temp">Temperature</string>
+    <string name="alert_storm">Storm</string>
+
+    <string name="storm_info_message">
+        You will receive a notification when storm conditions are detected.
+    </string>
+
 </resources>
