@@ -6,10 +6,10 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.provider.Settings
+import androidx.work.WorkManager
 import com.example.data.model.entity.AlarmEntity
 
 class AlarmScheduler(private val context: Context) : IAlarmScheduler {
-
 
     private val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
@@ -30,6 +30,8 @@ class AlarmScheduler(private val context: Context) : IAlarmScheduler {
             putExtra("lat", alarm.latitude)
             putExtra("lon", alarm.longitude)
             putExtra("alarmId", alarm.id)
+            putExtra("alertType", alarm.alertType)
+            putExtra("threshold", alarm.threshold ?: -1f)
         }
 
         val pendingIntent = PendingIntent.getBroadcast(
@@ -49,14 +51,9 @@ class AlarmScheduler(private val context: Context) : IAlarmScheduler {
             e.printStackTrace()
         }
     }
+
     override fun cancel(alarm: AlarmEntity) {
-        val intent = Intent(context, AlarmReceiver::class.java).apply {
-             putExtra("type",    alarm.type)
-            putExtra("city",    alarm.city)
-            putExtra("lat",     alarm.latitude)
-            putExtra("lon",     alarm.longitude)
-            putExtra("alarmId", alarm.id)
-        }
+        val intent = Intent(context, AlarmReceiver::class.java)
         val pendingIntent = PendingIntent.getBroadcast(
             context,
             alarm.id,
@@ -64,5 +61,6 @@ class AlarmScheduler(private val context: Context) : IAlarmScheduler {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
         alarmManager.cancel(pendingIntent)
+        WorkManager.getInstance(context).cancelAllWorkByTag("alarm_${alarm.id}")
     }
 }

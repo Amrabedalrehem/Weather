@@ -9,7 +9,6 @@ import com.example.presentation.utils.WeatherAlertState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-
 class AlertViewModel(
     application: Application,
     private val lat: Double,
@@ -19,6 +18,7 @@ class AlertViewModel(
 
     private val _weatherState = MutableStateFlow<WeatherAlertState>(WeatherAlertState.Loading)
     val weatherState: StateFlow<WeatherAlertState> = _weatherState
+
     fun fetchWeather() {
         viewModelScope.launch {
             repository.getCurrentWeather(lat, lon).collect { result ->
@@ -29,7 +29,7 @@ class AlertViewModel(
                         description = result.data.weather?.firstOrNull()?.description ?: "",
                         feelsLike   = result.data.main?.feelsLike?.toInt()            ?: 0
                     )
-                    is ApiResult.Error   -> _weatherState.value = WeatherAlertState.Error
+                    is ApiResult.Error -> _weatherState.value = WeatherAlertState.Error
                 }
             }
         }

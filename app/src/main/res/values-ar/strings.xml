@@ -161,7 +161,7 @@
     <string name="choose_future_time">يرجى اختيار وقت في المستقبل</string>
     <string name="alarm_set_success">تم ضبط التنبيه بنجاح</string>
     <string name="alarm_updated">تم تحديث التنبيه</string>
-    <string name="alarm_set_for">تم ضبط تنبيه لـ %1$s</string>
+    <string name="alarm_set_for"> ابدا الان التنبيه </string>
 
     <!-- Weather Conditions (API main field) -->
     <string name="weather_clear">صافي</string>
@@ -187,4 +187,21 @@
     <string name="wind_speed_ms">%1$s م/ث</string>
     <string name="wind_speed_mph">%1$s ميل/س</string>
     <string name="pressure_hpa">%1$s هـ.ب</string>
-</resources>
+
+    <string name="storm_alert_info">إعداد تنبيه الطقس</string>
+    <string name="threshold_level">مستوى التنبيه</string>
+     <string name="create_alert">إنشاء تنبيه</string>
+
+    <string name="alert_rain">أمطار</string>
+    <string name="alert_wind">رياح</string>
+    <string name="alert_temp">درجة الحرارة</string>
+    <string name="alert_storm">عاصفة</string>
+
+    <string name="storm_info_message">
+        سيتم إرسال إشعار عند اكتشاف حالة عاصفة.
+    </string>
+
+    <string name="unit_temp">°م</string>
+    <string name="unit_wind">كم/س</string>
+    <string name="unit_rain">مم</string>
+ </resources>

@@ -16,7 +16,7 @@ import com.example.data.model.mapper.WeatherTypeConverters
 
 @Database(
     entities = [FavouriteLocationCache::class , HomeWeatherCache::class, AlarmEntity::class],
-    version = 6,
+    version = 7,
     exportSchema = false
 )@TypeConverters(WeatherTypeConverters::class)
 abstract class AppDatabase : RoomDatabase() {
