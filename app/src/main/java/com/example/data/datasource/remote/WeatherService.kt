@@ -37,7 +37,7 @@ interface WeatherService {
         @Query("lon") lon: Double,
         @Query("lang") lang: String,
         @Query("units") units: String ,
-        @Query("cnt") count: Int = 5
+        @Query("cnt") count: Int = 6
     ): Response<FiveDayForecastResponse>
 
 
