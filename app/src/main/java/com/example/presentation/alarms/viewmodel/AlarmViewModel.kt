@@ -11,12 +11,14 @@ import com.example.weather.R
 import android.content.res.Configuration
 import com.example.data.IRepository
 import com.example.presentation.component.alert.alarm.IAlarmScheduler
+import com.example.presentation.utils.UiState
 import java.util.Locale
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -49,16 +51,17 @@ class AlarmViewModel(
 
     val currentCity: StateFlow<String> = repository.locationType
         .stateIn(
-            scope        = viewModelScope,
-            started      = SharingStarted.WhileSubscribed(5000),
+            scope    = viewModelScope,
+            started   = SharingStarted.WhileSubscribed(5000),
             initialValue = ""
         )
 
-    val alarms: StateFlow<List<AlarmEntity>> = repository.getAllAlarms()
+    val alarmsState: StateFlow<UiState<List<AlarmEntity>>> = repository.getAllAlarms()
+        .map { UiState.Success(it) }
         .stateIn(
-            scope        = viewModelScope,
-            started      = SharingStarted.WhileSubscribed(5000),
-            initialValue = emptyList()
+            scope   = viewModelScope,
+            started   = SharingStarted.WhileSubscribed(5000),
+            initialValue = UiState.Loading
         )
 
     fun addAlarm(alarm: AlarmEntity) {

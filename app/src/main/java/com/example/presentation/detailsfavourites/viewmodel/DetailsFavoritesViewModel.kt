@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.data.ApiResult
 import com.example.data.IRepository
-import com.example.data.Repository
 import com.example.data.model.entity.FavouriteLocationCache
 import com.example.presentation.utils.CheckNetwork
 import kotlinx.coroutines.flow.SharingStarted
@@ -15,9 +14,14 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
+sealed class DetailsUiState {
+    object Loading : DetailsUiState()
+    data class Success(val data: FavouriteLocationCache) : DetailsUiState()
+}
 class DetailsFavoritesViewModel(
     val repository: IRepository,
     private val locationId: Int,
@@ -29,6 +33,15 @@ class DetailsFavoritesViewModel(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = null
+        )
+
+    val uiState: StateFlow<DetailsUiState> = repository.getFavouriteById(locationId)
+        .filterNotNull()
+        .map<FavouriteLocationCache, DetailsUiState> { DetailsUiState.Success(it) }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = DetailsUiState.Loading
         )
 
     val windSpeedUnit: StateFlow<String> = repository.windSpeedUnit
@@ -66,7 +79,7 @@ class DetailsFavoritesViewModel(
             val isConnected = networkObserver.isConnected.first()
             if (!isConnected) return@launch
 
-            val current = itemFavourite.filterNotNull().first()
+            val current = repository.getFavouriteById(locationId).filterNotNull().first()
             val updatedWeather = fetchWeatherData(current)
             updatedWeather?.let { repository.insert(it) }
         }

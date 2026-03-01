@@ -24,6 +24,7 @@ import com.example.data.model.entity.AlarmEntity
 import com.example.presentation.alarms.viewmodel.AlarmViewModel
 import com.example.presentation.utils.AlarmUiEvent
 import com.example.presentation.utils.CustomToast
+import com.example.presentation.utils.UiState
 import com.example.presentation.utils.rememberToastState
 import com.example.weather.R
 import androidx.compose.ui.res.stringResource
@@ -38,11 +39,11 @@ fun AlarmsScreen(
     viewModel: AlarmViewModel,
     onRequestAddAlarm: (() -> Unit) -> Unit
 ) {
-    val alarms by viewModel.alarms.collectAsState()
+    val alarmsState by viewModel.alarmsState.collectAsState()
     val currentLocation by viewModel.currentLocation.collectAsState()
     val toastState = rememberToastState()
 
-     var showAddSheet by remember { mutableStateOf(false) }
+    var showAddSheet by remember { mutableStateOf(false) }
     var selectedType by remember { mutableStateOf("Alert") }
     val addSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val datePickerState = rememberDatePickerState(initialSelectedDateMillis = System.currentTimeMillis())
@@ -122,50 +123,69 @@ fun AlarmsScreen(
                     color = MaterialTheme.colorScheme.primary
                 )
             }
-            if (alarms.isNotEmpty()) {
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    items(alarms, key = { it.id }) { alarm ->
-                        AlarmCard(
-                            alarm    = alarm,
-                            onDelete = { alarmToReset = alarm; showResetDialog = true },
-                            onEdit   = {
-                                alarmToEdit    = alarm
-                                editSelectedType = alarm.type
-                                showEditSheet  = true
-                            }
-                        )
+
+            when (alarmsState) {
+                is UiState.Loading -> {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator()
                     }
                 }
-            } else {
-                Column(
-                    modifier              = Modifier.fillMaxSize(),
-                    verticalArrangement   = Arrangement.Center,
-                    horizontalAlignment   = Alignment.CenterHorizontally
-                ) {
-                    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.notification))
-                    LottieAnimation(
-                        composition = composition,
-                        iterations  = LottieConstants.IterateForever,
-                        modifier    = Modifier.size(220.dp)
-                    )
-                    Spacer(Modifier.height(5.dp))
-                    Text(
-                        stringResource(R.string.journey_quiet),
-                        fontSize   = 20.sp,
-                        fontWeight = FontWeight.Bold,
-                        color      = MaterialTheme.colorScheme.onBackground
-                    )
-                    Spacer(Modifier.height(4.dp))
-                    Text(
-                        stringResource(R.string.no_weather_alarms),
-                        fontSize = 16.sp,
-                        color    = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
-                    )
+                is UiState.Success -> {
+                    val alarms = (alarmsState as UiState.Success<List<AlarmEntity>>).data
+                    if (alarms.isNotEmpty()) {
+                        LazyColumn(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(16.dp),
+                            verticalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            items(alarms, key = { it.id }) { alarm ->
+                                AlarmCard(
+                                    alarm    = alarm,
+                                    onDelete = { alarmToReset = alarm; showResetDialog = true },
+                                    onEdit   = {
+                                        alarmToEdit      = alarm
+                                        editSelectedType = alarm.type
+                                        showEditSheet    = true
+                                    }
+                                )
+                            }
+                        }
+                    } else {
+                        Column(
+                            modifier              = Modifier.fillMaxSize(),
+                            verticalArrangement   = Arrangement.Center,
+                            horizontalAlignment   = Alignment.CenterHorizontally
+                        ) {
+                            val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.notification))
+                            LottieAnimation(
+                                composition = composition,
+                                iterations  = LottieConstants.IterateForever,
+                                modifier    = Modifier.size(220.dp)
+                            )
+                            Spacer(Modifier.height(5.dp))
+                            Text(
+                                stringResource(R.string.journey_quiet),
+                                fontSize   = 20.sp,
+                                fontWeight = FontWeight.Bold,
+                                color      = MaterialTheme.colorScheme.onBackground
+                            )
+                            Spacer(Modifier.height(4.dp))
+                            Text(
+                                stringResource(R.string.no_weather_alarms),
+                                fontSize = 16.sp,
+                                color    = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
+                            )
+                        }
+                    }
+                }
+                is UiState.Error -> {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Text(
+                            text = (alarmsState as UiState.Error).message,
+                            color = MaterialTheme.colorScheme.error
+                        )
+                    }
                 }
             }
         }
@@ -173,7 +193,7 @@ fun AlarmsScreen(
         CustomToast(state = toastState)
     }
 
-     if (showAddSheet) {
+    if (showAddSheet) {
         ModalBottomSheet(
             onDismissRequest = { showAddSheet = false },
             sheetState       = addSheetState,
@@ -181,18 +201,18 @@ fun AlarmsScreen(
         ) {
             val currentLocationText = stringResource(R.string.current_location)
             SharedAlarmSheetContent(
-                title          = stringResource(R.string.choose_date_time),
-                subtitle       = stringResource(R.string.weather_updates_question),
-                datePickerState = datePickerState,
-                timePickerState = timePickerState,
-                selectedType   = selectedType,
-                onTypeChange   = { selectedType = it },
+                title   = stringResource(R.string.choose_date_time),
+                subtitle     = stringResource(R.string.weather_updates_question),
+                datePickerState  = datePickerState,
+                timePickerState  = timePickerState,
+                selectedType     = selectedType,
+                onTypeChange     = { selectedType = it },
                 onShowTimePicker = { showAddTimePicker = true },
-                onDone         = {
+                onDone           = {
                     val calendar = buildCalendar(datePickerState, timePickerState)
                     viewModel.addAlarm(
                         AlarmEntity(
-                            city         = currentLocationText,
+                            city  = currentLocationText,
                             latitude     = currentLocation.first,
                             longitude    = currentLocation.second,
                             timeInMillis = calendar.timeInMillis,
@@ -213,21 +233,21 @@ fun AlarmsScreen(
         )
     }
 
-     if (showEditSheet && alarmToEdit != null) {
+    if (showEditSheet && alarmToEdit != null) {
         ModalBottomSheet(
             onDismissRequest = { showEditSheet = false },
             sheetState       = editSheetState,
             containerColor   = MaterialTheme.colorScheme.primary
         ) {
             SharedAlarmSheetContent(
-                title          = stringResource(R.string.edit_alarm),
-                subtitle       = stringResource(R.string.weather_updates_question),
-                datePickerState = editDateState,
-                timePickerState = editTimeState,
-                selectedType   = editSelectedType,
-                onTypeChange   = { editSelectedType = it },
+                title    = stringResource(R.string.edit_alarm),
+                subtitle  = stringResource(R.string.weather_updates_question),
+                datePickerState  = editDateState,
+                timePickerState  = editTimeState,
+                selectedType  = editSelectedType,
+                onTypeChange     = { editSelectedType = it },
                 onShowTimePicker = { showEditTimePicker = true },
-                onDone         = {
+                onDone           = {
                     val calendar = buildCalendar(editDateState, editTimeState)
                     alarmToEdit?.let { old ->
                         viewModel.editAlarm(
@@ -252,7 +272,7 @@ fun AlarmsScreen(
         )
     }
 
-     if (showConfigureSheet) {
+    if (showConfigureSheet) {
         ModalBottomSheet(
             onDismissRequest = { showConfigureSheet = false },
             sheetState       = rememberModalBottomSheetState(skipPartiallyExpanded = true),
@@ -260,16 +280,16 @@ fun AlarmsScreen(
         ) {
             val currentLocationText = stringResource(R.string.current_location)
             ConfigureAlertSheetContent(
-                selectedType     = configSelectedType,
-                threshold        = configThreshold,
-                onTypeChange     = { configSelectedType = it },
-                onThresholdChange = { configThreshold = it },
-                datePickerState  = configDateState,
-                timePickerState  = configTimeState,
-                notificationType = configNotificationType,
+                selectedType             = configSelectedType,
+                threshold                = configThreshold,
+                onTypeChange             = { configSelectedType = it },
+                onThresholdChange        = { configThreshold = it },
+                datePickerState          = configDateState,
+                timePickerState          = configTimeState,
+                notificationType         = configNotificationType,
                 onNotificationTypeChange = { configNotificationType = it },
-                onShowTimePicker = { showConfigTimePicker = true },
-                onDone           = {
+                onShowTimePicker         = { showConfigTimePicker = true },
+                onDone                   = {
                     val calendar = buildCalendar(configDateState, configTimeState)
                     viewModel.addAlarm(
                         AlarmEntity(
@@ -297,7 +317,7 @@ fun AlarmsScreen(
         )
     }
 
-     if (showResetDialog && alarmToReset != null) {
+    if (showResetDialog && alarmToReset != null) {
         AlertDialog(
             onDismissRequest = { showResetDialog = false },
             title = {
@@ -355,7 +375,7 @@ private fun ClockPickerDialog(
 ) {
     Dialog(
         onDismissRequest = onDismiss,
-        properties  = DialogProperties(usePlatformDefaultWidth = false)
+        properties   = DialogProperties(usePlatformDefaultWidth = false)
     ) {
         Card(
             shape    = RoundedCornerShape(24.dp),
@@ -364,7 +384,7 @@ private fun ClockPickerDialog(
                 .padding(horizontal = 24.dp)
         ) {
             Column(
-                modifier   = Modifier.padding(24.dp),
+                modifier = Modifier.padding(24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
@@ -376,7 +396,7 @@ private fun ClockPickerDialog(
                 TimePicker(state = state)
                 Spacer(modifier = Modifier.height(24.dp))
                 Row(
-                    modifier  = Modifier.fillMaxWidth(),
+                    modifier              = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.End
                 ) {
                     TextButton(onClick = onDismiss) {
@@ -388,7 +408,7 @@ private fun ClockPickerDialog(
                         shape   = RoundedCornerShape(12.dp)
                     ) {
                         Text(
-                            text   = stringResource(R.string.ok),
+                            text       = stringResource(R.string.ok),
                             fontWeight = FontWeight.ExtraBold
                         )
                     }
