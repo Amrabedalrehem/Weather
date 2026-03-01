@@ -128,4 +128,229 @@ class HomeViewModelTest {
         coVerify { repository.getHourlyForecast("Cairo") }
         coVerify { repository.getFiveDayForecast("Cairo") }
     }
+
+    @Test
+    fun getInfoWeatherOnline_CurrentWeatherIsNotSuccess_FallsBackToCairoWhen() = runTest {
+        // Mock the repository's behavior
+        every { repository.getCurrentWeather() } returns flowOf(
+            ApiResult.Loading,
+            ApiResult.Error("timeout")
+        )
+        //when  call getInfoWeather()
+        buildViewModel()
+        advanceUntilIdle()
+        // Should still call forecasts with default "Cairo"
+        coVerify { repository.getHourlyForecast("Cairo") }
+        coVerify { repository.getFiveDayForecast("Cairo") }
+    }
+
+
+    @Test
+    fun getInfoWeather_CurrentWeatherAPIError_emitsErrorState() = runTest {
+        // Mock the repository's behavior
+        every { repository.getCurrentWeather() } returns flowOf(
+            ApiResult.Loading,
+            ApiResult.Error("Network timeout")
+        )
+        // //when  call getInfoWeather()
+        buildViewModel()
+        advanceUntilIdle()
+        //then  currentWeather emits Error
+        val state = viewModel.currentWeather.value
+        assertTrue(state is UiState.Error)
+        assertEquals("Network timeout", (state as UiState.Error).message)
+    }
+
+    @Test
+    fun getInfoWeather_HourlyForecastAPIError_EmitsErrorState() = runTest {
+        // Mock the repository's behavior
+        every { repository.getHourlyForecast(any()) } returns flowOf(
+            ApiResult.Loading,
+            ApiResult.Error("Server Error")
+        )
+        //when  call getInfoWeather()
+        buildViewModel()
+        advanceUntilIdle()
+        //then  hourlyForecast emits Error
+        val state = viewModel.hourlyForecast.value
+        assertTrue(state is UiState.Error)
+        assertEquals("Server Error", (state as UiState.Error).message)
+    }
+
+    @Test
+    fun getInfoWeather_FiveDayForecastAPIError_EmitsErrorState() = runTest {
+        // Mock the repository's behavior
+        every { repository.getFiveDayForecast(any()) } returns flowOf(
+            ApiResult.Loading,
+            ApiResult.Error("Not Found")
+        )
+        //when  call getInfoWeather()
+        buildViewModel()
+        advanceUntilIdle()
+//then  fiveDayForecast emits Error
+        val state = viewModel.fiveDayForecast.value
+        assertTrue(state is UiState.Error)
+        assertEquals("Not Found", (state as UiState.Error).message)
+    }
+
+
+    @Test
+    fun getInfoWeatherOfflineWithCache_loadsAllThreeStatesFromCache() = runTest {
+        // Mock the repository's behavior
+        every { networkObserver.isConnected } returns MutableStateFlow(false)
+        val cache = HomeWeatherCache(
+            currentWeather = fakeCurrentWeather,
+            hourlyForecast = fakeHourlyForecast,
+            fiveDayForecast = fakeFiveDayForecast
+        )
+        every { repository.getHomeWeather() } returns flowOf(cache)
+        //when  call getInfoWeather()
+        buildViewModel()
+        advanceUntilIdle()
+        //then  all three states emit Success
+        assertTrue(viewModel.currentWeather.value is UiState.Success)
+        assertTrue(viewModel.hourlyForecast.value is UiState.Success)
+        assertTrue(viewModel.fiveDayForecast.value is UiState.Success)
+    }
+
+    @Test
+    fun getInfoWeather_OfflineWithCache_DoesNOTCallRemoteAPI() = runTest {
+        // Mock the repository's behavior
+        every { networkObserver.isConnected } returns MutableStateFlow(false)
+
+        val cache = HomeWeatherCache(
+            currentWeather = fakeCurrentWeather,
+            hourlyForecast = fakeHourlyForecast,
+            fiveDayForecast = fakeFiveDayForecast
+        )
+        every { repository.getHomeWeather() } returns flowOf(cache)
+        //when  call getInfoWeather()
+        buildViewModel()
+        advanceUntilIdle()
+        //then  no API calls should be made
+        coVerify(exactly = 0) { repository.getCurrentWeather() }
+        coVerify(exactly = 0) { repository.getHourlyForecast(any()) }
+        coVerify(exactly = 0) { repository.getFiveDayForecast(any()) }
+    }
+
+    @Test
+    fun getInfoWeatherOfflineNoCacheAllThree_StatesEmitError() = runTest {
+        // Mock the repository's behavior
+        every { networkObserver.isConnected } returns MutableStateFlow(false)
+        every { repository.getHomeWeather() } returns flowOf(null)
+        //when  call getInfoWeather()
+        buildViewModel()
+        advanceUntilIdle()
+        //then  all three states emit Error
+        val expectedMessage = "No internet & No cached data"
+        assertTrue(viewModel.currentWeather.value is UiState.Error)
+        assertTrue(viewModel.hourlyForecast.value is UiState.Error)
+        assertTrue(viewModel.fiveDayForecast.value is UiState.Error)
+        assertEquals(expectedMessage, (viewModel.currentWeather.value as UiState.Error).message)
+        assertEquals(expectedMessage, (viewModel.hourlyForecast.value as UiState.Error).message)
+        assertEquals(expectedMessage, (viewModel.fiveDayForecast.value as UiState.Error).message)
+    }
+
+
+    @Test
+    fun cacheWeatherData_DoesNOTInsertCache_WhenCurrentWeatherIsError() = runTest {
+        // Mock the repository's behavior
+        every { repository.getCurrentWeather() } returns flowOf(
+            ApiResult.Loading,
+            ApiResult.Error("error")
+        )
+        //when  call getInfoWeather()
+        buildViewModel()
+        advanceUntilIdle()
+        //then  no API calls should be made
+        coVerify(exactly = 0) { repository.insertHomeWeather(any()) }
+    }
+
+    @Test
+    fun cacheWeatherData_DoesNOTInsertCache_WhenHourlyForecastIsError() = runTest {
+        // Mock the repository's behavior
+        every { repository.getHourlyForecast(any()) } returns flowOf(
+            ApiResult.Loading,
+            ApiResult.Error("error")
+        )
+        //when  call getInfoWeather()
+        buildViewModel()
+        advanceUntilIdle()
+        //then  no API calls should be made
+        coVerify(exactly = 0) { repository.insertHomeWeather(any()) }
+    }
+
+    @Test
+    fun cacheWeatherData_DoesNOTInsertCache_WhenFiveDayForecastIsError() = runTest {
+        // Mock the repository's behavior
+        every { repository.getFiveDayForecast(any()) } returns flowOf(
+            ApiResult.Loading,
+            ApiResult.Error("error")
+        )
+        //when  call getInfoWeather()
+        buildViewModel()
+        advanceUntilIdle()
+//then  no API calls should be made
+        coVerify(exactly = 0) { repository.insertHomeWeather(any()) }
+    }
+
+
+
+    @Test
+    fun isConnected_ReflectsNetworkObserverValue_whenDisconnected() = runTest {
+        // Mock the repository's behavior
+        every { networkObserver.isConnected } returns MutableStateFlow(false)
+        every { repository.getHomeWeather() } returns flowOf(null)
+        //when  call getInfoWeather()
+        buildViewModel()
+        advanceUntilIdle()
+        //then  isConnected emits false
+        assertTrue(!viewModel.isConnected.value)
+    }
+
+    @Test
+    fun `init - re-fetches weather when language changes`() = runTest {
+        // Mock the repository's behavior
+        val langFlow = MutableStateFlow("en")
+        every { repository.language } returns langFlow
+        //when  call getInfoWeather() and Simulate language change
+        buildViewModel()
+        advanceUntilIdle()
+        langFlow.value = "ar"
+        advanceUntilIdle()
+
+        // getCurrentWeather should be called at least twice (initial + after change)
+        coVerify(atLeast = 2) { repository.getCurrentWeather() }
+    }
+
+    @Test
+    fun `init - re-fetches weather when temperatureUnit changes`() = runTest {
+        // Mock the repository's behavior
+        val unitFlow = MutableStateFlow("celsius")
+        every { repository.temperatureUnit } returns unitFlow
+        //when  call getInfoWeather() and temperatureUnit  change
+        buildViewModel()
+        advanceUntilIdle()
+
+        unitFlow.value = "fahrenheit"
+        advanceUntilIdle()
+        // getCurrentWeather should be called at least twice (initial + after change)
+        coVerify(atLeast = 2) { repository.getCurrentWeather() }
+    }
+
+    @Test
+    fun `init - re-fetches weather on network reconnection`() = runTest {
+        // Mock the repository's behavior
+        val connectedFlow = MutableStateFlow(false)
+        every { networkObserver.isConnected } returns connectedFlow
+        every { repository.getHomeWeather() } returns flowOf(null)
+        //when  call getInfoWeather()  Device comes back online
+        buildViewModel()
+        advanceUntilIdle()
+
+        connectedFlow.value = true
+        advanceUntilIdle()
+        // getCurrentWeather should be called at least once (initial + after reconnection)
+        coVerify(atLeast = 1) { repository.getCurrentWeather() }
+    }
 }
