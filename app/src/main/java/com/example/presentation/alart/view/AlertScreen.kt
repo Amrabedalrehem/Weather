@@ -82,7 +82,7 @@ fun AlertScreen(
         )
         Spacer(modifier = Modifier.height(4.dp))
         Text(
-            text       = city,
+            text     = city,
             fontSize   = 20.sp,
             fontWeight = FontWeight.SemiBold,
             color      = tertiary
@@ -94,7 +94,7 @@ fun AlertScreen(
                 CircularProgressIndicator(color = tertiary)
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text     = stringResource(R.string.fetching_weather),
+                    text  = stringResource(R.string.fetching_weather),
                     color    = textSub,
                     fontSize = 14.sp
                 )
@@ -106,14 +106,14 @@ fun AlertScreen(
                     colors   = CardDefaults.cardColors(containerColor = cardBg)
                 ) {
                     Column(
-                        modifier            = Modifier.fillMaxWidth().padding(20.dp),
+                        modifier    = Modifier.fillMaxWidth().padding(20.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
-                            text       = "${state.temp}°".toArabicDigits(),
-                            fontSize   = 56.sp,
+                            text      = "${state.temp}°".toArabicDigits(),
+                            fontSize  = 56.sp,
                             fontWeight = FontWeight.Bold,
-                            color      = onPrimary
+                            color    = onPrimary
                         )
                         Text(
                             text     = state.description.replaceFirstChar { it.uppercase() },

@@ -201,4 +201,7 @@
         You will receive a notification when storm conditions are detected.
     </string>
 
+    <string name="unit_temp">°C</string>
+    <string name="unit_wind">km/h</string>
+    <string name="unit_rain">mm</string>
 </resources>

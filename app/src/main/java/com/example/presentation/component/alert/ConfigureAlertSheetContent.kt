@@ -18,15 +18,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-
 import com.airbnb.lottie.compose.*
-
 import com.example.weather.R
 import com.example.presentation.utils.toArabicDigits
-
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ConfigureAlertSheetContent(
@@ -39,12 +37,21 @@ fun ConfigureAlertSheetContent(
     notificationType: String,
     onNotificationTypeChange: (String) -> Unit,
     onShowTimePicker: () -> Unit,
-    onDone: () -> Unit
+    onDone: () -> Unit,
 ) {
-    val gradientColors = com.example.presentation.theme.LocalWeatherGradient.current
+     val gradientColors = com.example.presentation.theme.LocalWeatherGradient.current
 
-    val alertTypes = listOf("Rain", "Wind", "Temp", "Storm")
+    val textMain = MaterialTheme.colorScheme.onBackground
+    val textSub  = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
+    val textFaint= MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
+    val tertiaryColor = MaterialTheme.colorScheme.tertiary
 
+    val alertTypes = listOf(
+        stringResource(R.string.alert_rain),
+        stringResource(R.string.alert_wind),
+        stringResource(R.string.alert_temp),
+        stringResource(R.string.alert_storm)
+    )
     val alertIcons = mapOf(
         "Rain" to R.raw.rainicon,
         "Wind" to R.raw.cloud,
@@ -81,7 +88,7 @@ fun ConfigureAlertSheetContent(
         Box(
             modifier = Modifier
                 .size(width = 40.dp, height = 4.dp)
-                .background(Color.White.copy(alpha = 0.3f), RoundedCornerShape(2.dp))
+                .background(textMain.copy(alpha = 0.3f), RoundedCornerShape(2.dp))
         )
 
         Spacer(Modifier.height(20.dp))
@@ -90,11 +97,11 @@ fun ConfigureAlertSheetContent(
             text = stringResource(R.string.storm_alert_info),
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
-            color = Color.White
+            color = textMain
         )
 
         Spacer(Modifier.height(24.dp))
-        HorizontalDivider(color = Color.White.copy(alpha = 0.1f))
+        HorizontalDivider(color = textMain.copy(alpha = 0.1f))
         Spacer(Modifier.height(24.dp))
 
         Row(
@@ -102,7 +109,6 @@ fun ConfigureAlertSheetContent(
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
             alertTypes.forEach { type ->
-
                 val isSelected = type == selectedType
 
                 Column(
@@ -118,26 +124,20 @@ fun ConfigureAlertSheetContent(
                             .size(70.dp)
                             .background(
                                 if (isSelected)
-                                    Color.White.copy(alpha = 0.2f)
+                                    textMain.copy(alpha = 0.2f)
                                 else
-                                    Color.White.copy(alpha = 0.08f),
+                                    textMain.copy(alpha = 0.08f),
                                 RoundedCornerShape(16.dp)
                             )
                             .then(
                                 if (isSelected)
-                                    Modifier.border(
-                                        2.dp,
-                                        MaterialTheme.colorScheme.tertiary,
-                                        RoundedCornerShape(16.dp)
-                                    )
+                                    Modifier.border(2.dp, tertiaryColor, RoundedCornerShape(16.dp))
                                 else Modifier
                             ),
                         contentAlignment = Alignment.Center
                     ) {
                         val composition by rememberLottieComposition(
-                            LottieCompositionSpec.RawRes(
-                                alertIcons[type] ?: R.raw.notification
-                            )
+                            LottieCompositionSpec.RawRes(alertIcons[type] ?: R.raw.notification)
                         )
 
                         LottieAnimation(
@@ -152,21 +152,15 @@ fun ConfigureAlertSheetContent(
                     Text(
                         text = type,
                         fontSize = 13.sp,
-                        color = if (isSelected)
-                            MaterialTheme.colorScheme.tertiary
-                        else
-                            Color.White.copy(alpha = 0.7f),
-                        fontWeight = if (isSelected)
-                            FontWeight.Bold
-                        else
-                            FontWeight.Normal
+                        color = if (isSelected) tertiaryColor else textFaint,
+                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
                     )
                 }
             }
         }
 
         Spacer(Modifier.height(24.dp))
-        HorizontalDivider(color = Color.White.copy(alpha = 0.1f))
+        HorizontalDivider(color = textMain.copy(alpha = 0.1f))
         Spacer(Modifier.height(20.dp))
 
         if (selectedType != "Storm") {
@@ -180,13 +174,13 @@ fun ConfigureAlertSheetContent(
                     text = stringResource(R.string.threshold_level),
                     fontSize = 16.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color = Color.White
+                    color = textMain
                 )
 
                 Text(
                     text = "${threshold.toInt()} $unit".toArabicDigits(),
                     fontSize = 16.sp,
-                    color = MaterialTheme.colorScheme.tertiary,
+                    color = tertiaryColor,
                     fontWeight = FontWeight.Bold
                 )
             }
@@ -206,25 +200,22 @@ fun ConfigureAlertSheetContent(
                 valueRange = 0f..maxValue,
                 modifier = Modifier.fillMaxWidth(),
                 colors = SliderDefaults.colors(
-                    thumbColor = MaterialTheme.colorScheme.tertiary,
-                    activeTrackColor = MaterialTheme.colorScheme.tertiary,
-                    inactiveTrackColor = Color.White.copy(alpha = 0.3f)
+                    thumbColor = tertiaryColor,
+                    activeTrackColor = tertiaryColor,
+                    inactiveTrackColor = textMain.copy(alpha = 0.3f)
                 )
             )
 
         } else {
-
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = Color.White.copy(alpha = 0.1f)
-                )
+                colors = CardDefaults.cardColors(containerColor = textMain.copy(alpha = 0.1f))
             ) {
                 Text(
                     text = stringResource(R.string.storm_alert_info),
                     fontSize = 14.sp,
-                    color = Color.White.copy(alpha = 0.8f),
+                    color = textSub,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.padding(16.dp)
                 )
@@ -232,32 +223,32 @@ fun ConfigureAlertSheetContent(
         }
 
         Spacer(Modifier.height(20.dp))
-        HorizontalDivider(color = Color.White.copy(alpha = 0.1f))
+        HorizontalDivider(color = textMain.copy(alpha = 0.1f))
         Spacer(Modifier.height(16.dp))
 
         DatePicker(
             state = datePickerState,
             colors = DatePickerDefaults.colors(
                 containerColor = Color.Transparent,
-                titleContentColor = Color.White,
-                headlineContentColor = Color.White,
-                weekdayContentColor = Color.White.copy(alpha = 0.6f),
-                dayContentColor = Color.White,
-                selectedDayContainerColor = MaterialTheme.colorScheme.tertiary,
-                todayContentColor = MaterialTheme.colorScheme.tertiary,
-                todayDateBorderColor = MaterialTheme.colorScheme.tertiary
+                titleContentColor = textMain,
+                headlineContentColor = textMain,
+                weekdayContentColor = textMain.copy(alpha = 0.6f),
+                dayContentColor = textMain,
+                selectedDayContainerColor = tertiaryColor,
+                todayContentColor = tertiaryColor,
+                todayDateBorderColor = tertiaryColor
             )
         )
 
         Spacer(Modifier.height(16.dp))
-        HorizontalDivider(color = Color.White.copy(alpha = 0.1f))
+        HorizontalDivider(color = textMain.copy(alpha = 0.1f))
         Spacer(Modifier.height(16.dp))
 
         Text(
             text = stringResource(R.string.choose_time),
             fontSize = 16.sp,
             fontWeight = FontWeight.SemiBold,
-            color = Color.White
+            color = textSub
         )
 
         Spacer(Modifier.height(8.dp))
@@ -266,25 +257,24 @@ fun ConfigureAlertSheetContent(
             onClick = onShowTimePicker,
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(12.dp),
-            border = BorderStroke(1.dp, Color.White.copy(alpha = 0.5f)),
-            colors = ButtonDefaults.outlinedButtonColors(
-                contentColor = Color.White
-            )
+            border = BorderStroke(1.dp, textMain.copy(alpha = 0.5f)),
+            colors = ButtonDefaults.outlinedButtonColors(contentColor = textMain)
         ) {
             Text(
                 text = "🕐  $formattedTime".toArabicDigits(),
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color.White
+                color = textMain
             )
         }
+
         Spacer(Modifier.height(16.dp))
-        HorizontalDivider(color = Color.White.copy(alpha = 0.1f))
+        HorizontalDivider(color = textMain.copy(alpha = 0.1f))
         Spacer(Modifier.height(16.dp))
 
         Text(
             text = stringResource(R.string.choose_preferred_option),
-            color = MaterialTheme.colorScheme.tertiary,
+            color = tertiaryColor,
             fontSize = 13.sp,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(vertical = 4.dp)
@@ -305,13 +295,13 @@ fun ConfigureAlertSheetContent(
                         selected = notificationType == key,
                         onClick = { onNotificationTypeChange(key) },
                         colors = RadioButtonDefaults.colors(
-                            selectedColor = Color.White,
-                            unselectedColor = Color.White.copy(alpha = 0.5f)
+                            selectedColor = tertiaryColor,
+                            unselectedColor = tertiaryColor.copy(alpha = 0.5f)
                         )
                     )
                     Text(
                         text = label,
-                        color = Color.White,
+                        color = textMain,
                         fontSize = 16.sp
                     )
                 }
@@ -326,9 +316,7 @@ fun ConfigureAlertSheetContent(
                 .fillMaxWidth()
                 .height(52.dp),
             shape = RoundedCornerShape(12.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.tertiary
-            )
+            colors = ButtonDefaults.buttonColors(containerColor = tertiaryColor)
         ) {
             Text(
                 text = stringResource(R.string.create_alert),

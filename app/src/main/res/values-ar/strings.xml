@@ -200,4 +200,8 @@
     <string name="storm_info_message">
         سيتم إرسال إشعار عند اكتشاف حالة عاصفة.
     </string>
+
+    <string name="unit_temp">°م</string>
+    <string name="unit_wind">كم/س</string>
+    <string name="unit_rain">مم</string>
  </resources>

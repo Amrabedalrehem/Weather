@@ -2,6 +2,7 @@ package com.example.presentation.alart.view
 import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Intent
+import android.media.RingtoneManager
 import android.os.Bundle
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
@@ -14,12 +15,16 @@ import com.example.data.datasource.sharedPreference.DataStorePermission
 import com.example.data.datasource.sharedPreference.DataStoreSettings
 import com.example.data.dp.AppDatabase
 import com.example.presentation.alart.viewmodel.AlertViewModel
+import com.example.presentation.theme.WeatherTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class AlertActivity : ComponentActivity() {
+
     private var alarmId: Int = -1
+    private var isDismissed = false
+
     private val dataSourceRemote by lazy { DataSourceRemote() }
     private val database by lazy { AppDatabase.getInstance(this) }
     private val dataSourceLocal by lazy {
@@ -35,7 +40,9 @@ class AlertActivity : ComponentActivity() {
         super.onDestroy()
         AlarmReceiver.ringtone?.stop()
         AlarmReceiver.ringtone = null
-        deleteAlarm(alarmId)
+        if (isDismissed) {
+            deleteAlarm(alarmId)
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,35 +54,39 @@ class AlertActivity : ComponentActivity() {
                     WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or
                     WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
         )
+
         alarmId = intent.getIntExtra("alarmId", -1)
         val city = intent.getStringExtra("city") ?: "Unknown"
         val lat = intent.getDoubleExtra("lat", 0.0)
         val lon = intent.getDoubleExtra("lon", 0.0)
-        val alarmId = intent.getIntExtra("alarmId", -1)
+
+        val uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
+        AlarmReceiver.ringtone = RingtoneManager.getRingtone(this, uri)
+        AlarmReceiver.ringtone?.play()
 
         val viewModel = AlertViewModel(application, lat, lon, repository)
 
         setContent {
-            AlertScreen(
-                city = city,
-                viewModel = viewModel,
-                onDismiss = {
-                    AlarmReceiver.ringtone?.stop()
-                    deleteAlarm(alarmId)
-                    finish()
-                },
-                onSnooze = { minutes ->
-                    AlarmReceiver.ringtone?.stop()
-                    scheduleSnooze(alarmId, city, lat, lon, minutes)
-                    finish()
-                }
-            )
+            WeatherTheme {
+                AlertScreen(
+                    city = city,
+                    viewModel = viewModel,
+                    onDismiss = {
+                        isDismissed = true
+                        finish()
+                    },
+                    onSnooze = { minutes ->
+                        AlarmReceiver.ringtone?.stop()
+                        scheduleSnooze(alarmId, city, lat, lon, minutes)
+                        finish()
+                    }
+                )
+            }
         }
     }
 
     private fun deleteAlarm(alarmId: Int) {
         if (alarmId == -1) return
-
         CoroutineScope(Dispatchers.IO).launch {
             val alarm = repository.getAlarmById(alarmId)
             alarm?.let { repository.deleteAlarm(it) }

@@ -1,6 +1,8 @@
 package com.example.presentation.component.alert.alarm
+import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.media.RingtoneManager
@@ -128,10 +130,6 @@ class WeatherNotificationWorker(
     }
 
     private fun showAlert(context: Context, city: String, lat: Double, lon: Double, alarmId: Int) {
-        val uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
-        ringtone = RingtoneManager.getRingtone(context, uri)
-        ringtone?.play()
-
         val alertIntent = Intent(context, AlertActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
             putExtra("city",    city)
@@ -139,9 +137,38 @@ class WeatherNotificationWorker(
             putExtra("lon",     lon)
             putExtra("alarmId", alarmId)
         }
-        context.startActivity(alertIntent)
-    }
 
+        val pendingIntent = PendingIntent.getActivity(
+            context, alarmId, alertIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        val notificationManager =
+            context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(
+                "alert_channel",
+                "Weather Alert",
+                NotificationManager.IMPORTANCE_HIGH
+            ).apply {
+                lockscreenVisibility = Notification.VISIBILITY_PUBLIC
+            }
+            notificationManager.createNotificationChannel(channel)
+        }
+
+        val notification = NotificationCompat.Builder(context, "alert_channel")
+            .setSmallIcon(R.drawable.home_could)
+            .setContentTitle("Weather Alert 🌤 - $city")
+            .setContentText("Tap to view weather alert")
+            .setPriority(NotificationCompat.PRIORITY_MAX)
+            .setCategory(NotificationCompat.CATEGORY_ALARM)
+            .setFullScreenIntent(pendingIntent, true)
+            .setAutoCancel(true)
+            .build()
+
+        notificationManager.notify(alarmId + 5000, notification)
+    }
     private suspend fun deleteAlarmWorker(alarmId: Int) {
         if (alarmId != -1) {
             val alarm = repository.getAlarmById(alarmId)

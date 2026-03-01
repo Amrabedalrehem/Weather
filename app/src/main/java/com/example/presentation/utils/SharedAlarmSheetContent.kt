@@ -1,4 +1,5 @@
 package com.example.presentation.utils
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -41,7 +42,12 @@ fun SharedAlarmSheetContent(
         }
     }
 
-    val gradientColors = com.example.presentation.theme.LocalWeatherGradient.current
+     val gradientColors = com.example.presentation.theme.LocalWeatherGradient.current
+
+     val textMain     = MaterialTheme.colorScheme.onBackground
+    val textSub      = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
+    val textFaint    = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
+    val tertiaryColor= MaterialTheme.colorScheme.tertiary
 
     Column(
         modifier = Modifier
@@ -57,7 +63,7 @@ fun SharedAlarmSheetContent(
         Box(
             modifier = Modifier
                 .size(width = 40.dp, height = 4.dp)
-                .background(Color.White.copy(alpha = 0.3f), RoundedCornerShape(2.dp))
+                .background(textMain.copy(alpha = 0.3f), RoundedCornerShape(2.dp))
         )
 
         Spacer(Modifier.height(16.dp))
@@ -66,7 +72,7 @@ fun SharedAlarmSheetContent(
             text = title,
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
-            color = Color.White
+            color = textMain
         )
 
         Spacer(Modifier.height(16.dp))
@@ -75,25 +81,25 @@ fun SharedAlarmSheetContent(
             state = datePickerState,
             colors = DatePickerDefaults.colors(
                 containerColor = Color.Transparent,
-                titleContentColor = Color.White,
-                headlineContentColor = Color.White,
-                weekdayContentColor = Color.White.copy(alpha = 0.6f),
-                dayContentColor = Color.White,
-                selectedDayContainerColor = MaterialTheme.colorScheme.tertiary,
-                todayContentColor = MaterialTheme.colorScheme.tertiary,
-                todayDateBorderColor = MaterialTheme.colorScheme.tertiary
+                titleContentColor = textMain,
+                headlineContentColor = textMain,
+                weekdayContentColor = textMain.copy(alpha = 0.6f),
+                dayContentColor = textMain,
+                selectedDayContainerColor = tertiaryColor,
+                todayContentColor = tertiaryColor,
+                todayDateBorderColor = tertiaryColor
             )
         )
 
         Spacer(Modifier.height(12.dp))
-        HorizontalDivider(color = Color.White.copy(alpha = 0.1f))
+        HorizontalDivider(color = textMain.copy(alpha = 0.1f))
         Spacer(Modifier.height(16.dp))
 
         Text(
             text = stringResource(R.string.choose_time),
             fontSize = 16.sp,
             fontWeight = FontWeight.SemiBold,
-            color = Color.White
+            color = textSub
         )
 
         Spacer(Modifier.height(8.dp))
@@ -101,31 +107,31 @@ fun SharedAlarmSheetContent(
         OutlinedButton(
             onClick = onShowTimePicker,
             shape = RoundedCornerShape(12.dp),
-            colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.White),
-            border = androidx.compose.foundation.BorderStroke(1.dp, Color.White.copy(alpha = 0.5f)),
+            colors = ButtonDefaults.outlinedButtonColors(contentColor = textMain),
+            border = androidx.compose.foundation.BorderStroke(1.dp, textMain.copy(alpha = 0.5f)),
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(
                 text = "🕐  $formattedTime".toArabicDigits(),
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color.White
+                color = textMain
             )
         }
 
         Spacer(Modifier.height(20.dp))
-        HorizontalDivider(color = Color.White.copy(alpha = 0.1f))
+        HorizontalDivider(color = textMain.copy(alpha = 0.1f))
         Spacer(Modifier.height(16.dp))
 
         Text(
             text = subtitle,
-            color = Color.White.copy(alpha = 0.8f),
+            color = textFaint,
             fontSize = 14.sp
         )
 
         Text(
             text = stringResource(R.string.choose_preferred_option),
-            color = MaterialTheme.colorScheme.tertiary,
+            color = tertiaryColor,
             fontSize = 13.sp,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(vertical = 4.dp)
@@ -146,13 +152,13 @@ fun SharedAlarmSheetContent(
                         selected = selectedType == key,
                         onClick = { onTypeChange(key) },
                         colors = RadioButtonDefaults.colors(
-                            selectedColor = Color.White,
-                            unselectedColor = Color.White.copy(alpha = 0.5f)
+                            selectedColor = tertiaryColor,
+                            unselectedColor = tertiaryColor.copy(alpha = 0.5f)
                         )
                     )
                     Text(
                         text = label,
-                        color = Color.White,
+                        color = textMain,
                         fontSize = 16.sp
                     )
                 }
@@ -166,15 +172,13 @@ fun SharedAlarmSheetContent(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(52.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.tertiary
-            ),
+            colors = ButtonDefaults.buttonColors(containerColor = tertiaryColor),
             shape = RoundedCornerShape(12.dp)
         ) {
             Text(
                 text = stringResource(R.string.done),
                 fontSize = 18.sp,
-                color = Color.Black,
+                color = MaterialTheme.colorScheme.onPrimary,
                 fontWeight = FontWeight.Bold
             )
         }

@@ -1,4 +1,5 @@
 package com.example.presentation.favorite.viewmodel
+
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -53,24 +54,27 @@ class FavoritesViewModel(
                 list.filter { it.id !in pending }
             }
             .stateIn(
-                scope        = viewModelScope,
-                started      = SharingStarted.Lazily,
+                scope  = viewModelScope,
+                started  = SharingStarted.Lazily,
                 initialValue = emptyList()
             )
 
     fun markForDeletion(location: FavouriteLocationCache) {
         pendingDeletion.value += location.id
-    }
-
-    fun confirmDelete(location: FavouriteLocationCache) {
         viewModelScope.launch {
-            pendingDeletion.value -= location.id
             repository.delete(location)
         }
     }
 
-    fun undoDelete(location: FavouriteLocationCache) {
+    fun confirmDelete(location: FavouriteLocationCache) {
         pendingDeletion.value -= location.id
+    }
+
+    fun undoDelete(location: FavouriteLocationCache) {
+        viewModelScope.launch {
+            repository.insert(location)
+            pendingDeletion.value -= location.id
+        }
     }
 
     val alarms: StateFlow<List<AlarmEntity>> = repository.getAllAlarms()
